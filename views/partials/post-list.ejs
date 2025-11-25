@@ -1,0 +1,32 @@
+<div class="posts">
+    <% posts.forEach((post, index)=> { %>
+        <div class="post">
+            <div class="post-title">
+                <% if (post.url) { %>
+                    <a href="<%= post.url %>">
+                        <%= post.title %>
+                    </a>
+                    <% } else { %>
+                        <a href="/item/<%= post.id %>">
+                            <%= post.title %>
+                        </a>
+                        <% } %>
+            </div>
+            <div class="post-meta">
+                <a href="/item/<%= post.id %>">
+                    <%= post.comment_count %> comments
+                </a>
+                <%= new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit' , minute:'2-digit'}) %> ago by
+                    <%= post.username %>
+                        <% if (post.url) { %>
+                            <span class="domain">
+                                <%= new URL(post.url).hostname.replace('www.', '' ) %>
+                            </span>
+                            <% } %>
+            </div>
+        </div>
+        <% }); %>
+</div>
+<% if (posts.length===0) { %>
+    <p>No posts yet.</p>
+    <% } %>

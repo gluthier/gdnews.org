@@ -14,13 +14,43 @@ const requireLogin = (req, res, next) => {
 router.get('/', async (req, res) => {
     try {
         const posts = await database.query(`
-      SELECT p.*, u.username, 
-      (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
+      SELECT 
+        p.*, 
+        u.username, 
+        COUNT(c.id) as comment_count,
+        (
+          100 / POW(TIMESTAMPDIFF(HOUR, p.created_at, NOW()) + 2, 1.8) + 
+          COALESCE(SUM(10 / POW(TIMESTAMPDIFF(HOUR, c.created_at, NOW()) + 2, 1.8)), 0)
+        ) as activity_score
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
-      ORDER BY p.created_at DESC
+      LEFT JOIN comments c ON p.id = c.post_id
+      GROUP BY p.id
+      ORDER BY activity_score DESC
     `);
         res.render('pages/index', { posts });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+// List posts (Newest)
+router.get('/new', async (req, res) => {
+    try {
+        const posts = await database.query(`
+      SELECT 
+        p.*, 
+        u.username, 
+        COUNT(c.id) as comment_count
+      FROM posts p 
+      JOIN users u ON p.user_id = u.id 
+      LEFT JOIN comments c ON p.id = c.post_id
+      GROUP BY p.id
+      ORDER BY p.created_at DESC
+    `);
+        res.render('pages/new', { posts });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
