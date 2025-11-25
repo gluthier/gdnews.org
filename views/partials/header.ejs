@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDNews</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo"><a href="/">gdnews</a></div>
+                <div class="links">
+                    <a href="/new">new</a>
+                    <a href="/submit">submit</a>
+                </div>
+                <div class="auth">
+                    <% if (typeof user !=='undefined' && user) { %>
+                        <span class="user-link"><a href="/user?id=<%= user.username %>">
+                                <%= user.username %>
+                            </a></span>
+                        <% } else { %>
+                            <a href="/login">login</a>
+                            <% } %>
+                </div>
+            </nav>
+        </header>
+        <main>

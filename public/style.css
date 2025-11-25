@@ -1,0 +1,162 @@
+body {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 10pt;
+    color: #000000;
+    background-color: #ffffff;
+    margin: 0;
+}
+
+.container {
+    width: 85%;
+    max-width: 960px;
+    margin: 0 auto;
+    background-color: #f6f6ef;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: #000000;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+header {
+    background-color: #1a1a1a;
+    padding: 2px;
+    border-bottom: 1px solid #000;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    line-height: 12pt;
+    padding: 5px 10px;
+}
+
+.logo a {
+    font-weight: bold;
+    margin-right: 15px;
+    color: #ffffff;
+    font-size: 11pt;
+}
+
+.links a {
+    margin-right: 10px;
+    color: #b8b8b8;
+}
+
+.links a:hover,
+.auth a:hover {
+    color: #ffffff;
+}
+
+.auth {
+    margin-left: auto;
+}
+
+.auth a,
+.auth span {
+    color: #b8b8b8;
+}
+
+main {
+    padding: 10px 0;
+    background-color: #f6f6ef;
+    flex: 1;
+}
+
+.posts {
+    padding: 0 10px;
+}
+
+.post {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+.post-title {
+    font-size: 11pt;
+    color: #000000;
+}
+
+.post-title a {
+    color: #000000;
+}
+
+.post-title a:visited {
+    color: #828282;
+}
+
+.domain {
+    font-size: 8pt;
+    color: #828282;
+    margin-left: 5px;
+}
+
+.post-meta {
+    font-size: 7pt;
+    color: #828282;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 2px;
+    padding-left: 0;
+}
+
+.post-meta a {
+    color: #828282;
+}
+
+.post-meta a:hover {
+    text-decoration: underline;
+    color: #000000;
+}
+
+.rank {
+    color: #828282;
+    margin-right: 5px;
+    font-size: 11pt;
+}
+
+/* Form styles */
+form div {
+    margin-bottom: 10px;
+}
+
+label {
+    display: inline-block;
+    width: 80px;
+    color: #000000;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="url"],
+textarea {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #000000;
+    padding: 5px;
+}
+
+button {
+    background-color: #f0f0f0;
+    color: #000000;
+    border: 1px solid #cccccc;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e0e0e0;
+}
+
+.error {
+    color: #ff0000;
+}
