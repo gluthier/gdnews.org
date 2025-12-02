@@ -70,7 +70,8 @@ main {
     flex: 1;
 }
 
-.posts {
+.posts,
+footer {
     padding: 0 10px;
 }
 
