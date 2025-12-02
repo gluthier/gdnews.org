@@ -65,12 +65,11 @@ nav {
 }
 
 main {
-    padding: 10px 0;
+    padding: 10px 10px;
     background-color: #f6f6ef;
     flex: 1;
 }
 
-.posts,
 footer {
     padding: 0 10px;
 }
