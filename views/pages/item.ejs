@@ -37,8 +37,8 @@
 
         <div class="comments">
 
-            <% function renderCommentTree(comment, depth) { const MAX_DEPTH=2; /* If we are at MAX_DEPTH and have
-                children, we show the children in a hidden div with a toggle */ %>
+            <% function renderCommentTree(comment, depth, maxDepth=2) { /* If we are at maxDepth and have children, we
+                show the children in a hidden div with a toggle */ %>
                 <div class="comment">
                     <div class="comment-meta">
                         <%= comment.username %>
@@ -64,17 +64,18 @@
 
                     <div id="children-<%= comment.id %>">
                         <% if (comment.children && comment.children.length> 0) { %>
-                            <% if (depth < MAX_DEPTH) { %>
-                                <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1); }); %>
+                            <% if (depth < maxDepth) { %>
+                                <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1, maxDepth); });
+                                    %>
                                     <% } else { %>
                                         <div class="show-more">
                                             <button
                                                 onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
-                                                show more comments (<%= comment.descendant_count %>)
+                                                show more (<%= comment.descendant_count %>)
                                             </button>
                                             <div style="display: none;">
                                                 <% comment.children.forEach(child=> { renderCommentTree(child, depth +
-                                                    1);
+                                                    1, maxDepth + 2);
                                                     });
                                                     %>
                                             </div>
