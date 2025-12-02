@@ -9,16 +9,17 @@
                     <% } else { %>
                         <%= post.title %>
                             <% } %>
+                                <% if (post.url) { %>
+                                    <span class="domain">
+                                        (<%= new URL(post.url).hostname.replace('www.', '' ) %>)
+                                    </span>
+                                    <% } %>
             </div>
             <div class="post-meta">
                 <%= post.score || 0 %> points by <%= post.username %>
                         <%= new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit' , minute:'2-digit'}) %>
                             ago
-                            <% if (post.url) { %>
-                                <span class="domain">
-                                    <%= new URL(post.url).hostname.replace('www.', '' ) %>
-                                </span>
-                                <% } %>
+
             </div>
             <% if (post.content) { %>
                 <div class="post-content">

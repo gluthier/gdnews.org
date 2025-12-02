@@ -11,6 +11,11 @@
                             <%= post.title %>
                         </a>
                         <% } %>
+                            <% if (post.url) { %>
+                                <span class="domain">
+                                    (<%= new URL(post.url).hostname.replace('www.', '' ) %>)
+                                </span>
+                                <% } %>
             </div>
             <div class="post-meta">
                 <a href="/item/<%= post.id %>">
@@ -18,11 +23,7 @@
                 </a>
                 <%= new Date(post.created_at).toLocaleTimeString([], {hour: '2-digit' , minute:'2-digit'}) %> ago by
                     <%= post.username %>
-                        <% if (post.url) { %>
-                            <span class="domain">
-                                <%= new URL(post.url).hostname.replace('www.', '' ) %>
-                            </span>
-                            <% } %>
+
             </div>
         </div>
         <% }); %>
