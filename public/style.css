@@ -160,3 +160,63 @@ button:hover {
 .error {
     color: #ff0000;
 }
+
+/* Comment styles */
+.comments {
+    margin-top: 20px;
+}
+
+.comment {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.comment .comment {
+    margin-left: 20px;
+}
+
+.comment-meta {
+    font-size: 8pt;
+    color: #828282;
+    margin-bottom: 2px;
+}
+
+.comment-content {
+    font-size: 9pt;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.comment-meta button {
+    background: none;
+    border: none;
+    color: #828282;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: 8pt;
+    margin-left: 5px;
+}
+
+.comment-meta button:hover {
+    color: #000000;
+}
+
+.show-more {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.show-more button {
+    background: none;
+    border: none;
+    color: #828282;
+    cursor: pointer;
+    font-size: 8pt;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.show-more button:hover {
+    color: #000000;
+}

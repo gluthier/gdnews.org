@@ -105,17 +105,54 @@ router.get('/item/:id', async (req, res) => {
       ORDER BY c.created_at ASC
     `, [postId]);
 
-        res.render('pages/item', { post, comments, error: null });
+        // Build comment tree
+        const commentMap = {};
+        const rootComments = [];
+
+        comments.forEach(comment => {
+            comment.children = [];
+            commentMap[comment.id] = comment;
+        });
+
+        comments.forEach(comment => {
+            if (comment.parent_comment_id) {
+                if (commentMap[comment.parent_comment_id]) {
+                    commentMap[comment.parent_comment_id].children.push(comment);
+                }
+            } else {
+                rootComments.push(comment);
+            }
+        });
+
+        // Helper to count total descendants
+        const countDescendants = (comment) => {
+            let count = 0;
+            if (comment.children && comment.children.length > 0) {
+                count += comment.children.length;
+                comment.children.forEach(child => {
+                    count += countDescendants(child);
+                });
+            }
+            return count;
+        };
+
+        // Attach descendant counts
+        comments.forEach(comment => {
+            comment.descendant_count = countDescendants(comment);
+        });
+
+        res.render('pages/item', { post, comments: rootComments, error: null });
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error('Error rendering item page:', err);
+        console.error(err.stack);
+        res.status(500).send('Server Error: ' + err.message);
     }
 });
 
 // Handle comment
 router.post('/item/:id/comment', requireLogin, async (req, res) => {
     const postId = req.params.id;
-    const { content } = req.body;
+    const { content, parent_comment_id } = req.body;
 
     if (!content) {
         return res.redirect(`/item/${postId}`);
@@ -123,8 +160,8 @@ router.post('/item/:id/comment', requireLogin, async (req, res) => {
 
     try {
         await database.query(
-            'INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)',
-            [postId, req.session.user.id, content]
+            'INSERT INTO comments (post_id, user_id, content, parent_comment_id) VALUES (?, ?, ?, ?)',
+            [postId, req.session.user.id, content, parent_comment_id || null]
         );
         res.redirect(`/item/${postId}`);
     } catch (err) {

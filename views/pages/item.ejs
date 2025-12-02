@@ -33,16 +33,49 @@
     </div>
 
     <div class="comments">
-        <% comments.forEach(comment=> { %>
+
+        <% function renderCommentTree(comment, depth) { const MAX_DEPTH=2; // If we are at MAX_DEPTH and have children,
+            // we show the children in a hidden div with a toggle %>
             <div class="comment">
                 <div class="comment-meta">
                     <%= comment.username %>
                         <%= new Date(comment.created_at).toLocaleString() %>
+                            <button
+                                onclick="document.getElementById('reply-<%= comment.id %>').style.display = 'block'">reply</button>
                 </div>
                 <div class="comment-content">
                     <%= comment.content %>
                 </div>
+
+                <div id="reply-<%= comment.id %>" style="display: none; margin-top: 10px;">
+                    <form action="/item/<%= post.id %>/comment" method="POST">
+                        <input type="hidden" name="parent_comment_id" value="<%= comment.id %>">
+                        <textarea name="content" rows="2" cols="50" required></textarea><br>
+                        <button type="submit">submit reply</button>
+                        <button type="button"
+                            onclick="document.getElementById('reply-<%= comment.id %>').style.display = 'none'">cancel</button>
+                    </form>
+                </div>
+
+                <% if (comment.children && comment.children.length> 0) { %>
+                    <% if (depth < MAX_DEPTH) { %>
+                        <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1); }); %>
+                            <% } else { %>
+                                <div class="show-more">
+                                    <button
+                                        onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                                        show (<%= comment.descendant_count %>) comments
+                                    </button>
+                                    <div style="display: none;">
+                                        <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1); });
+                                            %>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <% } %>
             </div>
-            <% }); %>
+            <% } %>
+
+                <% comments.forEach(comment=> { renderCommentTree(comment, 0); }); %>
     </div>
     <%- include('../partials/footer') %>
