@@ -14,6 +14,11 @@
                     <label for="password">password:</label>
                     <input type="password" id="password" name="password" required>
                 </div>
+                <div>
+                    <label for="email">email (optional, used for password reset):</label>
+                    <input type="email" id="email" name="email">
+                </div>
                 <button type="submit">create account</button>
             </form>
+            <p class="user-switch">Have an account? <i><a href="/login">login</a></i></p>
             <%- include('../partials/footer') %>

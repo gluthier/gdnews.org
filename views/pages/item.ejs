@@ -70,7 +70,7 @@
                                         <div class="show-more">
                                             <button
                                                 onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
-                                                show (<%= comment.descendant_count %>) comments
+                                                show more comments (<%= comment.descendant_count %>)
                                             </button>
                                             <div style="display: none;">
                                                 <% comment.children.forEach(child=> { renderCommentTree(child, depth +

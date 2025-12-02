@@ -8,14 +8,14 @@ router.get('/register', (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
     if (!username || !password) {
         return res.render('pages/register', { error: 'All fields are required' });
     }
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        await database.query('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword]);
+        await database.query('INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)', [username, hashedPassword, email || null]);
         res.redirect('/login');
     } catch (err) {
         console.error(err);
