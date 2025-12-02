@@ -34,16 +34,18 @@
 
     <div class="comments">
 
-        <% function renderCommentTree(comment, depth) { const MAX_DEPTH=2; // If we are at MAX_DEPTH and have children,
-            // we show the children in a hidden div with a toggle %>
+        <% function renderCommentTree(comment, depth) { const MAX_DEPTH=2; /* If we are at MAX_DEPTH and have children,
+            we show the children in a hidden div with a toggle */ %>
             <div class="comment">
                 <div class="comment-meta">
                     <%= comment.username %>
                         <%= new Date(comment.created_at).toLocaleString() %>
                             <button
+                                onclick="toggleChildren('<%= comment.id %>', this, <%= comment.descendant_count || 0 %>)">hide</button>
+                            <button
                                 onclick="document.getElementById('reply-<%= comment.id %>').style.display = 'block'">reply</button>
                 </div>
-                <div class="comment-content">
+                <div class="comment-content" id="content-<%= comment.id %>">
                     <%= comment.content %>
                 </div>
 
@@ -57,24 +59,47 @@
                     </form>
                 </div>
 
-                <% if (comment.children && comment.children.length> 0) { %>
-                    <% if (depth < MAX_DEPTH) { %>
-                        <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1); }); %>
-                            <% } else { %>
-                                <div class="show-more">
-                                    <button
-                                        onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
-                                        show (<%= comment.descendant_count %>) comments
-                                    </button>
-                                    <div style="display: none;">
-                                        <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1); });
-                                            %>
+                <div id="children-<%= comment.id %>">
+                    <% if (comment.children && comment.children.length> 0) { %>
+                        <% if (depth < MAX_DEPTH) { %>
+                            <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1); }); %>
+                                <% } else { %>
+                                    <div class="show-more">
+                                        <button
+                                            onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                                            show (<%= comment.descendant_count %>) comments
+                                        </button>
+                                        <div style="display: none;">
+                                            <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1);
+                                                });
+                                                %>
+                                        </div>
                                     </div>
-                                </div>
-                                <% } %>
                                     <% } %>
+                                        <% } %>
+                </div>
             </div>
             <% } %>
+
+                <script>
+                    function toggleChildren(commentId, btn, count) {
+                        const childrenDiv = document.getElementById('children-' + commentId);
+                        const contentDiv = document.getElementById('content-' + commentId);
+                        if (childrenDiv.style.display === 'none') {
+                            childrenDiv.style.display = 'block';
+                            if (contentDiv) contentDiv.style.display = 'block';
+                            btn.innerText = 'hide';
+                        } else {
+                            childrenDiv.style.display = 'none';
+                            if (contentDiv) contentDiv.style.display = 'none';
+                            if (count > 0) {
+                                btn.innerText = 'show (' + (count + 1) + ')';
+                            } else {
+                                btn.innerText = 'show';
+                            }
+                        }
+                    }
+                </script>
 
                 <% comments.forEach(comment=> { renderCommentTree(comment, 0); }); %>
     </div>
