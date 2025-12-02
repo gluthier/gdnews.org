@@ -64,23 +64,46 @@
                     <div id="children-<%= comment.id %>">
                         <% if (comment.children && comment.children.length> 0) { %>
                             <% if (depth < maxDepth) { %>
-                                <% comment.children.forEach(child=> { renderCommentTree(child, depth + 1, maxDepth); });
+                                <% const REPLY_LIMIT=5; let visibleChildren=comment.children; let hiddenChildren=[]; if
+                                    (comment.children && comment.children.length> REPLY_LIMIT) {
+                                    visibleChildren = comment.children.slice(0, REPLY_LIMIT);
+                                    hiddenChildren = comment.children.slice(REPLY_LIMIT);
+                                    }
                                     %>
-                                    <% } else { %>
-                                        <div class="show-more">
-                                            <button
-                                                onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
-                                                show more (<%= comment.descendant_count %>)
-                                            </button>
-                                            <div style="display: none;">
-                                                <% comment.children.forEach(child=> { renderCommentTree(child, depth +
-                                                    1, maxDepth + 2);
-                                                    });
-                                                    %>
-                                            </div>
-                                        </div>
-                                        <% } %>
-                                            <% } %>
+                                    <% visibleChildren.forEach(child=> { renderCommentTree(child, depth + 1, maxDepth);
+                                        }); %>
+
+                                        <% if (hiddenChildren.length> 0) { %>
+                                            <% const hiddenCount=hiddenChildren.reduce((acc, child)=> acc + 1 +
+                                                (child.descendant_count || 0), 0);
+                                                %>
+                                                <div class="show-more">
+                                                    <button
+                                                        onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                                                        show more (<%= hiddenCount %>)
+                                                    </button>
+                                                    <div style="display: none;">
+                                                        <% hiddenChildren.forEach(child=> { renderCommentTree(child,
+                                                            depth + 1, maxDepth); }); %>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <div class="show-more">
+                                                            <button
+                                                                onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                                                                show more (<%= comment.descendant_count %>)
+                                                            </button>
+                                                            <div style="display: none;">
+                                                                <% comment.children.forEach(child=> {
+                                                                    renderCommentTree(child, depth +
+                                                                    1, maxDepth + 2);
+                                                                    });
+                                                                    %>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+                                                            <% } %>
                     </div>
                 </div>
                 <% } %>

@@ -210,7 +210,7 @@ button:hover {
     margin-bottom: 10px;
 }
 
-.show-more button {
+.show-more>button {
     background: none;
     border: none;
     color: #828282;
@@ -219,9 +219,10 @@ button:hover {
     padding: 0;
     text-decoration: none;
     font-style: italic;
+    margin-left: 20px;
 }
 
-.show-more button:hover {
+.show-more>button:hover {
     text-decoration: underline;
     color: #000000;
 }
