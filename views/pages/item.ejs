@@ -45,8 +45,7 @@
                             <%= new Date(comment.created_at).toLocaleString() %>
                                 <button
                                     onclick="toggleChildren('<%= comment.id %>', this, <%= comment.descendant_count || 0 %>)">hide</button>
-                                <button
-                                    onclick="document.getElementById('reply-<%= comment.id %>').style.display = 'block'">reply</button>
+                                <button onclick="showReply('<%= comment.id %>', this)">reply</button>
                     </div>
                     <div class="comment-content" id="content-<%= comment.id %>">
                         <%= comment.content %>
@@ -87,9 +86,26 @@
                 <% } %>
 
                     <script>
+                        function showReply(commentId, replyBtn) {
+                            const replyForm = document.getElementById('reply-' + commentId);
+                            if (replyForm) replyForm.style.display = 'block';
+
+                            const contentDiv = document.getElementById('content-' + commentId);
+                            const childrenDiv = document.getElementById('children-' + commentId);
+                            const hideBtn = replyBtn.previousElementSibling;
+
+                            if (contentDiv && contentDiv.style.display === 'none') {
+                                contentDiv.style.display = 'block';
+                                if (childrenDiv) childrenDiv.style.display = 'block';
+                                if (hideBtn) hideBtn.innerText = 'hide';
+                            }
+                        }
+
                         function toggleChildren(commentId, btn, count) {
                             const childrenDiv = document.getElementById('children-' + commentId);
                             const contentDiv = document.getElementById('content-' + commentId);
+                            const replyForm = document.getElementById('reply-' + commentId);
+
                             if (childrenDiv.style.display === 'none') {
                                 childrenDiv.style.display = 'block';
                                 if (contentDiv) contentDiv.style.display = 'block';
@@ -97,6 +113,7 @@
                             } else {
                                 childrenDiv.style.display = 'none';
                                 if (contentDiv) contentDiv.style.display = 'none';
+                                if (replyForm) replyForm.style.display = 'none';
                                 if (count > 0) {
                                     btn.innerText = 'show (' + (count + 1) + ')';
                                 } else {
