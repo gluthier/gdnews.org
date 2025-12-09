@@ -53,7 +53,7 @@ router.get('/new', async (req, res) => {
       GROUP BY p.id
       ORDER BY p.created_at DESC
     `);
-        res.render('pages/new', { posts });
+        res.render('pages/new', { posts, title: 'newest' });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -62,14 +62,14 @@ router.get('/new', async (req, res) => {
 
 // Show submit form
 router.get('/submit', requireLogin, (req, res) => {
-    res.render('pages/submit', { error: null });
+    res.render('pages/submit', { error: null, title: 'submit' });
 });
 
 // Handle submission
 router.post('/submit', requireLogin, async (req, res) => {
     const { title, url, text } = req.body;
     if (!title) {
-        return res.render('pages/submit', { error: 'Title is required' });
+        return res.render('pages/submit', { error: 'Title is required', title: 'submit' });
     }
 
     try {
@@ -80,7 +80,7 @@ router.post('/submit', requireLogin, async (req, res) => {
         res.redirect('/');
     } catch (err) {
         console.error(err);
-        res.render('pages/submit', { error: 'Submission failed' });
+        res.render('pages/submit', { error: 'Submission failed', title: 'submit' });
     }
 });
 
@@ -144,7 +144,7 @@ router.get('/item/:id', async (req, res) => {
             comment.descendant_count = countDescendants(comment);
         });
 
-        res.render('pages/item', { post, comments: rootComments, error: null });
+        res.render('pages/item', { post, comments: rootComments, error: null, title: post.title });
     } catch (err) {
         console.error('Error rendering item page:', err);
         console.error(err.stack);
@@ -235,7 +235,7 @@ router.get('/user', async (req, res) => {
             ORDER BY p.created_at DESC
         `, [user.id]);
 
-        res.render('pages/user', { profileUser: user, posts });
+        res.render('pages/user', { profileUser: user, posts, title: `${user.username}` });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
