@@ -1,0 +1,33 @@
+<div class="posts">
+    {{#each posts}}
+    <div class="post">
+        <div class="post-title">
+            {{#if url}}
+            <a href="{{url}}">
+                {{title}}
+            </a>
+            {{else}}
+            <a href="/item/{{id}}">
+                {{title}}
+            </a>
+            {{/if}}
+            {{#if url}}
+            <span class="domain">
+                ({{getHostname url}})
+            </span>
+            {{/if}}
+        </div>
+        <div class="post-meta">
+            <a href="/item/{{id}}">
+                {{comment_count}} comments
+            </a>
+            {{formatDate created_at}} ago by
+            {{username}}
+
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{#if (eq posts.length 0)}}
+<p>No posts yet.</p>
+{{/if}}

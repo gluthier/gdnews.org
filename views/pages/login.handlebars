@@ -1,0 +1,20 @@
+{{> header}}
+<h2>Login</h2>
+{{#if error}}
+<div class="error">
+    {{error}}
+</div>
+{{/if}}
+<form action="/login" method="POST">
+    <div>
+        <label for="username">username:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+        <label for="password">password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">login</button>
+</form>
+<p class="user-switch">Don't have an account? <i><a href="/register">create account</a></i></p>
+{{> footer}}

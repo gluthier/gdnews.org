@@ -18,7 +18,14 @@ app.use(session({
 }));
 
 // View Engine
-app.set('view engine', 'ejs');
+const { engine } = require('express-handlebars');
+const helpers = require('./helpers');
+
+app.engine('handlebars', engine({
+    helpers: helpers,
+    defaultLayout: false, // We will use partials manualy for now to match the EJS structure
+}));
+app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 // Make user available to all templates

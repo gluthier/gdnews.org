@@ -1,0 +1,25 @@
+{{> header}}
+<h2>Submit</h2>
+{{#if error}}
+<div class="error">
+    {{error}}
+</div>
+{{/if}}
+<form action="/submit" method="POST">
+    <div>
+        <label for="title">title:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div>
+        <label for="url">url:</label>
+        <input type="url" id="url" name="url">
+    </div>
+    <div>
+        <label for="text">text:</label>
+        <textarea id="text" name="text" rows="4" cols="50"></textarea>
+    </div>
+    <p>Leave url blank to submit a question for discussion. If there is no url, the text (if any) will
+        appear at the top of the thread.</p>
+    <button type="submit">submit</button>
+</form>
+{{> footer}}

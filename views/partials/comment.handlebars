@@ -1,0 +1,66 @@
+<div class="comment">
+    <div class="comment-meta">
+        {{username}}
+        {{formatDateFull created_at}}
+        <button onclick="toggleChildren('{{id}}', this, {{descendant_count}})">hide</button>
+        <button onclick="showReply('{{id}}', this)">reply</button>
+    </div>
+
+    <div class="comment-content" id="content-{{id}}">
+        {{{formatCommentContent content}}}
+    </div>
+
+    <div id="reply-{{id}}" style="display: none; margin-top: 10px;">
+        <form action="/item/{{post_id}}/comment" method="POST">
+            <input type="hidden" name="parent_comment_id" value="{{id}}">
+            <textarea name="content" rows="2" cols="50" required></textarea><br>
+            <button type="submit">submit reply</button>
+            <button type="button"
+                onclick="document.getElementById('reply-{{id}}').style.display = 'none'">cancel</button>
+        </form>
+    </div>
+
+    <div id="children-{{id}}">
+        {{#if children}}
+        {{#if (lt depth maxDepth)}}
+        {{!-- Logic for showing limited children --}}
+        {{#if (gt (length children) 5)}}
+        {{!-- Visible Children --}}
+        {{#each (slice children 0 5)}}
+        {{> comment this depth=(add ../depth 1) maxDepth=../maxDepth}}
+        {{/each}}
+
+        {{!-- Hidden Children --}}
+        <div class="show-more">
+            <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                show more ({{reduceDescendantCount (slice children 5 (length children))}})
+            </button>
+            <div style="display: none;">
+                {{#each (slice children 5 (length children))}}
+                {{> comment this depth=(add ../depth 1) maxDepth=../maxDepth}}
+                {{/each}}
+            </div>
+        </div>
+        {{else}}
+        {{!-- All Children --}}
+        {{#each children}}
+        {{> comment this depth=(add ../depth 1) maxDepth=../maxDepth}}
+        {{/each}}
+        {{/if}}
+
+        {{else}}
+        {{!-- Max Depth Reached - Show More --}}
+        <div class="show-more">
+            <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                show more ({{descendant_count}})
+            </button>
+            <div style="display: none;">
+                {{#each children}}
+                {{> comment this depth=(add ../depth 1) maxDepth=(add ../maxDepth 2)}}
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+    </div>
+</div>

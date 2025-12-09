@@ -18,13 +18,13 @@
                     <a href="/submit">submit</a>
                 </div>
                 <div class="auth">
-                    <% if (typeof user !=='undefined' && user) { %>
-                        <span class="user-link"><a href="/user?id=<%= user.username %>">
-                                <%= user.username %>
-                            </a></span>
-                        <% } else { %>
-                            <a href="/login">login</a>
-                            <% } %>
+                    {{#if user}}
+                    <span class="user-link"><a href="/user?id={{user.username}}">
+                            {{user.username}}
+                        </a></span>
+                    {{else}}
+                    <a href="/login">login</a>
+                    {{/if}}
                 </div>
             </nav>
         </header>
