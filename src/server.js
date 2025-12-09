@@ -8,8 +8,11 @@ const database = require('./database');
 const app = express();
 const PORT = process.env.PORT;
 
+const lessMiddleware = require('less-middleware');
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(lessMiddleware(path.join(__dirname, '../public')));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(session({
     secret: 'secret-key', // In production, use a secure random string
