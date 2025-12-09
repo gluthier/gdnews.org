@@ -27,6 +27,13 @@
     </div>
     {{/each}}
 </div>
+
+{{#if nextPageUrl}}
+<div class="more-link">
+    <a href="{{nextPageUrl}}">more</a>
+</div>
+{{/if}}
+
 {{#if (eq posts.length 0)}}
-<p>No posts yet.</p>
+<p>No post yet.</p>
 {{/if}}

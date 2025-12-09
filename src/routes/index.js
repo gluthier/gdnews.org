@@ -14,7 +14,13 @@ const requireLogin = (req, res, next) => {
 };
 
 // List posts (Home)
+// List posts (Home)
 router.get('/', async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    if (page < 1) return res.redirect('/');
+    const limit = 30;
+    const offset = (page - 1) * limit;
+
     try {
         const posts = await database.query(`
       SELECT 
@@ -30,8 +36,16 @@ router.get('/', async (req, res) => {
       LEFT JOIN comments c ON p.id = c.post_id
       GROUP BY p.id
       ORDER BY activity_score DESC
-    `);
-        res.render('pages/index', { posts });
+      LIMIT ? OFFSET ?
+    `, [limit + 1, offset]);
+
+        let nextPageUrl = null;
+        if (posts.length > limit) {
+            posts.pop(); // Remove the extra item
+            nextPageUrl = `/?page=${page + 1}`;
+        }
+
+        res.render('pages/index', { posts, nextPageUrl });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -40,7 +54,13 @@ router.get('/', async (req, res) => {
 
 
 // List posts (Newest)
+// List posts (Newest)
 router.get('/new', async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    if (page < 1) return res.redirect('/new');
+    const limit = 30;
+    const offset = (page - 1) * limit;
+
     try {
         const posts = await database.query(`
       SELECT 
@@ -52,8 +72,16 @@ router.get('/new', async (req, res) => {
       LEFT JOIN comments c ON p.id = c.post_id
       GROUP BY p.id
       ORDER BY p.created_at DESC
-    `);
-        res.render('pages/new', { posts, title: 'newest' });
+      LIMIT ? OFFSET ?
+    `, [limit + 1, offset]);
+
+        let nextPageUrl = null;
+        if (posts.length > limit) {
+            posts.pop();
+            nextPageUrl = `/new?page=${page + 1}`;
+        }
+
+        res.render('pages/new', { posts, title: 'newest', nextPageUrl });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -226,6 +254,11 @@ router.get('/user', async (req, res) => {
         }
         const user = users[0];
 
+        const page = parseInt(req.query.page) || 1;
+        if (page < 1) return res.redirect(`/user?id=${username}`);
+        const limit = 30;
+        const offset = (page - 1) * limit;
+
         const posts = await database.query(`
             SELECT p.*, u.username, 
             (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
@@ -233,9 +266,16 @@ router.get('/user', async (req, res) => {
             JOIN users u ON p.user_id = u.id 
             WHERE u.id = ?
             ORDER BY p.created_at DESC
-        `, [user.id]);
+            LIMIT ? OFFSET ?
+        `, [user.id, limit + 1, offset]);
 
-        res.render('pages/user', { profileUser: user, posts, title: `${user.username}` });
+        let nextPageUrl = null;
+        if (posts.length > limit) {
+            posts.pop();
+            nextPageUrl = `/user?id=${username}&page=${page + 1}`;
+        }
+
+        res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
