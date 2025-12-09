@@ -193,6 +193,8 @@ button:hover {
     color: #000000;
     margin-bottom: 5px;
     max-width: 60ch;
+    white-space: pre-line;
+    word-wrap: break-word;
 }
 
 .comment-meta button {

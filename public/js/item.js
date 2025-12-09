@@ -46,6 +46,23 @@ function toggleChildren(commentId, btn, count) {
 }
 
 /**
+ * Escapes HTML characters and normalizes newlines to two newlines per paragraph.
+ * @param {string} text - The text to format.
+ * @returns {string} - The formatted HTML string.
+ */
+function formatCommentContent(text) {
+    if (text == null) return '';
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/\r\n/g, '\n')
+        .replace(/\n+/g, '\n\n');
+}
+
+/**
  * Renders a new comment into the DOM after successful submission.
  * @param {Object} comment - The comment object returned from the server.
  */
@@ -58,9 +75,7 @@ function renderNewComment(comment) {
                 <button onclick="toggleChildren('${comment.id}', this, 0)">hide</button>
                 <button onclick="showReply('${comment.id}', this)">reply</button>
             </div>
-            <div class="comment-content" id="content-${comment.id}">
-                ${comment.content}
-            </div>
+            <div class="comment-content" id="content-${comment.id}">${formatCommentContent(comment.content)}</div>
 
             <div id="reply-${comment.id}" style="display: none; margin-top: 10px;">
                 <form action="/item/${comment.post_id}/comment" method="POST">
