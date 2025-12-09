@@ -73,6 +73,16 @@ main {
 
 footer {
     padding: 0 10px;
+    font-size: 0.75rem;
+    color: #828282;
+}
+
+
+hr {
+    border: none;
+    height: 1px;
+    color: #828282;
+    background-color: #828282;
 }
 
 .post {
@@ -182,10 +192,20 @@ button:hover {
     margin-left: 20px;
 }
 
-.comment-meta {
-    font-size: 0.75rem;
+.meta-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
     color: #828282;
-    margin-bottom: 2px;
+    font-size: 0.75rem;
+}
+
+.meta-list li {
+    display: flex;
+    align-items: center;
 }
 
 .comment-content {
@@ -206,7 +226,6 @@ button:hover {
     cursor: pointer;
     padding: 0;
     font-size: 0.75rem;
-    margin-left: 5px;
 }
 
 .comment-meta button:hover {

@@ -1,8 +1,11 @@
 <div class="comment">
     <div class="comment-meta">
-        {{username}} {{formatDate created_at}}
-        <button onclick="toggleChildren('{{id}}', this, {{descendant_count}})">hide</button>
-        <button onclick="showReply('{{id}}', this)">reply</button>
+        <ul class="meta-list">
+            <li>{{username}}</li>
+            <li>{{formatDate created_at}}</li>
+            <li><button onclick="toggleChildren('{{id}}', this, {{descendant_count}})">hide</button></li>
+            <li><button onclick="showReply('{{id}}', this)">reply</button></li>
+        </ul>
     </div>
 
     <div class="comment-content" id="content-{{id}}">{{{formatTextBlockContent content}}}</div>

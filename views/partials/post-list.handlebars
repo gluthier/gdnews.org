@@ -18,10 +18,15 @@
             {{/if}}
         </div>
         <div class="post-meta">
-            <a href="/item/{{id}}">
-                {{comment_count}} comments
-            </a>
-            {{username}} {{formatDate created_at}}
+            <ul class="meta-list">
+                <li>
+                    <a href="/item/{{id}}">
+                        {{comment_count}} comments
+                    </a>
+                </li>
+                <li>{{username}}</li>
+                <li>{{formatDate created_at}}</li>
+            </ul>
         </div>
     </div>
     {{/each}}

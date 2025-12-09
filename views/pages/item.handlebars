@@ -16,7 +16,10 @@
             {{/if}}
         </div>
         <div class="post-meta">
-            {{post.username}} {{formatDate post.created_at}}
+            <ul class="meta-list">
+                <li>{{post.username}}</li>
+                <li>{{formatDate post.created_at}}</li>
+            </ul>
         </div>
         {{#if post.content}}
         <div class="post-content">{{{formatTextBlockContent post.content}}}</div>
