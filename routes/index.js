@@ -5,6 +5,9 @@ const router = express.Router();
 // Middleware to check if user is logged in
 const requireLogin = (req, res, next) => {
     if (!req.session.user) {
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
         return res.redirect('/login');
     }
     next();
@@ -165,17 +168,38 @@ router.post('/item/:id/comment', requireLogin, async (req, res) => {
         );
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            const newCommentId = result.insertId.toString();
             const newComment = {
-                id: newCommentId,
+                id: result.insertId.toString(),
                 post_id: postId,
                 user_id: req.session.user.id,
                 content: content,
                 parent_comment_id: parent_comment_id || null,
-                created_at: new Date(),
-                username: req.session.user.username
+                created_at: new Date(), // This will be formatted by the helper
+                username: req.session.user.username,
+                children: [],
+                descendant_count: 0,
+                depth: 0, // New comments are always at the top level or handled by the parent container logic
+                maxDepth: 5 // Default max depth
             };
-            return res.json(newComment);
+
+            // Calculate depth if it's a child comment (optional but good for consistency)
+            // For now, we assume the client handles the visual nesting so depth=0 is purely for the partial logic if needed.
+            // Actually, the partial logic uses depth to decide whether to show children. 
+            // Since it's a new comment, it has no children, so depth doesn't matter much for *its* children.
+            // But we should likely try to be accurate if possible, but that requires a DB lookup.
+            // For this optimization, passing depth: 0 or similar is fine as the client appends it to the correct parent.
+
+            res.render('partials/comment', {
+                layout: false,
+                ...newComment
+            }, (err, html) => {
+                if (err) {
+                    console.error('Render error:', err);
+                    return res.status(500).json({ error: 'Render Error' });
+                }
+                res.send(html);
+            });
+            return;
         }
 
         res.redirect(`/item/${postId}`);
