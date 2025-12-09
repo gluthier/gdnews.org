@@ -1,7 +1,7 @@
 <div class="comment">
     <div class="comment-meta">
         <ul class="meta-list">
-            <li>{{username}}</li>
+            <li><a href="/user?id={{username}}">{{username}}</a></li>
             <li>{{formatDate created_at}}</li>
             <li><button onclick="toggleChildren('{{id}}', this, {{descendant_count}})">hide</button></li>
             <li><button onclick="showReply('{{id}}', this)">reply</button></li>

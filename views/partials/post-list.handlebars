@@ -3,13 +3,9 @@
     <div class="post">
         <div class="post-title">
             {{#if url}}
-            <a href="{{url}}">
-                {{title}}
-            </a>
+            <a href="{{url}}">{{title}}</a>
             {{else}}
-            <a href="/item/{{id}}">
-                {{title}}
-            </a>
+            <a href="/item/{{id}}">{{title}}</a>
             {{/if}}
             {{#if url}}
             <span class="domain">
@@ -24,7 +20,7 @@
                         {{comment_count}} comments
                     </a>
                 </li>
-                <li>{{username}}</li>
+                <li><a href="/user?id={{username}}">{{username}}</a></li>
                 <li>{{formatDate created_at}}</li>
             </ul>
         </div>

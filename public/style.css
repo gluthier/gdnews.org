@@ -192,6 +192,10 @@ button:hover {
     margin-left: 20px;
 }
 
+.comment a {
+    color: #828282;
+}
+
 .meta-list {
     list-style: none;
     padding: 0;

@@ -1,7 +1,7 @@
 {{> header}}
 
 <div class="user-profile">
-    <h2>User: {{profileUser.username}}
+    <h2>{{profileUser.username}}
     </h2>
     <p>Created: {{formatDateFull profileUser.created_at}}
     </p>
@@ -11,43 +11,14 @@
     <p>Email: {{#if profileUser.email}}{{profileUser.email}}{{else}}Not set{{/if}}
     </p>
     <div class="user-actions">
-        <a href="/change-email">change email</a> |
-        <a href="/logout">logout</a>
+        <i><a href="/change-email">change email</a></i> |
+        <i><a href="/logout">logout</a></i>
     </div>
     {{/if}}
     {{/if}}
 
     <h3>Posts</h3>
-    {{#if (eq posts.length 0)}}
-    <p>No posts yet.</p>
-    {{else}}
-    <ul class="post-list">
-        {{#each posts}}
-        <li class="post-item">
-            <div class="post-content">
-                <div class="post-title">
-                    {{#if url}}
-                    <a href="{{url}}">
-                        {{title}}
-                    </a>
-                    <span class="domain">({{getHostname url}})</span>
-                    {{else}}
-                    <a href="/item/{{id}}">
-                        {{title}}
-                    </a>
-                    {{/if}}
-                </div>
-                <div class="post-meta">
-                    {{hoursAgo created_at}} hours ago
-                    | <a href="/item/{{id}}">
-                        {{comment_count}} comments
-                    </a>
-                </div>
-            </div>
-        </li>
-        {{/each}}
-    </ul>
-    {{/if}}
+    {{> post-list}}
 </div>
 
 {{> footer}}
