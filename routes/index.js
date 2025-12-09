@@ -165,7 +165,7 @@ router.post('/item/:id/comment', requireLogin, async (req, res) => {
         );
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            const newCommentId = result.insertId;
+            const newCommentId = result.insertId.toString();
             const newComment = {
                 id: newCommentId,
                 post_id: postId,
