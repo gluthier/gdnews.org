@@ -9,24 +9,24 @@ const helpers = {
         const days = Math.floor(hours / 24);
 
         if (minutes < 120) {
-            return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+            return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
         }
 
-        if (date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()) {
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        if (hours < 24) {
+            return `${hours} hour${hours > 1 ? 's' : ''} ago`;
         }
 
         if (days < 30) {
-            return `${days} day${days !== 1 ? 's' : ''} ago`;
+            return `${days} day${days > 1 ? 's' : ''} ago`;
         }
 
         if (days < 365) {
             const months = Math.floor(days / 30);
-            return `${months} month${months !== 1 ? 's' : ''} ago`;
+            return `${months} month${months > 1 ? 's' : ''} ago`;
         }
 
         const years = Math.floor(days / 365);
-        return `${years} year${years !== 1 ? 's' : ''} ago`;
+        return `${years} year${years > 1 ? 's' : ''} ago`;
     },
     formatDateFull: (date) => {
         return new Date(date).toLocaleString();
@@ -68,6 +68,16 @@ const helpers = {
     },
     hoursAgo: (date) => {
         return Math.floor((new Date() - new Date(date)) / (1000 * 60 * 60));
+    },
+    formatCommentCount: (count) => {
+        const numCount = Number(count);
+        if (!numCount || numCount === 0) {
+            return 'discuss';
+        }
+        if (numCount === 1) {
+            return '1 comment';
+        }
+        return `${numCount} comments`;
     }
 };
 

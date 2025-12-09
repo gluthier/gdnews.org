@@ -18,7 +18,7 @@
         <div class="post-meta">
             <ul class="meta-list">
                 <li><a href="/user?id={{post.username}}">{{post.username}}</a></li>
-                <li>{{formatDate post.created_at}}</li>
+                <li><span title="{{formatDateFull post.created_at}}">{{formatDate post.created_at}}</span></li>
             </ul>
         </div>
         {{#if post.content}}

@@ -17,11 +17,11 @@
             <ul class="meta-list">
                 <li>
                     <a href="/item/{{id}}">
-                        {{comment_count}} comments
+                        {{formatCommentCount comment_count}}
                     </a>
                 </li>
                 <li><a href="/user?id={{username}}">{{username}}</a></li>
-                <li>{{formatDate created_at}}</li>
+                <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
             </ul>
         </div>
     </div>
