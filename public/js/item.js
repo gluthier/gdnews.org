@@ -63,24 +63,27 @@ function toggleChildren(commentId, btn, count) {
  * Let's change the `renderNewComment` signature to accept `(commentHtml, parentId)`.
  */
 function renderNewComment(commentHtml, parentId) {
+    let container;
     if (parentId) {
         const parentChildrenDiv = document.getElementById('children-' + parentId);
         if (parentChildrenDiv) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = commentHtml;
-            // The template returns a single element, so firstElementChild is correct.
-            parentChildrenDiv.appendChild(tempDiv.firstElementChild);
+            container = parentChildrenDiv;
             parentChildrenDiv.style.display = 'block'; // Ensure children are visible
         }
     } else {
-        const commentsDiv = document.querySelector('.comments');
-        if (commentsDiv) {
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = commentHtml;
-            commentsDiv.appendChild(tempDiv.firstElementChild);
-        } else {
-            console.error('Comments container not found');
+        container = document.querySelector('.comments');
+    }
+
+    if (container) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = commentHtml;
+        const newCommentArg = tempDiv.firstElementChild;
+        if (newCommentArg) {
+            container.appendChild(newCommentArg);
+            newCommentArg.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+    } else {
+        console.error('Comments container not found');
     }
 }
 
