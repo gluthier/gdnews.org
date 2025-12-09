@@ -45,6 +45,31 @@ const indexRoutes = require('./routes/index');
 app.use('/', authRoutes);
 app.use('/', indexRoutes);
 
+// 404 Handler
+app.use((req, res, next) => {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+    const status = err.status || 500;
+    res.status(status);
+
+    // For API requests, return JSON
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        return res.json({ error: err.message });
+    }
+
+    res.render('pages/error', {
+        message: err.message,
+        statusCode: status,
+        title: 'Error'
+    });
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

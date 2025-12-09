@@ -1,0 +1,7 @@
+{{> header}}
+<div class="error-container">
+    <h1>{{#if statusCode}}{{statusCode}}{{else}}Error{{/if}}</h1>
+    <p>{{message}}</p>
+    <a href="/">go home</a>
+</div>
+{{> footer}}

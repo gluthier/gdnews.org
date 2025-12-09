@@ -15,7 +15,7 @@ const requireLogin = (req, res, next) => {
 
 // List posts (Home)
 // List posts (Home)
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/');
     const limit = 30;
@@ -48,14 +48,14 @@ router.get('/', async (req, res) => {
         res.render('pages/index', { posts, nextPageUrl });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 
 
 // List posts (Newest)
 // List posts (Newest)
-router.get('/new', async (req, res) => {
+router.get('/new', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/new');
     const limit = 30;
@@ -84,7 +84,7 @@ router.get('/new', async (req, res) => {
         res.render('pages/new', { posts, title: 'newest', nextPageUrl });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 
@@ -94,7 +94,7 @@ router.get('/submit', requireLogin, (req, res) => {
 });
 
 // Handle submission
-router.post('/submit', requireLogin, async (req, res) => {
+router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, url, text } = req.body;
     if (!title) {
         return res.render('pages/submit', { error: 'Title is required', title: 'submit' });
@@ -113,7 +113,7 @@ router.post('/submit', requireLogin, async (req, res) => {
 });
 
 // Show post details
-router.get('/item/:id', async (req, res) => {
+router.get('/item/:id', async (req, res, next) => {
     const postId = req.params.id;
     try {
         const posts = await database.query(`
@@ -124,7 +124,11 @@ router.get('/item/:id', async (req, res) => {
     `, [postId]);
 
         if (posts.length === 0) {
-            return res.status(404).send('Post not found');
+            if (posts.length === 0) {
+                const err = new Error('Post not found');
+                err.status = 404;
+                return next(err);
+            }
         }
 
         const post = posts[0];
@@ -175,13 +179,12 @@ router.get('/item/:id', async (req, res) => {
         res.render('pages/item', { post, comments: rootComments, error: null, title: post.title });
     } catch (err) {
         console.error('Error rendering item page:', err);
-        console.error(err.stack);
-        res.status(500).send('Server Error: ' + err.message);
+        next(err);
     }
 });
 
 // Handle comment
-router.post('/item/:id/comment', requireLogin, async (req, res) => {
+router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     const { content, parent_comment_id } = req.body;
 
@@ -234,23 +237,31 @@ router.post('/item/:id/comment', requireLogin, async (req, res) => {
     } catch (err) {
         console.error(err);
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-            return res.status(500).json({ error: 'Server Error' });
+            return next(err);
         }
         res.redirect(`/item/${postId}`);
     }
 });
 
 // User profile page
-router.get('/user', async (req, res) => {
+router.get('/user', async (req, res, next) => {
     const username = req.query.id;
     if (!username) {
-        return res.status(404).send('User not specified');
+        if (!username) {
+            const err = new Error('User not specified');
+            err.status = 404;
+            return next(err);
+        }
     }
 
     try {
         const users = await database.query('SELECT id, username, email, created_at FROM users WHERE username = ?', [username]);
         if (users.length === 0) {
-            return res.status(404).send('User not found');
+            if (users.length === 0) {
+                const err = new Error('User not found');
+                err.status = 404;
+                return next(err);
+            }
         }
         const user = users[0];
 
@@ -278,7 +289,7 @@ router.get('/user', async (req, res) => {
         res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        next(err);
     }
 });
 
