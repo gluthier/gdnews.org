@@ -159,13 +159,31 @@ router.post('/item/:id/comment', requireLogin, async (req, res) => {
     }
 
     try {
-        await database.query(
+        const result = await database.query(
             'INSERT INTO comments (post_id, user_id, content, parent_comment_id) VALUES (?, ?, ?, ?)',
             [postId, req.session.user.id, content, parent_comment_id || null]
         );
+
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            const newCommentId = result.insertId;
+            const newComment = {
+                id: newCommentId,
+                post_id: postId,
+                user_id: req.session.user.id,
+                content: content,
+                parent_comment_id: parent_comment_id || null,
+                created_at: new Date(),
+                username: req.session.user.username
+            };
+            return res.json(newComment);
+        }
+
         res.redirect(`/item/${postId}`);
     } catch (err) {
         console.error(err);
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.status(500).json({ error: 'Server Error' });
+        }
         res.redirect(`/item/${postId}`);
     }
 });

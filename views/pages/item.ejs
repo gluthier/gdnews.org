@@ -108,45 +108,9 @@
                 </div>
                 <% } %>
 
-                    <script>
-                        function showReply(commentId, replyBtn) {
-                            const replyForm = document.getElementById('reply-' + commentId);
-                            if (replyForm) replyForm.style.display = 'block';
-
-                            const contentDiv = document.getElementById('content-' + commentId);
-                            const childrenDiv = document.getElementById('children-' + commentId);
-                            const hideBtn = replyBtn.previousElementSibling;
-
-                            if (contentDiv && contentDiv.style.display === 'none') {
-                                contentDiv.style.display = 'block';
-                                if (childrenDiv) childrenDiv.style.display = 'block';
-                                if (hideBtn) hideBtn.innerText = 'hide';
-                            }
-                        }
-
-                        function toggleChildren(commentId, btn, count) {
-                            const childrenDiv = document.getElementById('children-' + commentId);
-                            const contentDiv = document.getElementById('content-' + commentId);
-                            const replyForm = document.getElementById('reply-' + commentId);
-
-                            if (childrenDiv.style.display === 'none') {
-                                childrenDiv.style.display = 'block';
-                                if (contentDiv) contentDiv.style.display = 'block';
-                                btn.innerText = 'hide';
-                            } else {
-                                childrenDiv.style.display = 'none';
-                                if (contentDiv) contentDiv.style.display = 'none';
-                                if (replyForm) replyForm.style.display = 'none';
-                                if (count > 0) {
-                                    btn.innerText = 'show (' + (count + 1) + ')';
-                                } else {
-                                    btn.innerText = 'show';
-                                }
-                            }
-                        }
-                    </script>
+                    <script src="/js/item.js" defer></script>
 
                     <% comments.forEach(comment=> { renderCommentTree(comment, 0); }); %>
         </div>
     </div>
-    <%- include('../partials/footer') %>
+    <% - include('../partials/footer') %>
