@@ -10,7 +10,7 @@ const PORT = process.env.PORT;
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 app.use(session({
     secret: 'secret-key', // In production, use a secure random string
     resave: false,
@@ -26,7 +26,7 @@ app.engine('handlebars', engine({
     defaultLayout: false, // We will use partials manualy for now to match the EJS structure
 }));
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views'));
 
 // Make user available to all templates
 app.use((req, res, next) => {

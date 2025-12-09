@@ -26,7 +26,7 @@ async function setup() {
         });
 
         conn = await pool.getConnection();
-        const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
+        const schema = fs.readFileSync(path.join(__dirname, '../schema.sql'), 'utf8');
 
         // Split by semicolon to run multiple statements
         const statements = schema.split(';').filter(s => s.trim());
