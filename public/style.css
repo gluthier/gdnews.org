@@ -1,6 +1,6 @@
 body {
     font-family: Verdana, Geneva, sans-serif;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #000000;
     background-color: #ffffff;
     margin: 0;
@@ -34,6 +34,7 @@ header {
 nav {
     display: flex;
     align-items: center;
+    font-size: 0.875rem;
     line-height: 1.1rem;
     padding: 5px 10px;
 }
@@ -121,13 +122,12 @@ footer {
 
 .post-content {
     margin-top: 2px;
+    font-size: 0.875rem;
+    color: #000000;
     margin-bottom: 2px;
-}
-
-.rank {
-    color: #828282;
-    margin-right: 5px;
-    font-size: 1rem;
+    max-width: 60ch;
+    white-space: pre-line;
+    word-wrap: break-word;
 }
 
 /* Form styles */
@@ -189,7 +189,7 @@ button:hover {
 }
 
 .comment-content {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     color: #000000;
     margin-bottom: 5px;
     max-width: 60ch;

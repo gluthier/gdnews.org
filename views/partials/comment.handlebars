@@ -1,12 +1,11 @@
 <div class="comment">
     <div class="comment-meta">
-        {{username}}
-        {{formatDateFull created_at}}
+        {{username}} {{formatDate created_at}}
         <button onclick="toggleChildren('{{id}}', this, {{descendant_count}})">hide</button>
         <button onclick="showReply('{{id}}', this)">reply</button>
     </div>
 
-    <div class="comment-content" id="content-{{id}}">{{{formatCommentContent content}}}</div>
+    <div class="comment-content" id="content-{{id}}">{{{formatTextBlockContent content}}}</div>
 
     <div id="reply-{{id}}" style="display: none; margin-top: 10px;">
         <form action="/item/{{post_id}}/comment" method="POST">
