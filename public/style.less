@@ -17,6 +17,7 @@
 @font-size-sm: 0.875rem;
 @font-size-xs: 0.75rem;
 
+/* Global Resets & Typography */
 body {
     font-family: Verdana, Geneva, sans-serif;
     font-size: @font-size-sm;
@@ -25,6 +26,27 @@ body {
     margin: 0;
 }
 
+a {
+    color: @color-dark-font;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+hr {
+    border: none;
+    height: 1px;
+    color: @color-light-font;
+    background-color: @color-light-font;
+}
+
+h3 {
+    margin-top: @spacing-xl;
+}
+
+/* Layout */
 .container {
     width: 85%;
     max-width: 960px;
@@ -35,65 +57,45 @@ body {
     flex-direction: column;
 }
 
-a {
-    color: @color-dark-font;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
 header {
     background-color: @color-dark-background;
     padding: @spacing-xs;
-    // border-bottom: 1px solid #000;
-}
 
-nav {
-    display: flex;
-    align-items: center;
-    font-size: @font-size-sm;
-    color: @color-white;
-    line-height: 1.1rem;
-    padding: @spacing-sm @spacing-md;
-}
+    nav {
+        display: flex;
+        align-items: center;
+        font-size: @font-size-sm;
+        color: @color-white;
+        line-height: 1.1rem;
+        padding: @spacing-sm @spacing-md;
 
-.logo a {
-    font-weight: bold;
-    margin-right: 15px;
-    color: @color-white;
-    font-size: @font-size-base;
-}
+        .logo a {
+            font-weight: bold;
+            margin-right: 15px;
+            color: @color-white;
+            font-size: @font-size-base;
+        }
 
-.links a {
-    margin-right: @spacing-md;
-    color: @color-white;
-}
+        .links a {
+            margin-right: @spacing-md;
+            color: @color-white;
+        }
 
-.auth a {
-    margin-left: @spacing-md;
-    color: @color-white;
-}
+        .auth {
+            margin-left: auto;
 
-.auth {
-    margin-left: auto;
+            a {
+                margin-left: @spacing-md;
+                color: @color-white;
+            }
+        }
+    }
 }
-
 
 main {
     padding: @spacing-md @spacing-md;
     background-color: @color-light-background;
     flex: 1;
-}
-
-.more-link a {
-    color: @color-light-font;
-}
-
-.more-link a:hover {
-    text-decoration: underline;
-    color: @color-dark-font;
 }
 
 footer {
@@ -102,73 +104,162 @@ footer {
     color: @color-light-font;
 }
 
-
-hr {
-    border: none;
-    height: 1px;
+/* Common Components */
+.inline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
     color: @color-light-font;
-    background-color: @color-light-font;
+    font-size: @font-size-xs;
+
+    li {
+        display: flex;
+        align-items: center;
+    }
+
+    a,
+    button {
+        color: @color-light-font;
+        text-decoration: none;
+        font-size: inherit;
+
+        &:hover {
+            color: @color-dark-font;
+            text-decoration: underline;
+        }
+    }
 }
 
+.text-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-style: italic;
+    color: @color-light-font;
+    font-size: @font-size-xs;
+
+    &:hover {
+        color: @color-dark-font;
+        text-decoration: underline;
+    }
+}
+
+.more-link a {
+    color: @color-light-font;
+
+    &:hover {
+        text-decoration: underline;
+        color: @color-dark-font;
+    }
+}
+
+/* Post Styles */
 .post {
     margin-bottom: 8px;
-    /* Special spacing */
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
+
+    .post-title {
+        font-size: @font-size-base;
+        color: @color-dark-font;
+
+        a {
+            color: @color-dark-font;
+
+            &:visited {
+                color: @color-light-font;
+            }
+        }
+
+        .domain {
+            font-size: @font-size-xs;
+            color: @color-light-font;
+            margin-left: @spacing-sm;
+        }
+    }
+
+    .post-meta {
+        font-size: @font-size-xs;
+        color: @color-light-font;
+        width: 100%;
+        margin: @spacing-xs 0;
+    }
+
+    .post-content {
+        margin: @spacing-xs 0;
+        font-size: @font-size-sm;
+        color: @color-dark-font;
+        max-width: 60ch;
+        white-space: pre-line;
+        word-wrap: break-word;
+    }
 }
 
-.post-title {
-    font-size: @font-size-base;
-    color: @color-dark-font;
+
+/* Comment Styles */
+.comments {
+    margin-top: @spacing-lg;
 }
 
-.post-title a {
-    color: @color-dark-font;
+.comment {
+    margin: @spacing-md 0;
+
+    .comment {
+        margin-left: @spacing-lg;
+    }
+
+    .comment-meta {
+        // Now mostly handled by .inline-list, but keeping just in case specific overrides needed
+        button {
+            .text-button();
+        }
+    }
+
+    .comment-content {
+        font-size: @font-size-sm;
+        color: @color-dark-font;
+        margin: @spacing-xs 0 @spacing-sm 0;
+        max-width: 60ch;
+        white-space: pre-line;
+        word-wrap: break-word;
+    }
+
+    .show-more {
+        margin: @spacing-sm 0 @spacing-md 0;
+
+        >button {
+            .text-button();
+            margin-left: @spacing-lg;
+        }
+    }
 }
 
-.post-title a:visited {
-    color: @color-light-font;
+/* User Profile */
+.user-profile {
+    .user-header {
+        display: flex;
+        align-items: baseline;
+        gap: @spacing-lg;
+    }
+
+    .user-switch a {
+        .text-button();
+        font-size: inherit; // Override size for user switch if needed
+    }
+
+    // .user-actions is now replaced by .inline-list in HTML
 }
 
-.domain {
-    font-size: @font-size-xs;
-    color: @color-light-font;
-    margin-left: @spacing-sm;
-}
-
-.post-meta {
-    font-size: @font-size-xs;
-    color: @color-light-font;
-    width: 100%;
-    margin-left: 0;
-    margin-top: @spacing-xs;
-    margin-bottom: @spacing-xs;
-    padding-left: 0;
-}
-
-.post-meta a {
-    color: @color-light-font;
-}
-
-.post-meta a:hover {
-    text-decoration: underline;
-    color: @color-dark-font;
-}
-
-.post-content {
-    margin-top: @spacing-xs;
-    font-size: @font-size-sm;
-    color: @color-dark-font;
-    margin-bottom: @spacing-xs;
-    max-width: 60ch;
-    white-space: pre-line;
-    word-wrap: break-word;
-}
-
-/* Form styles */
-form div {
-    margin-bottom: @spacing-md;
+/* Forms */
+form {
+    div {
+        margin-bottom: @spacing-md;
+    }
 }
 
 label {
@@ -194,146 +285,30 @@ button {
     border: 1px solid @color-highlight-border;
     padding: @spacing-sm @spacing-md;
     cursor: pointer;
-}
 
-button:hover {
-    background-color: #e0e0e0;
+    &:hover {
+        background-color: #e0e0e0;
+    }
+
+    &.text-button {
+        // In case the class is applied directly to a button element that might get global styles
+        background: none;
+        border: none;
+        padding: 0;
+        color: @color-light-font;
+
+        &:hover {
+            color: @color-dark-font;
+            background: none;
+        }
+    }
 }
 
 .error {
     color: @color-error;
 }
 
-/* Comment styles */
-.comments {
-    margin-top: @spacing-lg;
-}
-
-.comment {
-    margin-top: @spacing-md;
-    margin-bottom: @spacing-md;
-}
-
-.comment .comment {
-    margin-left: @spacing-lg;
-}
-
-.comment a {
-    color: @color-light-font;
-}
-
-.meta-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    color: @color-light-font;
-    font-size: @font-size-xs;
-}
-
-.meta-list li {
-    display: flex;
-    align-items: center;
-}
-
-.comment-content {
-    font-size: @font-size-sm;
-    color: @color-dark-font;
-    margin-top: @spacing-xs;
-    margin-bottom: @spacing-sm;
-    max-width: 60ch;
-    white-space: pre-line;
-    word-wrap: break-word;
-}
-
-.comment-meta button {
-    background: none;
-    border: none;
-    color: @color-light-font;
-    text-decoration: none;
-    font-style: italic;
-    cursor: pointer;
-    padding: 0;
-    font-size: @font-size-xs;
-}
-
-.comment-meta button:hover {
-    text-decoration: underline;
-    color: @color-dark-font;
-}
-
-.show-more {
-    margin-top: @spacing-sm;
-    margin-bottom: @spacing-md;
-}
-
-.show-more>button {
-    background: none;
-    border: none;
-    color: @color-light-font;
-    cursor: pointer;
-    font-size: @font-size-xs;
-    padding: 0;
-    text-decoration: none;
-    font-style: italic;
-    margin-left: @spacing-lg;
-}
-
-.show-more>button:hover {
-    text-decoration: underline;
-    color: @color-dark-font;
-}
-
-.user-switch a {
-    color: @color-light-font;
-    padding: 0;
-    text-decoration: none;
-    font-style: italic;
-}
-
-.user-switch a:hover {
-    text-decoration: underline;
-    color: @color-dark-font;
-}
-
-.user-header {
-    display: flex;
-    align-items: baseline;
-    gap: @spacing-lg;
-}
-
-.user-actions {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    color: @color-light-font;
-    font-size: @font-size-sm;
-}
-
-.user-actions li {
-    display: flex;
-    align-items: center;
-}
-
-.user-actions a {
-    color: @color-light-font;
-}
-
-.user-actions a:hover {
-    color: @color-dark-font;
-    text-decoration: underline;
-}
-
-h3 {
-    margin-top: @spacing-xl;
-}
-
-// Error Page
+/* Error Page */
 .error-container {
     text-align: center;
     padding: @spacing-lg;
