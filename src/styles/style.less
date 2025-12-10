@@ -13,14 +13,14 @@
 @spacing-lg: 20px;
 @spacing-xl: 30px;
 
-@font-size-base: 1rem;
-@font-size-sm: 0.875rem;
-@font-size-xs: 0.75rem;
+@font-size-large: 1rem;
+@font-size-medium: 0.875rem;
+@font-size-small: 0.75rem;
 
 /* Global Resets & Typography */
 body {
     font-family: Verdana, Geneva, sans-serif;
-    font-size: @font-size-sm;
+    font-size: @font-size-medium;
     color: @color-dark-font;
     background-color: @color-white;
     margin: 0;
@@ -64,7 +64,7 @@ header {
     nav {
         display: flex;
         align-items: center;
-        font-size: @font-size-sm;
+        font-size: @font-size-medium;
         color: @color-white;
         line-height: 1.1rem;
         padding: @spacing-sm @spacing-md;
@@ -73,7 +73,7 @@ header {
             font-weight: bold;
             margin-right: 15px;
             color: @color-white;
-            font-size: @font-size-base;
+            font-size: @font-size-large;
         }
 
         .links a {
@@ -100,7 +100,7 @@ main {
 
 footer {
     padding: 0 @spacing-md;
-    font-size: @font-size-sm;
+    font-size: @font-size-medium;
     color: @color-light-font;
 }
 
@@ -113,7 +113,7 @@ footer {
     gap: 0.75rem;
     align-items: center;
     color: @color-light-font;
-    font-size: @font-size-xs;
+    font-size: @font-size-small;
 
     li {
         display: flex;
@@ -140,7 +140,6 @@ footer {
     padding: 0;
     font-style: italic;
     color: @color-light-font;
-    font-size: @font-size-xs;
 
     &:hover {
         color: @color-dark-font;
@@ -165,7 +164,7 @@ footer {
     flex-wrap: wrap;
 
     .post-title {
-        font-size: @font-size-base;
+        font-size: @font-size-large;
         color: @color-dark-font;
 
         a {
@@ -177,14 +176,14 @@ footer {
         }
 
         .domain {
-            font-size: @font-size-xs;
+            font-size: @font-size-small;
             color: @color-light-font;
             margin-left: @spacing-sm;
         }
     }
 
     .post-meta {
-        font-size: @font-size-xs;
+        font-size: @font-size-small;
         color: @color-light-font;
         width: 100%;
         margin: @spacing-xs 0;
@@ -192,7 +191,7 @@ footer {
 
     .post-content {
         margin: @spacing-xs 0;
-        font-size: @font-size-sm;
+        font-size: @font-size-medium;
         color: @color-dark-font;
         max-width: 60ch;
         white-space: pre-line;
@@ -221,7 +220,7 @@ footer {
     }
 
     .comment-content {
-        font-size: @font-size-sm;
+        font-size: @font-size-medium;
         color: @color-dark-font;
         margin: @spacing-xs 0 @spacing-sm 0;
         max-width: 60ch;
@@ -245,14 +244,22 @@ footer {
         display: flex;
         align-items: baseline;
         gap: @spacing-lg;
-    }
 
-    .user-switch a {
-        .text-button();
-        font-size: inherit; // Override size for user switch if needed
+        .inline-list {
+            font-size: @font-size-medium;
+        }
     }
+}
 
-    // .user-actions is now replaced by .inline-list in HTML
+.user-switch a {
+    color: @color-light-font;
+    margin-left: @spacing-sm;
+    font-size: @font-size-medium;
+
+    &:hover {
+        color: @color-dark-font;
+        text-decoration: underline;
+    }
 }
 
 /* Forms */
@@ -272,17 +279,22 @@ label {
 input[type="text"],
 input[type="password"],
 input[type="url"],
+input[type="email"],
 textarea {
     background-color: @color-white;
     border: 1px solid @color-highlight-border;
+    border-radius: 6px;
     color: @color-dark-font;
     padding: @spacing-sm;
+    font-size: @font-size-medium;
 }
 
 button {
     background-color: #f0f0f0;
     color: @color-dark-font;
     border: 1px solid @color-highlight-border;
+    border-radius: 6px;
+    font-size: @font-size-medium;
     padding: @spacing-sm @spacing-md;
     cursor: pointer;
 
@@ -302,6 +314,29 @@ button {
             background: none;
         }
     }
+}
+
+.primary-button {
+    background-color: @color-dark-background;
+    color: @color-white;
+    border: 1px solid @color-highlight-border;
+    border-radius: 6px;
+    padding: @spacing-sm @spacing-md;
+    cursor: pointer;
+
+    &:hover {
+        background-color: @color-highlight-border;
+        color: @color-dark-font;
+    }
+}
+
+.secondary-button {
+    background-color: @color-white;
+    color: @color-dark-font;
+    border: 1px solid @color-highlight-border;
+    border-radius: 6px;
+    padding: @spacing-sm @spacing-md;
+    cursor: pointer;
 }
 
 .error {

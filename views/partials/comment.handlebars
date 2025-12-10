@@ -14,8 +14,8 @@
         <form action="/item/{{post_id}}/comment" method="POST">
             <input type="hidden" name="parent_comment_id" value="{{id}}">
             <textarea name="content" rows="2" cols="50" required></textarea><br>
-            <button type="submit">submit reply</button>
-            <button type="button"
+            <button class="primary-button" type="submit">submit reply</button>
+            <button class="secondary-button" type="button"
                 onclick="document.getElementById('reply-{{id}}').style.display = 'none'">cancel</button>
         </form>
     </div>
