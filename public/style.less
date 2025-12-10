@@ -1,11 +1,10 @@
 /* Variables */
-@color-black: #000000;
+@color-dark-font: #011205;
+@color-light-font: #7b8b7e;
+@color-dark-background: #18311d;
+@color-light-background: #e9f0eb;
+@color-highlight-border: #bcd6c1;
 @color-white: #ffffff;
-@color-grey: #828282;
-@color-bg: #f6f6ef;
-@color-border: #cccccc;
-@color-header: #1a1a1a;
-@color-link-pale: #b8b8b8;
 @color-error: #ff0000;
 
 @spacing-xs: 2px;
@@ -20,7 +19,7 @@
 body {
     font-family: Verdana, Geneva, sans-serif;
     font-size: @font-size-sm;
-    color: @color-black;
+    color: @color-dark-font;
     background-color: @color-white;
     margin: 0;
 }
@@ -29,14 +28,14 @@ body {
     width: 85%;
     max-width: 960px;
     margin: 0 auto;
-    background-color: @color-bg;
+    background-color: @color-light-background;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 a {
-    color: @color-black;
+    color: @color-dark-font;
     text-decoration: none;
 }
 
@@ -45,9 +44,9 @@ a:hover {
 }
 
 header {
-    background-color: @color-header;
+    background-color: @color-dark-background;
     padding: @spacing-xs;
-    border-bottom: 1px solid #000;
+    // border-bottom: 1px solid #000;
 }
 
 nav {
@@ -68,7 +67,7 @@ nav {
 .links a,
 .auth a {
     margin-right: @spacing-md;
-    color: @color-link-pale;
+    color: @color-white;
 }
 
 .links a:hover,
@@ -80,38 +79,34 @@ nav {
     margin-left: auto;
 }
 
-.auth a,
-.auth span {
-    color: @color-link-pale;
-}
 
 main {
     padding: @spacing-md @spacing-md;
-    background-color: @color-bg;
+    background-color: @color-light-background;
     flex: 1;
 }
 
 .more-link a {
-    color: @color-grey;
+    color: @color-light-font;
 }
 
 .more-link a:hover {
     text-decoration: underline;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 footer {
     padding: 0 @spacing-md;
     font-size: @font-size-xs;
-    color: @color-grey;
+    color: @color-light-font;
 }
 
 
 hr {
     border: none;
     height: 1px;
-    color: @color-grey;
-    background-color: @color-grey;
+    color: @color-light-font;
+    background-color: @color-light-font;
 }
 
 .post {
@@ -124,26 +119,26 @@ hr {
 
 .post-title {
     font-size: @font-size-base;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 .post-title a {
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 .post-title a:visited {
-    color: @color-grey;
+    color: @color-light-font;
 }
 
 .domain {
     font-size: @font-size-xs;
-    color: @color-grey;
+    color: @color-light-font;
     margin-left: @spacing-sm;
 }
 
 .post-meta {
     font-size: @font-size-xs;
-    color: @color-grey;
+    color: @color-light-font;
     width: 100%;
     margin-left: 0;
     margin-top: @spacing-xs;
@@ -152,18 +147,18 @@ hr {
 }
 
 .post-meta a {
-    color: @color-grey;
+    color: @color-light-font;
 }
 
 .post-meta a:hover {
     text-decoration: underline;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 .post-content {
     margin-top: @spacing-xs;
     font-size: @font-size-sm;
-    color: @color-black;
+    color: @color-dark-font;
     margin-bottom: @spacing-xs;
     max-width: 60ch;
     white-space: pre-line;
@@ -179,7 +174,7 @@ label {
     display: block;
     width: auto;
     margin-bottom: @spacing-sm;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 input[type="text"],
@@ -187,15 +182,15 @@ input[type="password"],
 input[type="url"],
 textarea {
     background-color: @color-white;
-    border: 1px solid @color-border;
-    color: @color-black;
+    border: 1px solid @color-highlight-border;
+    color: @color-dark-font;
     padding: @spacing-sm;
 }
 
 button {
     background-color: #f0f0f0;
-    color: @color-black;
-    border: 1px solid @color-border;
+    color: @color-dark-font;
+    border: 1px solid @color-highlight-border;
     padding: @spacing-sm @spacing-md;
     cursor: pointer;
 }
@@ -223,7 +218,7 @@ button:hover {
 }
 
 .comment a {
-    color: @color-grey;
+    color: @color-light-font;
 }
 
 .meta-list {
@@ -233,7 +228,7 @@ button:hover {
     display: flex;
     gap: 0.75rem;
     align-items: center;
-    color: @color-grey;
+    color: @color-light-font;
     font-size: @font-size-xs;
 }
 
@@ -244,7 +239,7 @@ button:hover {
 
 .comment-content {
     font-size: @font-size-sm;
-    color: @color-black;
+    color: @color-dark-font;
     margin-top: @spacing-xs;
     margin-bottom: @spacing-sm;
     max-width: 60ch;
@@ -255,7 +250,7 @@ button:hover {
 .comment-meta button {
     background: none;
     border: none;
-    color: @color-grey;
+    color: @color-light-font;
     text-decoration: none;
     font-style: italic;
     cursor: pointer;
@@ -265,7 +260,7 @@ button:hover {
 
 .comment-meta button:hover {
     text-decoration: underline;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 .show-more {
@@ -276,7 +271,7 @@ button:hover {
 .show-more>button {
     background: none;
     border: none;
-    color: @color-grey;
+    color: @color-light-font;
     cursor: pointer;
     font-size: @font-size-xs;
     padding: 0;
@@ -287,11 +282,11 @@ button:hover {
 
 .show-more>button:hover {
     text-decoration: underline;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 .user-switch a {
-    color: @color-grey;
+    color: @color-light-font;
     padding: 0;
     text-decoration: none;
     font-style: italic;
@@ -299,7 +294,7 @@ button:hover {
 
 .user-switch a:hover {
     text-decoration: underline;
-    color: @color-black;
+    color: @color-dark-font;
 }
 
 // Error Page

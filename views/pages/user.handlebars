@@ -3,7 +3,8 @@
 <div class="user-profile">
     <h2>{{profileUser.username}}
     </h2>
-    <p>Created: {{formatDateFull profileUser.created_at}}
+    <p>Account created: <span title="{{formatDateFull profileUser.created_at}}">{{formatDate
+            profileUser.created_at}}</span>
     </p>
 
     {{#if user}}
