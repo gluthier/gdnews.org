@@ -19,9 +19,9 @@
                 <div class="auth">
                     <a href="/submit">submit</a>
                     {{#if user}}
-                    <span class="user-link"><a href="/user?id={{user.username}}">
-                            {{user.username}}
-                        </a></span>
+                    <a href="/user?id={{user.username}}">
+                        {{user.username}}
+                    </a>
                     {{else}}
                     <a href="/login">login</a>
                     {{/if}}
