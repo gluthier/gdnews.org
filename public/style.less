@@ -11,6 +11,7 @@
 @spacing-sm: 5px;
 @spacing-md: 10px;
 @spacing-lg: 20px;
+@spacing-xl: 30px;
 
 @font-size-base: 1rem;
 @font-size-sm: 0.875rem;
@@ -295,6 +296,41 @@ button:hover {
 .user-switch a:hover {
     text-decoration: underline;
     color: @color-dark-font;
+}
+
+.user-header {
+    display: flex;
+    align-items: baseline;
+    gap: @spacing-lg;
+}
+
+.user-actions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    color: @color-light-font;
+    font-size: @font-size-sm;
+}
+
+.user-actions li {
+    display: flex;
+    align-items: center;
+}
+
+.user-actions a {
+    color: @color-light-font;
+}
+
+.user-actions a:hover {
+    color: @color-dark-font;
+    text-decoration: underline;
+}
+
+h3 {
+    margin-top: @spacing-xl;
 }
 
 // Error Page

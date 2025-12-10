@@ -1,20 +1,25 @@
 {{> header}}
 
 <div class="user-profile">
-    <h2>{{profileUser.username}}
-    </h2>
-    <p>Account created: <span title="{{formatDateFull profileUser.created_at}}">{{formatDate
+    <div class="user-header">
+        <h2>{{profileUser.username}}</h2>
+        {{#if user}}
+        {{#if (eq user.id profileUser.id)}}
+        <ul class="user-actions">
+            <li><a href="/change-email">change email</a></li>
+            <li><a href="/logout">logout</a></li>
+        </ul>
+        {{/if}}
+        {{/if}}
+    </div>
+    <div>account creation: <span title="{{formatDateFull profileUser.created_at}}">{{formatDate
             profileUser.created_at}}</span>
-    </p>
+    </div>
 
     {{#if user}}
     {{#if (eq user.id profileUser.id)}}
-    <p>Email: {{#if profileUser.email}}{{profileUser.email}}{{else}}Not set{{/if}}
+    <p>email: {{#if profileUser.email}}{{profileUser.email}}{{else}}Not set{{/if}}
     </p>
-    <div class="user-actions">
-        <i><a href="/change-email">change email</a></i> |
-        <i><a href="/logout">logout</a></i>
-    </div>
     {{/if}}
     {{/if}}
 
