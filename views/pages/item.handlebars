@@ -19,6 +19,19 @@
             <ul class="inline-list">
                 <li><a href="/user?id={{post.username}}">{{post.username}}</a></li>
                 <li><span title="{{formatDateFull post.created_at}}">{{formatDate post.created_at}}</span></li>
+                {{#if user}}
+                <li>
+                    {{#if isFavorited}}
+                    <form action="/unfavorite/{{post.id}}" method="POST" style="display:inline">
+                        <button type="submit" class="text-button">unfavourite</button>
+                    </form>
+                    {{else}}
+                    <form action="/favorite/{{post.id}}" method="POST" style="display:inline">
+                        <button type="submit" class="text-button">favourite</button>
+                    </form>
+                    {{/if}}
+                </li>
+                {{/if}}
             </ul>
         </div>
         {{#if post.content}}

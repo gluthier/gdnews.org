@@ -40,8 +40,8 @@ a {
 hr {
     border: none;
     height: 1px;
-    color: @color-dark-background;
-    background-color: @color-dark-background;
+    color: @color-highlight-border;
+    background-color: @color-highlight-border;
 }
 
 h3 {
@@ -143,7 +143,7 @@ footer {
     border: none;
     cursor: pointer;
     padding: 0;
-    font-style: italic;
+    font-style: normal;
     color: @color-light-font;
 
     &:hover {
@@ -264,6 +264,36 @@ footer {
     &:hover {
         color: @color-dark-font;
         text-decoration: underline;
+    }
+    &:hover {
+        color: @color-dark-font;
+        text-decoration: underline;
+    }
+}
+
+.tabs {
+    display: flex;
+    gap: @spacing-lg;
+    border-bottom: 1px solid @color-highlight-border;
+    margin-bottom: @spacing-lg;
+    margin-top: @spacing-xl;
+
+    a {
+        padding: @spacing-sm @spacing-md;
+        margin-bottom: -1px;
+        color: @color-light-font;
+        border-bottom: 2px solid transparent;
+
+        &.active {
+            color: @color-dark-font;
+            border-bottom: 2px solid @color-dark-font;
+            font-weight: bold;
+        }
+
+        &:hover {
+            text-decoration: none;
+            color: @color-dark-font;
+        }
     }
 }
 

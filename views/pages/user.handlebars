@@ -23,7 +23,14 @@
     {{/if}}
     {{/if}}
 
-    <h3>Posts</h3>
+    <div class="tabs">
+        <a href="/user?id={{profileUser.username}}&tab=submissions" class="{{#if (eq currentTab 'submissions')}}active{{/if}}">Posts</a>
+        {{#if user}}
+        {{#if (eq user.id profileUser.id)}}
+        <a href="/user?id={{profileUser.username}}&tab=favorites" class="{{#if (eq currentTab 'favorites')}}active{{/if}}">Favourites</a>
+        {{/if}}
+        {{/if}}
+    </div>
     {{> post-list}}
 </div>
 

@@ -176,7 +176,18 @@ router.get('/item/:id', async (req, res, next) => {
             comment.descendant_count = countDescendants(comment);
         });
 
-        res.render('pages/item', { post, comments: rootComments, error: null, title: post.title });
+        let isFavorited = false;
+        if (req.session.user) {
+            const favCheck = await database.query(
+                'SELECT 1 FROM favourites WHERE user_id = ? AND post_id = ?',
+                [req.session.user.id, postId]
+            );
+            if (favCheck.length > 0) {
+                isFavorited = true;
+            }
+        }
+
+        res.render('pages/item', { post, comments: rootComments, error: null, title: post.title, isFavorited });
     } catch (err) {
         console.error('Error rendering item page:', err);
         next(err);
@@ -213,13 +224,6 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
                 maxDepth: 5 // Default max depth
             };
 
-            // Calculate depth if it's a child comment (optional but good for consistency)
-            // For now, we assume the client handles the visual nesting so depth=0 is purely for the partial logic if needed.
-            // Actually, the partial logic uses depth to decide whether to show children. 
-            // Since it's a new comment, it has no children, so depth doesn't matter much for *its* children.
-            // But we should likely try to be accurate if possible, but that requires a DB lookup.
-            // For this optimization, passing depth: 0 or similar is fine as the client appends it to the correct parent.
-
             res.render('partials/comment', {
                 layout: false,
                 ...newComment
@@ -240,6 +244,34 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
             return next(err);
         }
         res.redirect(`/item/${postId}`);
+    }
+});
+
+router.post('/favorite/:id', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        await database.query(
+            'INSERT IGNORE INTO favourites (user_id, post_id) VALUES (?, ?)',
+            [req.session.user.id, postId]
+        );
+        res.redirect(`/item/${postId}`);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        await database.query(
+            'DELETE FROM favourites WHERE user_id = ? AND post_id = ?',
+            [req.session.user.id, postId]
+        );
+        res.redirect(`/item/${postId}`);
+    } catch (err) {
+        console.error(err);
+        next(err);
     }
 });
 
@@ -270,23 +302,45 @@ router.get('/user', async (req, res, next) => {
         const limit = 30;
         const offset = (page - 1) * limit;
 
-        const posts = await database.query(`
-            SELECT p.*, u.username, 
-            (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
-            FROM posts p 
-            JOIN users u ON p.user_id = u.id 
-            WHERE u.id = ?
-            ORDER BY p.created_at DESC
-            LIMIT ? OFFSET ?
-        `, [user.id, limit + 1, offset]);
+        const currentTab = req.query.tab || 'submissions';
+
+        if (currentTab === 'favorites') {
+            if (!req.session.user || req.session.user.id !== user.id) {
+                return res.redirect(`/user?id=${username}`);
+            }
+        }
+
+        let posts;
+        if (currentTab === 'favorites') {
+            posts = await database.query(`
+                SELECT p.*, u.username, 
+                (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
+                FROM favourites f
+                JOIN posts p ON f.post_id = p.id
+                JOIN users u ON p.user_id = u.id
+                WHERE f.user_id = ?
+                ORDER BY f.created_at DESC
+                LIMIT ? OFFSET ?
+            `, [user.id, limit + 1, offset]);
+        } else {
+            posts = await database.query(`
+                SELECT p.*, u.username, 
+                (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
+                FROM posts p 
+                JOIN users u ON p.user_id = u.id 
+                WHERE u.id = ?
+                ORDER BY p.created_at DESC
+                LIMIT ? OFFSET ?
+            `, [user.id, limit + 1, offset]);
+        }
 
         let nextPageUrl = null;
         if (posts.length > limit) {
             posts.pop();
-            nextPageUrl = `/user?id=${username}&page=${page + 1}`;
+            nextPageUrl = `/user?id=${username}&page=${page + 1}&tab=${currentTab}`;
         }
 
-        res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl });
+        res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
     } catch (err) {
         console.error(err);
         next(err);
