@@ -277,6 +277,11 @@ router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
 
 // Upcoming Promoted Posts
 router.get('/upcoming', async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    if (page < 1) return res.redirect('/upcoming');
+    const limit = 30;
+    const offset = (page - 1) * limit;
+
     try {
         const posts = await database.query(`
             SELECT p.*, u.username 
@@ -284,8 +289,16 @@ router.get('/upcoming', async (req, res, next) => {
             JOIN users u ON p.user_id = u.id
             WHERE p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE()
             ORDER BY p.promoted_date ASC
-        `);
-        res.render('pages/upcoming', { posts, title: 'upcoming' });
+            LIMIT ? OFFSET ?
+        `, [limit + 1, offset]);
+
+        let nextPageUrl = null;
+        if (posts.length > limit) {
+            posts.pop();
+            nextPageUrl = `/upcoming?page=${page + 1}`;
+        }
+
+        res.render('pages/upcoming', { posts, title: 'upcoming', nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);

@@ -36,4 +36,10 @@
     <p>No upcoming promoted post scheduled.</p>
     {{/if}}
 </div>
+
+{{#if nextPageUrl}}
+<div class="more-link">
+    <a href="{{nextPageUrl}}">more</a>
+</div>
+{{/if}}
 {{> footer}}
