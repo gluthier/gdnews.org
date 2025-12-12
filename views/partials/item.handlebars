@@ -1,0 +1,81 @@
+<div class="post">
+    <div class="post-title">
+        {{#if url}}
+        <a href="{{url}}">{{title}}</a>
+        {{else}}
+        <a href="{{basePath}}{{id}}">{{title}}</a>
+        {{/if}}
+        {{#if url}}
+        <span class="domain">
+            ({{getHostname url}})
+        </span>
+        {{/if}}
+    </div>
+    <div class="post-meta">
+        <ul class="inline-list">
+            {{#if (eq type 'post')}}
+                {{#unless isDetail}}
+                <li>
+                    <a href="{{basePath}}{{id}}">
+                        {{formatCommentCount comment_count}}
+                    </a>
+                </li>
+                {{/unless}}
+                <li><a href="/user?id={{username}}">{{username}}</a></li>
+                <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
+                {{#if isDetail}}
+                    {{#if user}}
+                        <li>
+                            {{#if isFavorited}}
+                            <form action="/unfavorite/{{id}}" method="POST" style="display:inline">
+                                <button type="submit" class="text-button">unfavourite</button>
+                            </form>
+                            {{else}}
+                            <form action="/favorite/{{id}}" method="POST" style="display:inline">
+                                <button type="submit" class="text-button">favourite</button>
+                            </form>
+                            {{/if}}
+                        </li>
+                    {{/if}}
+                {{/if}}
+            {{/if}}
+
+            {{#if (eq type 'promoted')}}
+                {{#if isDetail}}
+                    <li><a href="/user?id={{username}}">{{username}}</a></li>
+                    <li><strong>Scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
+                    <li><span title="{{formatDateFull created_at}}">posted {{formatDate created_at}}</span></li>
+                {{else}}
+                    <li><strong>{{formatDatePromotedPost promoted_date}}</strong></li>
+                    <li>
+                        <a href="{{basePath}}{{id}}">
+                            details
+                        </a>
+                    </li>
+                    <li><a href="/user?id={{username}}">{{username}}</a></li>
+                {{/if}}
+            {{/if}}
+
+            {{#if (eq type 'job')}}
+                 {{#if isDetail}}
+                    <li><a href="/user?id={{username}}">{{username}}</a></li>
+                    <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
+                 {{else}}
+                    <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
+                    <li><a href="/user?id={{username}}">{{username}}</a></li>
+                    <li><a href="{{basePath}}{{id}}">details</a></li>
+                 {{/if}}
+            {{/if}}
+        </ul>
+    </div>
+    
+    {{#if content}}
+        {{#if isDetail}}
+        <div class="post-content">{{{formatTextBlockContent content}}}</div>
+        {{else}}
+            {{#if (eq type 'job')}}
+            <div class="post-text">{{content}}</div>
+            {{/if}}
+        {{/if}}
+    {{/if}}
+</div>

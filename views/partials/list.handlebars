@@ -1,0 +1,14 @@
+<div class="posts">
+    {{#each items}}
+    {{> item this type=../type basePath=../basePath}}
+    {{/each}}
+    {{#if (eq items.length 0)}}
+    <p>{{emptyMessage}}</p>
+    {{/if}}
+</div>
+
+{{#if nextPageUrl}}
+<div class="more-link">
+    <a href="{{nextPageUrl}}">more</a>
+</div>
+{{/if}}

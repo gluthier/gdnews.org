@@ -1,0 +1,13 @@
+{{> header}}
+<h2>New job offer</h2>
+<form action="/submit-job" method="POST">
+    {{> submit-form-fields}}
+    
+    {{#if error}}
+    <div class="error-message">
+        {{error}}
+    </div>
+    {{/if}}
+    <button class="primary-button" type="submit">submit job</button>
+</form>
+{{> footer}}

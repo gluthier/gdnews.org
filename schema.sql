@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS posts (
     content TEXT,
     is_promoted BOOLEAN DEFAULT FALSE,
     promoted_date DATE,
+    is_job BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

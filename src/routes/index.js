@@ -14,7 +14,6 @@ const requireLogin = (req, res, next) => {
 };
 
 // List posts (Home)
-// List posts (Home)
 router.get('/', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/');
@@ -54,7 +53,6 @@ router.get('/', async (req, res, next) => {
 
 
 // List posts (Newest)
-// List posts (Newest)
 router.get('/new', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/new');
@@ -81,7 +79,7 @@ router.get('/new', async (req, res, next) => {
             nextPageUrl = `/new?page=${page + 1}`;
         }
 
-        res.render('pages/new', { posts, title: 'newest', nextPageUrl });
+        res.render('pages/newest', { posts, title: 'newest', nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -90,14 +88,14 @@ router.get('/new', async (req, res, next) => {
 
 // Show submit form
 router.get('/submit', requireLogin, (req, res) => {
-    res.render('pages/submit', { error: null, title: 'submit' });
+    res.render('pages/submit-post', { error: null });
 });
 
 // Handle submission
 router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, url, text } = req.body;
     if (!title) {
-        return res.render('pages/submit', { error: 'Title is required', title: 'submit' });
+        return res.render('pages/submit-post', { error: 'Title is required' });
     }
 
     try {
@@ -108,7 +106,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         res.redirect('/');
     } catch (err) {
         console.error(err);
-        res.render('pages/submit', { error: 'Submission failed', title: 'submit' });
+        res.render('pages/submit-post', { error: 'Submission failed' });
     }
 });
 
@@ -187,7 +185,7 @@ router.get('/item/:id', async (req, res, next) => {
             }
         }
 
-        res.render('pages/item', { post, comments: rootComments, error: null, title: post.title, isFavorited });
+        res.render('pages/post-item-page', { post, comments: rootComments, error: null, title: post.title, isFavorited });
     } catch (err) {
         console.error('Error rendering item page:', err);
         next(err);
@@ -306,16 +304,16 @@ router.get('/upcoming', async (req, res, next) => {
 });
 
 // Buy Promoted Post Form
-router.get('/buy-promoted', requireLogin, (req, res) => {
-    res.render('pages/buy-promoted', { error: null, minDate: new Date().toISOString().split('T')[0] });
+router.get('/schedule-promoted', requireLogin, (req, res) => {
+    res.render('pages/schedule-promoted', { error: null, minDate: new Date().toISOString().split('T')[0] });
 });
 
 // Process Promoted Post Purchase
-router.post('/buy-promoted', requireLogin, async (req, res, next) => {
+router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
     const { title, url, text, promoted_date } = req.body;
 
     if (!title || !promoted_date) {
-        return res.render('pages/buy-promoted', { 
+        return res.render('pages/schedule-promoted', { 
             error: 'Title and Date are required',
             title: title,
             url: url,
@@ -329,7 +327,7 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
     today.setHours(0, 0, 0, 0);
     
     if (selectedDate <= today) {
-         return res.render('pages/buy-promoted', { 
+         return res.render('pages/schedule-promoted', { 
             error: 'Date must be in the future', 
             title: title,
             url: url,
@@ -346,7 +344,7 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
         );
 
         if (existing.length > 0) {
-            return res.render('pages/buy-promoted', { 
+            return res.render('pages/schedule-promoted', { 
                 error: 'A promoted post is already scheduled for this date. Please choose another day.', 
                 title: title,
                 url: url,
@@ -363,12 +361,77 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
         res.redirect('/upcoming');
     } catch (err) {
         console.error(err);
-        res.render('pages/buy-promoted', { 
+        res.render('pages/schedule-promoted', { 
             error: 'Transaction failed', 
             title: title,
             url: url,
             text: text,
             minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+});
+
+// Jobs Page
+router.get('/jobs', async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    if (page < 1) return res.redirect('/jobs');
+    const limit = 30;
+    const offset = (page - 1) * limit;
+
+    try {
+        const posts = await database.query(`
+            SELECT p.*, u.username 
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
+            WHERE p.is_job = TRUE
+            ORDER BY p.created_at DESC
+            LIMIT ? OFFSET ?
+        `, [limit + 1, offset]);
+
+        let nextPageUrl = null;
+        if (posts.length > limit) {
+            posts.pop();
+            nextPageUrl = `/jobs?page=${page + 1}`;
+        }
+
+        res.render('pages/jobs', { posts, title: 'jobs', nextPageUrl });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+// Submit Job Form
+router.get('/submit-job', requireLogin, (req, res) => {
+    res.render('pages/submit-job', { error: null });
+});
+
+// Handle Job Submission
+router.post('/submit-job', requireLogin, async (req, res, next) => {
+    const { title, text, url } = req.body;
+
+    if (!title || !text) {
+        return res.render('pages/submit-job', { 
+            error: 'Title and Description are required', 
+            title, 
+            url, 
+            text,
+        });
+    }
+
+    try {
+        await database.query(
+            'INSERT INTO posts (user_id, title, url, content, is_job) VALUES (?, ?, ?, ?, TRUE)',
+            [req.session.user.id, title, url || null, text]
+        );
+        res.redirect('/jobs');
+    } catch (err) {
+        console.error(err);
+        res.render('pages/submit-job', { 
+            error: 'Submission failed', 
+            title, 
+            url, 
+            text 
         });
     }
 });
@@ -441,6 +504,54 @@ router.get('/user', async (req, res, next) => {
         res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
     } catch (err) {
         console.error(err);
+        next(err);
+    }
+});
+
+// Show job details
+router.get('/job/:id', async (req, res, next) => {
+    const jobId = req.params.id;
+    try {
+        const posts = await database.query(`
+            SELECT p.*, u.username 
+            FROM posts p 
+            JOIN users u ON p.user_id = u.id 
+            WHERE p.id = ? AND p.is_job = TRUE
+        `, [jobId]);
+
+        if (posts.length === 0) {
+            const err = new Error('Job not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        res.render('pages/job', { job: posts[0], title: posts[0].title });
+    } catch (err) {
+        console.error('Error rendering job page:', err);
+        next(err);
+    }
+});
+
+// Show promoted post details
+router.get('/promoted/:id', async (req, res, next) => {
+    const promotedId = req.params.id;
+    try {
+        const posts = await database.query(`
+            SELECT p.*, u.username 
+            FROM posts p 
+            JOIN users u ON p.user_id = u.id 
+            WHERE p.id = ? AND p.is_promoted = TRUE
+        `, [promotedId]);
+
+        if (posts.length === 0) {
+            const err = new Error('Promoted post not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        res.render('pages/promoted', { post: posts[0], title: posts[0].title });
+    } catch (err) {
+        console.error('Error rendering promoted post page:', err);
         next(err);
     }
 });
