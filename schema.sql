@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS posts (
     title VARCHAR(255) NOT NULL,
     url VARCHAR(2048),
     content TEXT,
+    is_promoted BOOLEAN DEFAULT FALSE,
+    promoted_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

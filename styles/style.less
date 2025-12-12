@@ -76,22 +76,37 @@ header {
 
         .logo a {
             font-weight: bold;
-            margin-right: 15px;
             color: @color-white;
             font-size: @font-size-large;
         }
 
-        .links a {
-            margin-right: @spacing-md;
-            color: @color-white;
+        .links ul {
+            font-size: @font-size-medium;
+
+            li a {
+                color: @color-white;
+            }
+
+            li a:hover {
+                color: @color-white;
+                text-decoration: underline;
+            }
         }
 
         .auth {
             margin-left: auto;
 
-            a {
-                margin-left: @spacing-md;
-                color: @color-white;
+            ul {
+                font-size: @font-size-medium;
+
+                li a {
+                    color: @color-white;
+                }
+
+                li a:hover {
+                    color: @color-white;
+                    text-decoration: underline;
+                }
             }
         }
     }
@@ -115,7 +130,7 @@ footer {
     padding: 0;
     margin: 0;
     display: flex;
-    gap: 0.75rem;
+    gap: @spacing-lg;
     align-items: center;
     color: @color-light-font;
     font-size: @font-size-small;
@@ -394,5 +409,17 @@ button {
         font-size: 1.2rem;
         margin-bottom: @spacing-lg;
         color: #828282;
+    }
+}
+
+/* Upcoming Page */
+.upcoming-intro {
+    background-color: @color-white;
+    padding: @spacing-md;
+    margin-bottom: @spacing-lg;
+    border-radius: @border-radius;
+
+    p {
+        margin: @spacing-sm 0;
     }
 }

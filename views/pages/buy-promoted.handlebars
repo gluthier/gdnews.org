@@ -1,0 +1,29 @@
+{{> header}}
+<div class="main-content">
+    <h2>Buy Promoted Post</h2>
+    {{#if error}}
+    <div class="error-message">
+        {{error}}
+    </div>
+    {{/if}}
+    <form action="/buy-promoted" method="POST" class="submit-form">
+        <div class="form-group">
+            <label for="title">title</label>
+            <input type="text" name="title" id="title" required>
+        </div>
+        <div class="form-group">
+            <label for="url">url</label>
+            <input type="url" name="url" id="url">
+        </div>
+        <div class="form-group">
+            <label for="text">text</label>
+            <textarea name="text" id="text" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="promoted_date">date</label>
+            <input type="date" name="promoted_date" id="promoted_date" required min="{{minDate}}">
+        </div>
+        <button type="submit">submit promoted post</button>
+    </form>
+</div>
+{{> footer}}

@@ -13,19 +13,22 @@
     <div class="container">
         <header>
             <nav>
-                <div title="Home" class="logo">🐉 <a href="/">gdnews</a></div>
                 <div class="links">
-                    <a href="/new">newest</a>
+                    <ul class="inline-list">
+                        <li><div title="Home" class="logo">🐉 <a href="/">gdnews</a></div></li>
+                        <li><a href="/new">newest</a></li>
+                        <li><a href="/upcoming">upcoming</a></li>
+                    </ul>
                 </div>
                 <div class="auth">
-                    <a href="/submit">submit</a>
-                    {{#if user}}
-                    <a href="/user?id={{user.username}}">
-                        {{user.username}}
-                    </a>
-                    {{else}}
-                    <a href="/login">login</a>
-                    {{/if}}
+                    <ul class="inline-list">
+                        <li><a href="/submit">submit</a></li>
+                        {{#if user}}
+                        <li><a href="/user?id={{user.username}}">{{user.username}}</a></li>
+                        {{else}}
+                        <li><a href="/login">login</a></li>
+                        {{/if}}
+                    </ul>
                 </div>
             </nav>
         </header>

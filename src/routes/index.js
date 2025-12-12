@@ -275,6 +275,83 @@ router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
     }
 });
 
+// Upcoming Promoted Posts
+router.get('/upcoming', async (req, res, next) => {
+    try {
+        const posts = await database.query(`
+            SELECT p.*, u.username 
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
+            WHERE p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE()
+            ORDER BY p.promoted_date ASC
+        `);
+        res.render('pages/upcoming', { posts, title: 'upcoming' });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+// Buy Promoted Post Form
+router.get('/buy-promoted', requireLogin, (req, res) => {
+    res.render('pages/buy-promoted', { title: 'buy promoted post', error: null, minDate: new Date().toISOString().split('T')[0] });
+});
+
+// Process Promoted Post Purchase
+router.post('/buy-promoted', requireLogin, async (req, res, next) => {
+    const { title, url, text, promoted_date } = req.body;
+
+    if (!title || !promoted_date) {
+        return res.render('pages/buy-promoted', { 
+            error: 'Title and Date are required', 
+            title: 'buy promoted post',
+            minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+
+    const selectedDate = new Date(promoted_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+         return res.render('pages/buy-promoted', { 
+            error: 'Date must be in the future', 
+            title: 'buy promoted post',
+            minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+
+    try {
+        // Check for collision
+        const existing = await database.query(
+            'SELECT id FROM posts WHERE is_promoted = TRUE AND promoted_date = ?',
+            [promoted_date]
+        );
+
+        if (existing.length > 0) {
+            return res.render('pages/buy-promoted', { 
+                error: 'A promoted post is already scheduled for this date. Please choose another.', 
+                title: 'buy promoted post',
+                minDate: new Date().toISOString().split('T')[0]
+            });
+        }
+
+        await database.query(
+            'INSERT INTO posts (user_id, title, url, content, is_promoted, promoted_date) VALUES (?, ?, ?, ?, TRUE, ?)',
+            [req.session.user.id, title, url || null, text || null, promoted_date]
+        );
+
+        res.redirect('/upcoming');
+    } catch (err) {
+        console.error(err);
+        res.render('pages/buy-promoted', { 
+            error: 'Transaction failed', 
+            title: 'buy promoted post',
+            minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+});
+
 // User profile page
 router.get('/user', async (req, res, next) => {
     const username = req.query.id;

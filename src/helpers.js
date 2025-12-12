@@ -31,6 +31,9 @@ const helpers = {
     formatDateFull: (date) => {
         return new Date(date).toLocaleString();
     },
+    formatDateSimple: (date) => {
+        return new Date(date).toLocaleDateString();
+    },
     getHostname: (url) => {
         try {
             return new URL(url).hostname.replace('www.', '');
