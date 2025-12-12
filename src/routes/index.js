@@ -294,7 +294,7 @@ router.get('/upcoming', async (req, res, next) => {
 
 // Buy Promoted Post Form
 router.get('/buy-promoted', requireLogin, (req, res) => {
-    res.render('pages/buy-promoted', { title: 'buy promoted post', error: null, minDate: new Date().toISOString().split('T')[0] });
+    res.render('pages/buy-promoted', { error: null, minDate: new Date().toISOString().split('T')[0] });
 });
 
 // Process Promoted Post Purchase
@@ -303,8 +303,10 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
 
     if (!title || !promoted_date) {
         return res.render('pages/buy-promoted', { 
-            error: 'Title and Date are required', 
-            title: 'buy promoted post',
+            error: 'Title and Date are required',
+            title: title,
+            url: url,
+            text: text,
             minDate: new Date().toISOString().split('T')[0]
         });
     }
@@ -313,10 +315,12 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    if (selectedDate < today) {
+    if (selectedDate <= today) {
          return res.render('pages/buy-promoted', { 
             error: 'Date must be in the future', 
-            title: 'buy promoted post',
+            title: title,
+            url: url,
+            text: text,
             minDate: new Date().toISOString().split('T')[0]
         });
     }
@@ -330,8 +334,10 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
 
         if (existing.length > 0) {
             return res.render('pages/buy-promoted', { 
-                error: 'A promoted post is already scheduled for this date. Please choose another.', 
-                title: 'buy promoted post',
+                error: 'A promoted post is already scheduled for this date. Please choose another day.', 
+                title: title,
+                url: url,
+                text: text,
                 minDate: new Date().toISOString().split('T')[0]
             });
         }
@@ -346,7 +352,9 @@ router.post('/buy-promoted', requireLogin, async (req, res, next) => {
         console.error(err);
         res.render('pages/buy-promoted', { 
             error: 'Transaction failed', 
-            title: 'buy promoted post',
+            title: title,
+            url: url,
+            text: text,
             minDate: new Date().toISOString().split('T')[0]
         });
     }
