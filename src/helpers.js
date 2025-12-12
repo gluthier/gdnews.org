@@ -29,10 +29,10 @@ const helpers = {
         return `${years} year${years > 1 ? 's' : ''} ago`;
     },
     formatDateFull: (date) => {
-        return new Date(date).toLocaleString();
+        return new Date(date).toLocaleString("en-GB");
     },
-    formatDateSimple: (date) => {
-        return new Date(date).toLocaleDateString();
+    formatDatePromotedPost: (date) => {
+        return new Date(date).toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' });
     },
     getHostname: (url) => {
         try {
