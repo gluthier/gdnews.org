@@ -1,6 +1,7 @@
 <div class="post">
     <div class="post-title">
         {{#if is_job}}<span class="job-tag">hiring:</span> {{/if}}
+        {{#if is_promoted}}<span>✨</span> {{/if}}
         {{#if url}}
         <a href="{{url}}">{{title}}</a>
         {{else}}

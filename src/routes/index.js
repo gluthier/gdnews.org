@@ -93,10 +93,32 @@ router.get('/', async (req, res, next) => {
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
       LEFT JOIN comments c ON p.id = c.post_id
+      WHERE NOT (p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE())
       GROUP BY p.id
       ORDER BY activity_score DESC
       LIMIT ? OFFSET ?
     `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
+
+        // If we are on the first page, fetch and inject today's promoted post
+        if (page === 1) {
+            const promoted = await database.query(`
+                SELECT 
+                    p.*, 
+                    u.username, 
+                    COUNT(c.id) as comment_count,
+                    EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                LEFT JOIN comments c ON p.id = c.post_id
+                WHERE p.is_promoted = TRUE AND p.promoted_date = CURRENT_DATE()
+                GROUP BY p.id
+                LIMIT 1
+            `, [req.session.user ? req.session.user.id : -1]);
+
+            if (promoted.length > 0) {
+                posts.unshift(promoted[0]);
+            }
+        }
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -129,6 +151,7 @@ router.get('/new', async (req, res, next) => {
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
       LEFT JOIN comments c ON p.id = c.post_id
+      WHERE NOT (p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE())
       GROUP BY p.id
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
@@ -595,5 +618,7 @@ router.get('/promoted/:id', async (req, res, next) => {
         next(err);
     }
 });
+
+
 
 module.exports = router;
