@@ -49,7 +49,7 @@
                     <li><strong>{{formatDatePromotedPost promoted_date}}</strong></li>
                     <li>
                         <a href="{{basePath}}{{id}}">
-                            details
+                            {{formatCommentCount comment_count}}
                         </a>
                     </li>
                     <li><a href="/user?id={{username}}">{{username}}</a></li>
@@ -57,14 +57,15 @@
             {{/if}}
 
             {{#if (eq type 'job')}}
-                 {{#if isDetail}}
-                    <li><a href="/user?id={{username}}">{{username}}</a></li>
-                    <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
-                 {{else}}
-                    <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
-                    <li><a href="/user?id={{username}}">{{username}}</a></li>
-                    <li><a href="{{basePath}}{{id}}">details</a></li>
-                 {{/if}}
+                 {{#unless isDetail}}
+                 <li>
+                    <a href="{{basePath}}{{id}}">
+                        {{formatCommentCount comment_count}}
+                    </a>
+                 </li>
+                 {{/unless}}
+                 <li><a href="/user?id={{username}}">{{username}}</a></li>
+                 <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
             {{/if}}
         </ul>
     </div>
