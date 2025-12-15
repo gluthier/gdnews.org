@@ -1,5 +1,6 @@
 <div class="post">
     <div class="post-title">
+        {{#if is_job}}<span class="job-tag">hiring:</span> {{/if}}
         {{#if url}}
         <a href="{{url}}">{{title}}</a>
         {{else}}
@@ -50,10 +51,6 @@
     {{#if content}}
         {{#if isDetail}}
         <div class="post-content">{{{formatTextBlockContent content}}}</div>
-        {{else}}
-            {{#if (eq type 'job')}}
-            <div class="post-text">{{content}}</div>
-            {{/if}}
         {{/if}}
     {{/if}}
 </div>
