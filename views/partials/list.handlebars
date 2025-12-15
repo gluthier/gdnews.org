@@ -1,6 +1,6 @@
 <div class="posts">
     {{#each items}}
-    {{> item this type=../type basePath=../basePath}}
+    {{> item this type=../type basePath=../basePath user=@root.user}}
     {{/each}}
     {{#if (eq items.length 0)}}
     <p>{{emptyMessage}}</p>

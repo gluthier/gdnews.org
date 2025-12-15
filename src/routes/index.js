@@ -88,14 +88,15 @@ router.get('/', async (req, res, next) => {
         (
           100 / POW(TIMESTAMPDIFF(HOUR, p.created_at, NOW()) + 2, 1.8) + 
           COALESCE(SUM(10 / POW(TIMESTAMPDIFF(HOUR, c.created_at, NOW()) + 2, 1.8)), 0)
-        ) as activity_score
+        ) as activity_score,
+        EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
       LEFT JOIN comments c ON p.id = c.post_id
       GROUP BY p.id
       ORDER BY activity_score DESC
       LIMIT ? OFFSET ?
-    `, [limit + 1, offset]);
+    `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -123,14 +124,15 @@ router.get('/new', async (req, res, next) => {
       SELECT 
         p.*, 
         u.username, 
-        COUNT(c.id) as comment_count
+        COUNT(c.id) as comment_count,
+        EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
       LEFT JOIN comments c ON p.id = c.post_id
       GROUP BY p.id
       ORDER BY p.created_at DESC
       LIMIT ? OFFSET ?
-    `, [limit + 1, offset]);
+    `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -272,7 +274,7 @@ router.post('/favorite/:id', requireLogin, async (req, res, next) => {
             'INSERT IGNORE INTO favourites (user_id, post_id) VALUES (?, ?)',
             [req.session.user.id, postId]
         );
-        res.redirect(`/item/${postId}`);
+        res.redirect(req.get('Referrer') || `/item/${postId}`);
     } catch (err) {
         console.error(err);
         next(err);
@@ -286,7 +288,7 @@ router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
             'DELETE FROM favourites WHERE user_id = ? AND post_id = ?',
             [req.session.user.id, postId]
         );
-        res.redirect(`/item/${postId}`);
+        res.redirect(req.get('Referrer') || `/item/${postId}`);
     } catch (err) {
         console.error(err);
         next(err);
@@ -305,7 +307,8 @@ router.get('/upcoming', async (req, res, next) => {
             SELECT 
                 p.*, 
                 u.username,
-                COUNT(c.id) as comment_count
+                COUNT(c.id) as comment_count,
+                EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
             FROM posts p
             JOIN users u ON p.user_id = u.id
             LEFT JOIN comments c ON p.id = c.post_id
@@ -313,7 +316,7 @@ router.get('/upcoming', async (req, res, next) => {
             GROUP BY p.id
             ORDER BY p.promoted_date ASC
             LIMIT ? OFFSET ?
-        `, [limit + 1, offset]);
+        `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -408,7 +411,8 @@ router.get('/jobs', async (req, res, next) => {
             SELECT 
                 p.*, 
                 u.username,
-                COUNT(c.id) as comment_count
+                COUNT(c.id) as comment_count,
+                EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
             FROM posts p
             JOIN users u ON p.user_id = u.id
             LEFT JOIN comments c ON p.id = c.post_id
@@ -416,7 +420,7 @@ router.get('/jobs', async (req, res, next) => {
             GROUP BY p.id
             ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?
-        `, [limit + 1, offset]);
+        `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -505,24 +509,26 @@ router.get('/user', async (req, res, next) => {
         if (currentTab === 'favorites') {
             posts = await database.query(`
                 SELECT p.*, u.username, 
-                (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
+                (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count,
+                EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
                 FROM favourites f
                 JOIN posts p ON f.post_id = p.id
                 JOIN users u ON p.user_id = u.id
                 WHERE f.user_id = ?
                 ORDER BY f.created_at DESC
                 LIMIT ? OFFSET ?
-            `, [user.id, limit + 1, offset]);
+            `, [req.session.user ? req.session.user.id : -1, user.id, limit + 1, offset]);
         } else {
             posts = await database.query(`
                 SELECT p.*, u.username, 
-                (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
+                (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count,
+                EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
                 FROM posts p 
                 JOIN users u ON p.user_id = u.id 
                 WHERE u.id = ?
                 ORDER BY p.created_at DESC
                 LIMIT ? OFFSET ?
-            `, [user.id, limit + 1, offset]);
+            `, [req.session.user ? req.session.user.id : -1, user.id, limit + 1, offset]);
         }
 
         let nextPageUrl = null;

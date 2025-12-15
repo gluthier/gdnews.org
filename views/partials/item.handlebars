@@ -13,59 +13,36 @@
     </div>
     <div class="post-meta">
         <ul class="inline-list">
-            {{#if (eq type 'post')}}
-                {{#unless isDetail}}
-                <li>
-                    <a href="{{basePath}}{{id}}">
-                        {{formatCommentCount comment_count}}
-                    </a>
-                </li>
-                {{/unless}}
-                <li><a href="/user?id={{username}}">{{username}}</a></li>
-                <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
-                {{#if isDetail}}
-                    {{#if user}}
-                        <li>
-                            {{#if isFavorited}}
-                            <form action="/unfavorite/{{id}}" method="POST" style="display:inline">
-                                <button type="submit" class="text-button">unfavourite</button>
-                            </form>
-                            {{else}}
-                            <form action="/favorite/{{id}}" method="POST" style="display:inline">
-                                <button type="submit" class="text-button">favourite</button>
-                            </form>
-                            {{/if}}
-                        </li>
-                    {{/if}}
-                {{/if}}
-            {{/if}}
+            {{#unless isDetail}}
+            <li>
+                <a href="{{basePath}}{{id}}">
+                    {{formatCommentCount comment_count}}
+                </a>
+            </li>
+            {{/unless}}
+
+            <li><a href="/user?id={{username}}">{{username}}</a></li>
 
             {{#if (eq type 'promoted')}}
-                {{#if isDetail}}
-                    <li><a href="/user?id={{username}}">{{username}}</a></li>
-                    <li><strong>Scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
-                    <li><span title="{{formatDateFull created_at}}">posted {{formatDate created_at}}</span></li>
-                {{else}}
-                    <li><strong>{{formatDatePromotedPost promoted_date}}</strong></li>
-                    <li>
-                        <a href="{{basePath}}{{id}}">
-                            {{formatCommentCount comment_count}}
-                        </a>
-                    </li>
-                    <li><a href="/user?id={{username}}">{{username}}</a></li>
-                {{/if}}
+            <li><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
+            {{else}}
+            <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
             {{/if}}
 
-            {{#if (eq type 'job')}}
-                 {{#unless isDetail}}
-                 <li>
-                    <a href="{{basePath}}{{id}}">
-                        {{formatCommentCount comment_count}}
-                    </a>
-                 </li>
-                 {{/unless}}
-                 <li><a href="/user?id={{username}}">{{username}}</a></li>
-                 <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
+            {{#if isDetail}}
+                {{#if user}}
+                    <li>
+                        {{#if isFavorited}}
+                        <form action="/unfavorite/{{id}}" method="POST" style="display:inline">
+                            <button type="submit" class="text-button">unfavourite</button>
+                        </form>
+                        {{else}}
+                        <form action="/favorite/{{id}}" method="POST" style="display:inline">
+                            <button type="submit" class="text-button">favourite</button>
+                        </form>
+                        {{/if}}
+                    </li>
+                {{/if}}
             {{/if}}
         </ul>
     </div>
