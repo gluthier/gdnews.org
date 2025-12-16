@@ -1,7 +1,11 @@
 <div class="post">
     <div class="post-title">
-        {{#if is_job}}<a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="job-symbol"><span class="job-tag">hiring:</span></a>{{/if}}
-        {{#if is_promoted}}<a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="promoted-symbol">✨</a>{{/if}}
+        {{#if is_job}}
+        <a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="job-symbol"><span class="job-tag">hiring: </span></a>
+        {{/if}}
+        {{#if is_promoted}}
+        <a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="promoted-symbol">✨ </a>
+        {{/if}}
         {{#if url}}
         <a href="{{url}}">{{title}}</a>
         {{else}}
