@@ -78,6 +78,14 @@ header {
             font-weight: bold;
             color: @color-white;
             font-size: @font-size-large;
+
+            &.logo-symbol:hover {
+                text-decoration: none;
+            }
+
+            &.logo-symbol:hover + a {
+                text-decoration: underline;
+            }
         }
 
         .links ul {
@@ -225,6 +233,21 @@ footer {
             font-size: @font-size-small;
             color: @color-light-font;
             margin-left: @spacing-sm;
+        }
+
+        .job-symbol,
+        .promoted-symbol {
+            text-decoration: none;
+            margin-right: 0.125em; // Re-adding some spacing since we removed the space in html or just consistency
+
+            &:hover {
+                text-decoration: none;
+            }
+
+            &:hover ~ a {
+                color: @color-dark-font;
+                text-decoration: underline;
+            }
         }
     }
 
