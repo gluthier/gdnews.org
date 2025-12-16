@@ -2,29 +2,45 @@
 <h2>Schedule promoted post</h2>
 
 <div class="pricing-tiers">
-    <div class="pricing-tier">
+    <div class="pricing-tier" data-value="personal">
         <div class="tier-title">Personal</div>
-        <div class="tier-desc">For hobbyists and small indie teams under $50K in funding or annual revenue.</div>
-        <div class="tier-price">20 CHF</div>
+        <div class="tier-desc">For hobbyists and small indie teams under €100K in funding or annual revenue.</div>
+        <div class="tier-price">€20</div>
     </div>
-    <div class="pricing-tier">
+    <div class="pricing-tier" data-value="indie">
         <div class="tier-title">Indie Studio</div>
-        <div class="tier-desc">Required for businesses with over $50K in funding or annual revenue.</div>
-        <div class="tier-price">100 CHF</div>
+        <div class="tier-desc">Required for businesses with over €100K in funding or annual revenue.</div>
+        <div class="tier-price">€100</div>
     </div>
-    <div class="pricing-tier">
+    <div class="pricing-tier" data-value="mid">
         <div class="tier-title">Mid-Sized Studio</div>
-        <div class="tier-desc">Required for businesses with over $200K in funding or annual revenue.</div>
-        <div class="tier-price">200 CHF</div>
+        <div class="tier-desc">Required for businesses with over €200K in funding or annual revenue.</div>
+        <div class="tier-price">€200</div>
     </div>
-    <div class="pricing-tier">
+    <div class="pricing-tier" data-value="aaa">
         <div class="tier-title">AAA Studio</div>
-        <div class="tier-desc">Required for businesses with more than $25M in annual revenue.</div>
-        <div class="tier-price">1000 CHF</div>
+        <div class="tier-desc">Required for businesses with more than €10M in annual revenue.</div>
+        <div class="tier-price">€1000</div>
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tiers = document.querySelectorAll('.pricing-tier');
+        const input = document.getElementById('pricing_tier');
+
+        tiers.forEach(tier => {
+            tier.addEventListener('click', () => {
+                tiers.forEach(t => t.classList.remove('selected'));
+                tier.classList.add('selected');
+                input.value = tier.dataset.value;
+            });
+        });
+    });
+</script>
+
 <form action="/schedule-promoted" method="POST">
+    <input type="hidden" name="pricing_tier" id="pricing_tier" required>
     {{> submit-form-fields}}
     <div>
         <label for="promoted_date">date:</label>

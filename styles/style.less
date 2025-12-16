@@ -489,6 +489,19 @@ button {
         flex-direction: column;
         justify-content: space-between;
         background-color: @color-white; // Ensure background is white
+        cursor: pointer;
+        transition: border-color 0.2s, background-color 0.2s;
+
+        &:hover {
+            border-color: @color-dark-font;
+        }
+
+        &.selected {
+            background-color: @color-light-background;
+            border-color: @color-dark-font;
+            border-width: 2px;
+            padding: 14px; // Compensate for 1px extra border
+        }
 
         .tier-title {
             font-weight: bold;

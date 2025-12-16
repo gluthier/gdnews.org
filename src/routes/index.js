@@ -365,11 +365,14 @@ router.get('/schedule-promoted', requireLogin, (req, res) => {
 
 // Process Promoted Post Purchase
 router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
-    const { title, url, text, promoted_date } = req.body;
+    const { title, url, text, promoted_date, pricing_tier } = req.body;
+    
+    // Simple validation for pricing tier
+    const validTiers = ['personal', 'indie', 'mid', 'aaa'];
 
-    if (!title || !promoted_date) {
+    if (!title || !promoted_date || !pricing_tier || !validTiers.includes(pricing_tier)) {
         return res.render('pages/schedule-promoted', { 
-            error: 'Title and Date are required',
+            error: 'Title, Date, and a valid Pricing Tier are required',
             title: title,
             url: url,
             text: text,
