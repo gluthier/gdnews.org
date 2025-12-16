@@ -151,9 +151,13 @@ router.get('/newest', async (req, res, next) => {
       FROM posts p 
       JOIN users u ON p.user_id = u.id 
       LEFT JOIN comments c ON p.id = c.post_id
-      WHERE NOT (p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE())
+      WHERE NOT (p.is_promoted = TRUE AND p.promoted_date > CURRENT_DATE())
       GROUP BY p.id
-      ORDER BY p.created_at DESC
+      ORDER BY 
+        CASE 
+          WHEN p.is_promoted = TRUE THEN p.promoted_date 
+          ELSE p.created_at 
+        END DESC
       LIMIT ? OFFSET ?
     `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
 
