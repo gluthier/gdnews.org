@@ -119,9 +119,27 @@ main {
 }
 
 footer {
-    padding: 0 @spacing-md;
+    padding: @spacing-md;
     font-size: @font-size-medium;
     color: @color-light-font;
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        p {
+            margin: 0;
+        }
+
+        .links {
+            margin-left: auto;
+
+            .inline-list {
+                font-size: @font-size-medium;
+            }
+        }
+    }
 }
 
 /* Common Components */
