@@ -4,11 +4,11 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run batch\"",
+    "start": "concurrently -k \"npm run server\" \"npm run batch\"",
     "server": "node src/server.js",
     "batch": "node src/batch_server/batch_server.js",
     "dev": "nodemon src/server.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run batch\"",
+    "dev:all": "concurrently -k \"npm run dev\" \"npm run batch\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

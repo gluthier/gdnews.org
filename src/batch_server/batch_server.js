@@ -125,8 +125,31 @@ app.get('/weekly-links', async (req, res) => {
 });
 
 // Start Server
+// Start Server
 ensureBotUser().then(() => {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`Batch upload server running on port ${PORT}`);
     });
+
+    const gracefulShutdown = () => {
+        console.log('Batch Server: Received kill signal, shutting down gracefully');
+        server.close(() => {
+            console.log('Batch Server: Closed out remaining connections');
+            database.close().then(() => {
+                 console.log('Batch Server: Database pool closed');
+                 process.exit(0);
+            }).catch((err) => {
+                 console.error('Batch Server: Error closing database pool', err);
+                 process.exit(1);
+            });
+        });
+
+        setTimeout(() => {
+            console.error('Batch Server: Could not close connections in time, forcefully shutting down');
+            process.exit(1);
+        }, 10000);
+    };
+
+    process.on('SIGTERM', gracefulShutdown);
+    process.on('SIGINT', gracefulShutdown);
 });

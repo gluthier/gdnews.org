@@ -11,5 +11,6 @@ const pool = mariadb.createPool({
 
 module.exports = {
   getConnection: () => pool.getConnection(),
-  query: (sql, params) => pool.query(sql, params)
+  query: (sql, params) => pool.query(sql, params),
+  close: () => pool.end()
 };
