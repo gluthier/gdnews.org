@@ -1,5 +1,29 @@
 {{> header}}
 <h2>Schedule promoted post</h2>
+
+<div class="pricing-tiers">
+    <div class="pricing-tier">
+        <div class="tier-title">Personal</div>
+        <div class="tier-desc">For hobbyists and small indie teams under $50K in funding or annual revenue.</div>
+        <div class="tier-price">20 CHF</div>
+    </div>
+    <div class="pricing-tier">
+        <div class="tier-title">Indie Studio</div>
+        <div class="tier-desc">Required for businesses with over $50K in funding or annual revenue.</div>
+        <div class="tier-price">100 CHF</div>
+    </div>
+    <div class="pricing-tier">
+        <div class="tier-title">Mid-Sized Studio</div>
+        <div class="tier-desc">Required for businesses with over $200K in funding or annual revenue.</div>
+        <div class="tier-price">200 CHF</div>
+    </div>
+    <div class="pricing-tier">
+        <div class="tier-title">AAA Studio</div>
+        <div class="tier-desc">Required for businesses with more than $25M in annual revenue.</div>
+        <div class="tier-price">1000 CHF</div>
+    </div>
+</div>
+
 <form action="/schedule-promoted" method="POST">
     {{> submit-form-fields}}
     <div>
