@@ -135,9 +135,9 @@ router.get('/', async (req, res, next) => {
 
 
 // List posts (Newest)
-router.get('/new', async (req, res, next) => {
+router.get('/newest', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
-    if (page < 1) return res.redirect('/new');
+    if (page < 1) return res.redirect('/newest');
     const limit = 30;
     const offset = (page - 1) * limit;
 
@@ -160,7 +160,7 @@ router.get('/new', async (req, res, next) => {
         let nextPageUrl = null;
         if (posts.length > limit) {
             posts.pop();
-            nextPageUrl = `/new?page=${page + 1}`;
+            nextPageUrl = `/newest?page=${page + 1}`;
         }
 
         res.render('pages/newest', { posts, title: 'newest', nextPageUrl });
@@ -335,7 +335,7 @@ router.get('/upcoming', async (req, res, next) => {
             FROM posts p
             JOIN users u ON p.user_id = u.id
             LEFT JOIN comments c ON p.id = c.post_id
-            WHERE p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE()
+            WHERE p.is_promoted = TRUE AND p.promoted_date > CURRENT_DATE()
             GROUP BY p.id
             ORDER BY p.promoted_date ASC
             LIMIT ? OFFSET ?
