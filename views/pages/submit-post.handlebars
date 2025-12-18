@@ -1,6 +1,7 @@
 {{> header}}
 <h2>Submit</h2>
 <form action="/submit" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{> submit-form-fields}}
     <p>Leave url blank to submit a question for discussion.</p>
     {{#if error}}

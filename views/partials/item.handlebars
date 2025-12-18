@@ -44,10 +44,12 @@
                     <li>
                         {{#if isFavorited}}
                         <form action="/unfavorite/{{id}}" method="POST" style="display:inline">
+                            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
                             <button type="submit" class="text-button">unfavourite</button>
                         </form>
                         {{else}}
                         <form action="/favorite/{{id}}" method="POST" style="display:inline">
+                            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
                             <button type="submit" class="text-button">favourite</button>
                         </form>
                         {{/if}}

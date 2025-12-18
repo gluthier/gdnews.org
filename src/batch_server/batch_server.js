@@ -56,7 +56,7 @@ const ensureBotUser = async () => {
         const users = await database.query("SELECT id FROM users WHERE username = 'gdnews-bot'");
         if (users.length === 0) {
             console.log("Creating 'gdnews-bot' user...");
-            const password = Math.random().toString(36).slice(-8);
+            const password = crypto.randomBytes(32).toString('hex');
             const hashedPassword = await bcrypt.hash(password, 10);
             await database.query(
                 "INSERT INTO users (username, password_hash, email) VALUES ('gdnews-bot', ?, 'gdnews-bot@gdnews.org')",

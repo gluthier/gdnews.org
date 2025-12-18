@@ -6,6 +6,7 @@
 </div>
 {{/if}}
 <form action="/register" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>
         <label for="username">username:</label>
         <input type="text" id="username" name="username" required>

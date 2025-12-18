@@ -3,6 +3,8 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+const helmet = require('helmet');
+const csurf = require('csurf');
 const database = require('./database');
 
 const app = express();
@@ -11,16 +13,35 @@ const PORT = process.env.PORT;
 const lessMiddleware = require('less-middleware');
 
 // Middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+            "script-src": ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+            "frame-src": ["'self'", "https://js.stripe.com"],
+            "connect-src": ["'self'", "https://api.stripe.com"]
+        }
+    }
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(lessMiddleware(path.join(__dirname, '../styles'), {
     dest: path.join(__dirname, '../public')
 }));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(session({
-    secret: 'secret-key', // In production, use a secure random string
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+    }
 }));
+
+// CSRF Protection
+const csrfProtection = csurf();
+app.use(csrfProtection);
 
 // View Engine
 const { engine } = require('express-handlebars');
@@ -33,9 +54,10 @@ app.engine('handlebars', engine({
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, '../views'));
 
-// Make user available to all templates
+// Make user and CSRF token available to all templates
 app.use((req, res, next) => {
     res.locals.user = req.session.user;
+    res.locals.csrfToken = req.csrfToken();
     next();
 });
 

@@ -1,5 +1,6 @@
 <div class="comment-form">
     <form action="/item/{{post.id}}/comment" method="POST">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <textarea name="content" rows="4" cols="50" required></textarea><br>
         <button class="primary-button" type="submit">add comment</button>
     </form>

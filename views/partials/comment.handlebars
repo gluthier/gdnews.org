@@ -12,6 +12,7 @@
 
     <div id="reply-{{id}}" style="display: none; margin-top: 10px;">
         <form action="/item/{{post_id}}/comment" method="POST">
+            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
             <input type="hidden" name="parent_comment_id" value="{{id}}">
             <textarea name="content" rows="2" cols="50" required></textarea><br>
             <button class="primary-button" type="submit">submit reply</button>

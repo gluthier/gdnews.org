@@ -187,6 +187,10 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         return res.render('pages/submit-post', { error: 'Title is required' });
     }
 
+    if (url && (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:'))) {
+        return res.render('pages/submit-post', { error: 'Invalid URL scheme' });
+    }
+
     try {
         await database.query(
             'INSERT INTO posts (user_id, title, url, content) VALUES (?, ?, ?, ?)',
