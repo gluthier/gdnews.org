@@ -2,7 +2,11 @@
 
 <div class="user-profile">
     <div class="user-header">
-        <h2>{{profileUser.username}}</h2>
+        <h2>
+            {{#if (eq profileUser.username "gdnews-bot")}}<span title="This is an automated account"><span class="bot-emoji">☰</span>{{profileUser.username}}</span>
+            {{else}}{{profileUser.username}}
+            {{/if}}
+        </h2>
         {{#if user}}
         {{#if (eq user.id profileUser.id)}}
         <ul class="inline-list">

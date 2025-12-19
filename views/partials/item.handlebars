@@ -27,7 +27,11 @@
             </li>
             {{/unless}}
 
-            <li><a href="/user?id={{username}}">{{username}}</a></li>
+            <li><a href="/user?id={{username}}">
+            {{#if (eq username "gdnews-bot")}}<span title="This is an automated account"><span class="bot-emoji">☰</span>{{username}}</span>
+            {{else}}{{username}}
+            {{/if}}
+            </a></li>
 
             {{#if (eq type 'promoted')}}
             <li><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>

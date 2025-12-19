@@ -175,8 +175,19 @@ footer {
         &:hover {
             color: @color-dark-font;
             text-decoration: underline;
+
+            .bot-emoji {
+                text-decoration: none;
+                display: inline-block;
+            }
         }
     }
+}
+
+.bot-emoji {
+    text-decoration: none !important;
+    display: inline-block;
+    margin-right: @spacing-xs;
 }
 
 .job-tag {
