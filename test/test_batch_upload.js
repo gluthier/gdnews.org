@@ -22,7 +22,7 @@ signer.update(data);
 const signature = signer.sign(privateKey, 'base64');
 
 const options = {
-  hostname: 'localhost',
+  hostname: process.env.APP_DOMAIN,
   port: 3001,
   path: '/batch',
   method: 'POST',

@@ -3,7 +3,7 @@ const http = require('http');
 console.log('Testing GET /weekly-links...');
 
 const options = {
-  hostname: 'localhost',
+  hostname: process.env.APP_DOMAIN,
   port: 3001,
   path: '/weekly-links',
   method: 'GET',

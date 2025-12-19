@@ -1,8 +1,10 @@
-require('dotenv').config();
+const path = require('path');
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+require('dotenv').config({ path: path.join(__dirname, '../', envFile) });
+
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const path = require('path');
 const helmet = require('helmet');
 const csurf = require('csurf');
 const database = require('./database');
@@ -21,8 +23,15 @@ app.use(helmet({
             "frame-src": ["'self'", "https://js.stripe.com"],
             "connect-src": ["'self'", "https://api.stripe.com"]
         }
-    }
+    },
+    crossOriginEmbedderPolicy: { policy: "require-corp" }
 }));
+
+// Set Cross-Origin-Resource-Policy for local assets to satisfy COEP
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+    next();
+});
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(lessMiddleware(path.join(__dirname, '../styles'), {
     dest: path.join(__dirname, '../public')
@@ -96,7 +105,9 @@ app.use((err, req, res, next) => {
 
 
 const server = app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    const protocol = process.env.APP_PROTOCOL || 'http';
+    const domain = process.env.APP_DOMAIN || 'localhost';
+    console.log(`Server running on ${protocol}://${domain}:${PORT}`);
 });
 
 const gracefulShutdown = () => {
