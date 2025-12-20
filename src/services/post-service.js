@@ -80,7 +80,11 @@ const PostService = {
                     ${fromPart}
                     WHERE u.username = ?
                     ${groupByPart}
-                    ORDER BY p.created_at DESC
+                    ORDER BY 
+                        CASE 
+                            WHEN p.is_promoted = TRUE THEN p.promoted_date 
+                            ELSE p.created_at 
+                        END DESC
                     LIMIT ? OFFSET ?
                 `;
                 params.push(targetId, limit + 1, offset);
@@ -237,7 +241,11 @@ const PostService = {
             WHERE url IS NOT NULL 
               AND url != '' 
               AND created_at >= NOW() - INTERVAL 7 DAY 
-            ORDER BY created_at DESC
+            ORDER BY 
+                CASE 
+                    WHEN is_promoted = TRUE THEN promoted_date 
+                    ELSE created_at 
+                END DESC
         `;
         return await database.query(query);
     }

@@ -37,7 +37,7 @@
             <li><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
             {{else}}
                 {{#if is_promoted}}
-                <li><span title="{{formatDateFull promoted_date}}">{{formatDate promoted_date}}</span></li>
+                <li><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
                 {{else}}
                 <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
                 {{/if}}
