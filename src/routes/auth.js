@@ -17,7 +17,8 @@ router.post('/register', async (req, res, next) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         await UserService.createUser({ username, password_hash: hashedPassword, email });
-        res.redirect('/auth/login');
+        // Redirect to a page telling them to check email (or just login with a message)
+        res.render('pages/auth/login', { error: null, success: 'Registration successful! Please check your email to confirm your account.', title: 'login' });
     } catch (err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {
@@ -59,6 +60,31 @@ router.get('/logout', (req, res) => {
 router.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/post/list');
+});
+
+router.get('/confirm-email', async (req, res, next) => {
+    const { token } = req.query;
+    try {
+        await UserService.verifyAndComplete(token);
+        res.render('pages/auth/login', { error: null, success: 'Email verified! You can now log in.', title: 'login' });
+    } catch (err) {
+        res.render('pages/auth/login', { error: 'Invalid or expired confirmation token.', title: 'login' });
+    }
+});
+
+router.get('/confirm-change-email', async (req, res, next) => {
+    const { token } = req.query;
+    try {
+        await UserService.verifyAndComplete(token);
+        // If user is logged in, redirect to profile. Otherwise login.
+        if (req.session.user) {
+             res.redirect(`/user/profile/${req.session.user.username}`);
+        } else {
+             res.render('pages/auth/login', { error: null, success: 'Email changed successfully! Please log in.', title: 'login' });
+        }
+    } catch (err) {
+         res.render('pages/auth/login', { error: 'Invalid or expired confirmation token.', title: 'login' });
+    }
 });
 
 module.exports = router;

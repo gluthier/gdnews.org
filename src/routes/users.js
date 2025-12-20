@@ -77,8 +77,13 @@ router.post('/change-email', async (req, res, next) => {
     const { email } = req.body;
 
     try {
-        await UserService.updateUserEmail(req.session.user.id, email);
-        res.redirect(`/user/profile/${req.session.user.username}`);
+        await UserService.initiateEmailConfirmation(req.session.user.id, email, 'CHANGE_EMAIL');
+        res.render('pages/auth/change-email', { 
+            error: null, 
+            success: 'Confirmation email sent. Please check your inbox.', 
+            user: req.session.user, 
+            title: 'change email' 
+        });
     } catch (err) {
         console.error(err);
         next(err);

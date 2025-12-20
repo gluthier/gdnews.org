@@ -19,7 +19,8 @@ jest.mock('../../src/middleware/auth', () => (req, res, next) => {
 const UserService = require('../../src/services/user-service');
 jest.mock('../../src/services/user-service', () => ({
     getUserByUsername: jest.fn(),
-    updateUserEmail: jest.fn()
+    updateUserEmail: jest.fn(),
+    initiateEmailConfirmation: jest.fn()
 }));
 
 const PostService = require('../../src/services/post-service');
@@ -117,8 +118,9 @@ describe('User Routes', () => {
                 .type('form')
                 .send({ email: 'new@example.com' });
 
-            expect(res.statusCode).toEqual(302);
-            expect(UserService.updateUserEmail).toHaveBeenCalledWith(1, 'new@example.com');
+            expect(res.statusCode).toEqual(200);
+            expect(res.text).toContain('Confirmation email sent');
+            expect(UserService.initiateEmailConfirmation).toHaveBeenCalledWith(1, 'new@example.com', 'CHANGE_EMAIL');
         });
     });
 });

@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
 const database = require('../database/database');
+const EmailService = require('./email-service');
 
 /**
  * Service to handle user-related operations
@@ -12,10 +13,16 @@ const UserService = {
      * @param {Object} userData 
      */
     async createUser({ username, password_hash, email }) {
-        return await database.query(
-            'INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)',
-            [username, password_hash, email || null]
+        const result = await database.query(
+            'INSERT INTO users (username, password_hash, email, email_verified) VALUES (?, ?, ?, ?)',
+            [username, password_hash, email || null, false]
         );
+        
+        if (email) {
+            await this.initiateEmailConfirmation(result.insertId, email, 'REGISTER');
+        }
+
+        return result;
     },
 
     /**
@@ -49,9 +56,63 @@ const UserService = {
      */
     async updateUserEmail(userId, email) {
         return await database.query(
-            'UPDATE users SET email = ? WHERE id = ?',
+            'UPDATE users SET email = ?, email_verified = TRUE WHERE id = ?',
             [email, userId]
         );
+    },
+
+    /**
+     * Initiate email confirmation (for register or change)
+     * @param {number} userId 
+     * @param {string} email 
+     * @param {string} type 
+     */
+    async initiateEmailConfirmation(userId, email, type = 'REGISTER') {
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+        await database.query(
+            'INSERT INTO email_confirmations (user_id, email, token, type, expires_at) VALUES (?, ?, ?, ?, ?)',
+            [userId, email, token, type, expiresAt]
+        );
+
+        await EmailService.sendConfirmationEmail(email, token, type);
+        return token;
+    },
+
+    /**
+     * Verify token and complete action
+     * @param {string} token 
+     */
+    async verifyAndComplete(token) {
+        const request = await database.query(
+            'SELECT * FROM email_confirmations WHERE token = ? AND expires_at > NOW()',
+            [token]
+        );
+
+        if (request.length === 0) {
+            throw new Error('Invalid or expired token');
+        }
+
+        const data = request[0];
+        
+        // Update user
+        if (data.type === 'REGISTER') {
+             await database.query(
+                'UPDATE users SET email_verified = TRUE WHERE id = ?',
+                [data.user_id]
+            );
+        } else if (data.type === 'CHANGE_EMAIL') {
+            await database.query(
+                'UPDATE users SET email = ?, email_verified = TRUE WHERE id = ?',
+                [data.email, data.user_id]
+            );
+        }
+
+        // Delete used token
+        await database.query('DELETE FROM email_confirmations WHERE id = ?', [data.id]);
+
+        return data;
     },
 
     /**

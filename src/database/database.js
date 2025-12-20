@@ -1,6 +1,6 @@
 const path = require('path');
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
-require('dotenv').config({ path: path.join(__dirname, '../', envFile) });
+require('dotenv').config({ path: path.join(__dirname, '../../', envFile) });
 
 const mariadb = require('mariadb');
 

@@ -147,8 +147,8 @@ describe('Authentication Routes', () => {
                     _csrf: csrfToken
                 });
 
-            expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/auth/login');
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Registration successful');
             expect(UserService.createUser).toHaveBeenCalled();
         });
 

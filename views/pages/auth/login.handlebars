@@ -5,6 +5,11 @@
     {{error}}
 </div>
 {{/if}}
+{{#if success}}
+<div class="success">
+    {{success}}
+</div>
+{{/if}}
 <form action="/auth/login" method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>

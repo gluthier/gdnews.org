@@ -1,9 +1,11 @@
 const UserService = require('../../src/services/user-service');
 const database = require('../../src/database/database');
 const bcrypt = require('bcrypt');
+const EmailService = require('../../src/services/email-service');
 
 jest.mock('../../src/database/database');
 jest.mock('bcrypt');
+jest.mock('../../src/services/email-service');
 
 describe('UserService', () => {
     afterEach(() => {
@@ -12,13 +14,23 @@ describe('UserService', () => {
 
     describe('createUser', () => {
         it('should insert user', async () => {
-            database.query.mockResolvedValue({ insertId: 1 });
+            // Mock createUser insert
+            database.query.mockResolvedValueOnce({ insertId: 1 });
+            // Mock initiateEmailConfirmation insert
+            database.query.mockResolvedValueOnce({ insertId: 100 });
+
             const result = await UserService.createUser({ username: 'user', password_hash: 'hash', email: 'email@example.com' });
             
-            expect(database.query).toHaveBeenCalledWith(
+            expect(database.query).toHaveBeenNthCalledWith(1,
                 expect.stringContaining('INSERT INTO users'),
-                ['user', 'hash', 'email@example.com']
+                ['user', 'hash', 'email@example.com', false]
             );
+            // Verify email confirmation initiated
+            expect(database.query).toHaveBeenNthCalledWith(2,
+                expect.stringContaining('INSERT INTO email_confirmations'),
+                expect.arrayContaining([1, 'email@example.com', 'REGISTER'])
+            );
+            expect(EmailService.sendConfirmationEmail).toHaveBeenCalled();
             expect(result).toEqual({ insertId: 1 });
         });
 
@@ -28,8 +40,9 @@ describe('UserService', () => {
              
              expect(database.query).toHaveBeenCalledWith(
                 expect.stringContaining('INSERT INTO users'),
-                ['noemail', 'hash', null]
+                ['noemail', 'hash', null, false]
             );
+            expect(EmailService.sendConfirmationEmail).not.toHaveBeenCalled();
         });
     });
 

@@ -7,6 +7,11 @@
         {{error}}
     </div>
     {{/if}}
+    {{#if success}}
+    <div class="success">
+        {{success}}
+    </div>
+    {{/if}}
     <form action="/change-email" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
