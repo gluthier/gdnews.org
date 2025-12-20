@@ -10,7 +10,7 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const UserService = require('../services/user-service');
 const PostService = require('../services/post-service');
-const database = require('../database');
+const database = require('../database/database');
 
 const app = express();
 const PORT = process.env.BATCH_UPLOAD_PORT || 3001;

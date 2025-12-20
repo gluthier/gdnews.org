@@ -7,7 +7,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const csurf = require('csurf');
-const database = require('./database');
+const database = require('./database/database');
 
 const app = express();
 const PORT = process.env.PORT;

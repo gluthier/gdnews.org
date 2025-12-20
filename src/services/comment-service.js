@@ -1,4 +1,4 @@
-const database = require('../database');
+const database = require('../database/database');
 
 /**
  * Helper to fetch comments and build tree

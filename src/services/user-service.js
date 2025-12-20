@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-const database = require('../database');
+const database = require('../database/database');
 
 /**
  * Service to handle user-related operations

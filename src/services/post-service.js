@@ -1,4 +1,4 @@
-const database = require('../database');
+const database = require('../database/database');
 
 /**
  * Service to handle post-related operations
