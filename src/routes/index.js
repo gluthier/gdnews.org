@@ -6,7 +6,7 @@ const router = express.Router();
 // Middleware to check if user is logged in
 const requireLogin = (req, res, next) => {
     if (!req.session.user) {
-        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
         return res.redirect('/login');
@@ -261,7 +261,7 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
             [postId, req.session.user.id, content, parent_comment_id || null]
         );
 
-        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             const newComment = {
                 id: result.insertId.toString(),
                 post_id: postId,
@@ -292,7 +292,7 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
         res.redirect(redirectUrl);
     } catch (err) {
         console.error(err);
-        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             return next(err);
         }
         res.redirect(redirectUrl);

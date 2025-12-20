@@ -91,7 +91,7 @@ app.use((err, req, res, next) => {
     res.status(status);
 
     // For API requests, return JSON
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+    if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
         return res.json({ error: err.message });
     }
 
