@@ -1,0 +1,24 @@
+{{> header}}
+<h1>Remove Post</h1>
+<p>You are about to remove your post: <strong>{{post.title}}</strong></p>
+
+{{#if error}}
+<div class="error-message">{{error}}</div>
+{{/if}}
+
+<div class="removal-options">
+    <div class="option-card">
+        <h2>Confirm Removal</h2>
+        <p>This action cannot be undone.</p>
+        <form action="/post/item/{{post.id}}/remove" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <button type="submit" class="secondary-button" style="background-color: #d9534f; border-color: #d43f3a; color: white;">Remove Post</button>
+        </form>
+    </div>
+</div>
+
+<div class="back-link">
+    <a href="/post/item/{{post.id}}">← back to post</a>
+</div>
+
+{{> footer}}

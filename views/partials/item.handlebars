@@ -52,9 +52,20 @@
                         <a href="/post/favorite/{{id}}">favourite</a>
                         {{/if}}
                     </li>
+
                     {{#if (and isDetail is_job (eq user.id user_id))}}
                     <li>
                         <a href="/job/item/{{id}}/remove">remove offer</a>
+                    </li>
+                    {{/if}}
+                    {{#if (and isDetail (not is_job) (not is_promoted) (eq user.id user_id))}}
+                    <li>
+                        <a href="/post/item/{{id}}/remove" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove</a>
+                    </li>
+                    {{/if}}
+                    {{#if (and isDetail is_promoted (eq user.id user_id))}}
+                    <li>
+                        <a href="/promoted/item/{{id}}/remove" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove</a>
                     </li>
                     {{/if}}
                 {{/if}}

@@ -132,4 +132,44 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    document.body.addEventListener('click', async (e) => {
+        if (e.target.matches('a.confirm-action')) {
+            e.preventDefault();
+            const link = e.target;
+            if (link.dataset.confirmed !== 'true') {
+                link.innerText = 'confirm remove';
+                link.style.color = '#eb0808'; // @color-error
+                link.dataset.confirmed = 'true';
+            } else {
+                const originalText = link.innerText;
+                link.innerText = 'removing...';
+                
+                try {
+                    const response = await fetch(link.href, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `_csrf=${link.dataset.csrf}`
+                    });
+
+                    if (response.redirected) {
+                         window.location.href = response.url;
+                    } else if (response.ok) {
+                         window.location.reload(); 
+                    } else {
+                        console.error('Removal failed');
+                         alert('Failed to remove item.');
+                         link.innerText = originalText;
+                    }
+
+                } catch (err) {
+                    console.error('Error:', err);
+                    alert('An error occurred.');
+                    link.innerText = originalText;
+                }
+            }
+        }
+    });
 });

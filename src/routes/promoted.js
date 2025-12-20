@@ -221,4 +221,45 @@ router.get('/item/:id', async (req, res, next) => {
     }
 });
 
+// Promoted Post Removal Selection Page
+router.get('/item/:id/remove', requireLogin, async (req, res, next) => {
+    const promotedId = req.params.id;
+    try {
+        const post = await PostService.getPostById(promotedId, req.session.user.id);
+
+        if (!post || !post.is_promoted) {
+            const err = new Error('Promoted post not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        if (post.user_id !== req.session.user.id) {
+            const err = new Error('Unauthorized');
+            err.status = 403;
+            return next(err);
+        }
+
+        res.render('pages/promoted/remove', { post, title: 'Remove Promoted Post' });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Handle Promoted Post Removal
+router.post('/item/:id/remove', requireLogin, async (req, res, next) => {
+    const promotedId = req.params.id;
+    try {
+        const post = await PostService.getPostById(promotedId, req.session.user.id);
+
+        if (!post || post.user_id !== req.session.user.id || !post.is_promoted) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await PostService.updatePostStatus(promotedId, 'removed');
+        res.redirect('/promoted/upcoming');
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

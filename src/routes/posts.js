@@ -181,6 +181,7 @@ router.get('/favorite/:id', requireLogin, async (req, res, next) => {
     }
 });
 
+
 router.get('/unfavorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
@@ -188,6 +189,47 @@ router.get('/unfavorite/:id', requireLogin, async (req, res, next) => {
         res.redirect(req.get('Referrer') || `/post/item/${postId}`);
     } catch (err) {
         console.error(err);
+        next(err);
+    }
+});
+
+// // Post Removal Selection Page
+// router.get('/item/:id/remove', requireLogin, async (req, res, next) => {
+//     const postId = req.params.id;
+//     try {
+//         const post = await PostService.getPostById(postId, req.session.user.id);
+
+//         if (!post) {
+//             const err = new Error('Post not found');
+//             err.status = 404;
+//             return next(err);
+//         }
+
+//         if (post.user_id !== req.session.user.id) {
+//             const err = new Error('Unauthorized');
+//             err.status = 403;
+//             return next(err);
+//         }
+
+//         res.render('pages/post/remove', { post, title: 'Remove Post' });
+//     } catch (err) {
+//         next(err);
+//     }
+// });
+
+// Handle Post Removal
+router.post('/item/:id/remove', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        const post = await PostService.getPostById(postId, req.session.user.id);
+
+        if (!post || post.user_id !== req.session.user.id) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await PostService.updatePostStatus(postId, 'removed');
+        res.redirect('/post/list');
+    } catch (err) {
         next(err);
     }
 });

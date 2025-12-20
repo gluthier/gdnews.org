@@ -62,6 +62,7 @@ const helpers = {
         return args.every(val => !!val);
     },
     or: (v1, v2) => v1 || v2,
+    not: (value) => !value,
     slice: (arr, start, end) => {
         if (!arr || !Array.isArray(arr)) return [];
         return arr.slice(start, end);

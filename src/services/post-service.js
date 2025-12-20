@@ -68,6 +68,7 @@ const PostService = {
                     ${selectPart}
                     ${fromPart}
                     WHERE p.is_promoted = TRUE AND p.promoted_date > CURRENT_DATE()
+                    AND p.status != 'removed'
                     ${groupByPart}
                     ORDER BY p.promoted_date ASC
                     LIMIT ? OFFSET ?
@@ -80,6 +81,7 @@ const PostService = {
                     ${selectPart}
                     ${fromPart}
                     WHERE u.username = ?
+                    AND p.status != 'removed'
                     ${groupByPart}
                     ORDER BY 
                         CASE 
@@ -103,6 +105,7 @@ const PostService = {
                     JOIN users u ON p.user_id = u.id
                     JOIN users target_u ON f.user_id = target_u.id
                     WHERE target_u.username = ?
+                    AND p.status != 'removed'
                     ORDER BY f.created_at DESC
                     LIMIT ? OFFSET ?
                 `;
@@ -140,7 +143,6 @@ const PostService = {
 
         const posts = await database.query(query, params);
 
-        // Fetch promoted post for home page 1
         if (type === 'home' && page === 1) {
             const promoted = await database.query(`
                 SELECT 
@@ -176,6 +178,7 @@ const PostService = {
             FROM posts p 
             JOIN users u ON p.user_id = u.id 
             WHERE p.id = ?
+            AND p.status != 'removed'
         `, [userId, id]);
 
         return posts.length > 0 ? posts[0] : null;
@@ -242,6 +245,7 @@ const PostService = {
             FROM posts 
             WHERE url IS NOT NULL 
               AND url != '' 
+              AND status != 'removed'
               AND created_at >= NOW() - INTERVAL 7 DAY 
             ORDER BY 
                 CASE 
