@@ -3,7 +3,7 @@
 <div class="user-profile">
     <div class="user-header">
         <h2>
-            {{#if (eq profileUser.username "gdnews-bot")}}<span title="This is an automated account"><span class="bot-emoji">☰</span>{{profileUser.username}}</span>
+            {{#if (eq profileUser.username "gdnews-bot")}}<span title="This is an automated account"><span class="bot-emoji">☰</span>{{profileUser.username}}</span> <span class="automated-account-info">(automated account)</span>
             {{else}}{{profileUser.username}}
             {{/if}}
         </h2>
