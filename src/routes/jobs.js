@@ -1,7 +1,9 @@
 const express = require('express');
 const database = require('../database');
 const router = express.Router();
+
 const requireLogin = require('../middleware/auth');
+const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
 
 // Jobs Page
@@ -9,23 +11,10 @@ router.get('/jobs', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/jobs');
     const limit = 30;
-    const offset = (page - 1) * limit;
 
     try {
-        const posts = await database.query(`
-            SELECT 
-                p.*, 
-                u.username,
-                COUNT(c.id) as comment_count,
-                EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
-            FROM posts p
-            JOIN users u ON p.user_id = u.id
-            LEFT JOIN comments c ON p.id = c.post_id
-            WHERE p.is_job = TRUE
-            GROUP BY p.id
-            ORDER BY p.created_at DESC
-            LIMIT ? OFFSET ?
-        `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
+        const userId = req.session.user ? req.session.user.id : -1;
+        const posts = await PostService.getPosts({ userId, page, limit, type: 'jobs' });
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -59,10 +48,13 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
     }
 
     try {
-        await database.query(
-            'INSERT INTO posts (user_id, title, url, content, is_job) VALUES (?, ?, ?, ?, TRUE)',
-            [req.session.user.id, title, url || null, text]
-        );
+        await PostService.createPost({
+            userId: req.session.user.id,
+            title,
+            url,
+            content: text,
+            isJob: true
+        });
         res.redirect('/jobs');
     } catch (err) {
         console.error(err);
@@ -79,14 +71,10 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
 router.get('/job/:id', async (req, res, next) => {
     const jobId = req.params.id;
     try {
-        const posts = await database.query(`
-            SELECT p.*, u.username 
-            FROM posts p 
-            JOIN users u ON p.user_id = u.id 
-            WHERE p.id = ? AND p.is_job = TRUE
-        `, [jobId]);
+        const userId = req.session.user ? req.session.user.id : -1;
+        const post = await PostService.getPostById(jobId, userId);
 
-        if (posts.length === 0) {
+        if (!post || !post.is_job) {
             const err = new Error('Job not found');
             err.status = 404;
             return next(err);
@@ -94,7 +82,12 @@ router.get('/job/:id', async (req, res, next) => {
 
         const comments = await fetchCommentsForPost(jobId);
 
-        res.render('pages/job', { job: posts[0], title: posts[0].title, comments });
+        res.render('pages/job', { 
+            job: post, 
+            title: post.title, 
+            comments,
+            isFavorited: !!post.isFavorited
+        });
     } catch (err) {
         console.error('Error rendering job page:', err);
         next(err);

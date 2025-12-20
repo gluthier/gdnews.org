@@ -1,7 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const database = require('../database');
 const router = express.Router();
+
+const UserService = require('../services/user-service');
 
 router.get('/register', (req, res) => {
     res.render('pages/register', { error: null, title: 'register' });
@@ -15,7 +16,7 @@ router.post('/register', async (req, res, next) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        await database.query('INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)', [username, hashedPassword, email || null]);
+        await UserService.createUser({ username, password_hash: hashedPassword, email });
         res.redirect('/login');
     } catch (err) {
         console.error(err);
@@ -33,12 +34,10 @@ router.get('/login', (req, res) => {
 router.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
     try {
-        const users = await database.query('SELECT * FROM users WHERE username = ?', [username]);
-        if (users.length === 0) {
+        const user = await UserService.getUserByUsername(username);
+        if (!user) {
             return res.render('pages/login', { error: 'Invalid username or password', title: 'login' });
         }
-
-        const user = users[0];
         const match = await bcrypt.compare(password, user.password_hash);
         if (!match) {
             return res.render('pages/login', { error: 'Invalid username or password', title: 'login' });
@@ -76,8 +75,8 @@ router.post('/change-email', async (req, res, next) => {
     const { email } = req.body;
 
     try {
-        await database.query('UPDATE users SET email = ? WHERE id = ?', [email, req.session.user.id]);
-        res.redirect(`/user?id=${req.session.user.username}`);
+        await UserService.updateUserEmail(req.session.user.id, email);
+        res.redirect(`/user/${req.session.user.username}`);
     } catch (err) {
         console.error(err);
         next(err);

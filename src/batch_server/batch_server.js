@@ -2,13 +2,15 @@ const path = require('path');
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
 require('dotenv').config({ path: path.join(__dirname, '../../', envFile) });
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const database = require('../database');
 const bcrypt = require('bcrypt');
-
+const express = require('express');
 const crypto = require('crypto');
 const fs = require('fs');
+
+const bodyParser = require('body-parser');
+const UserService = require('../services/user-service');
+const PostService = require('../services/post-service');
+const database = require('../database');
 
 const app = express();
 const PORT = process.env.BATCH_UPLOAD_PORT || 3001;
@@ -56,17 +58,7 @@ const authenticate = (req, res, next) => {
 // Ensure 'bot' user exists
 const ensureBotUser = async () => {
     try {
-        const users = await database.query("SELECT id FROM users WHERE username = 'gdnews-bot'");
-        if (users.length === 0) {
-            console.log("Creating 'gdnews-bot' user...");
-            const password = crypto.randomBytes(32).toString('hex');
-            const hashedPassword = await bcrypt.hash(password, 10);
-            await database.query(
-                "INSERT INTO users (username, password_hash, email) VALUES ('gdnews-bot', ?, 'gdnews-bot@gdnews.org')",
-                [hashedPassword]
-            );
-            console.log("'gdnews-bot' user created.");
-        }
+        await UserService.ensureBotUser();
     } catch (err) {
         console.error("Error ensuring gdnews-bot user:", err);
         process.exit(1);
@@ -82,20 +74,22 @@ app.post('/batch', authenticate, async (req, res) => {
     }
 
     try {
-        const botUser = await database.query("SELECT id FROM users WHERE username = 'gdnews-bot'");
-        if (botUser.length === 0) {
+        const botUser = await UserService.getUserByUsername('gdnews-bot');
+        if (!botUser) {
              return res.status(500).json({ error: "gdnews-bot user not found" });
         }
-        const userId = botUser[0].id;
+        const userId = botUser.id;
 
         let addedCount = 0;
         for (const post of posts) {
              if (!post.title) continue; // Skip invalid posts
 
-             await database.query(
-                'INSERT INTO posts (user_id, title, url, content) VALUES (?, ?, ?, ?)',
-                [userId, post.title, post.url || null, post.content || null]
-            );
+             await PostService.createPost({
+                userId,
+                title: post.title,
+                url: post.url,
+                content: post.content
+            });
             addedCount++;
         }
 
@@ -111,15 +105,7 @@ app.post('/batch', authenticate, async (req, res) => {
 // Weekly Links Endpoint
 app.get('/weekly-links', async (req, res) => {
     try {
-        const query = `
-            SELECT title, url 
-            FROM posts 
-            WHERE url IS NOT NULL 
-              AND url != '' 
-              AND created_at >= NOW() - INTERVAL 7 DAY 
-            ORDER BY created_at DESC
-        `;
-        const posts = await database.query(query);
+        const posts = await PostService.getWeeklyLinks();
         res.json(posts);
     } catch (err) {
         console.error("Error fetching weekly links:", err);

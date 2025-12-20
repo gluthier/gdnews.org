@@ -25,7 +25,7 @@
                     <ul class="inline-list">
                         <li><a href="/submit">submit</a></li>
                         {{#if user}}
-                        <li><a href="/user?id={{user.username}}">{{user.username}}</a></li>
+                        <li><a href="/user/{{user.username}}">{{user.username}}</a></li>
                         {{else}}
                         <li><a href="/login">login</a></li>
                         {{/if}}

@@ -2,6 +2,7 @@ const express = require('express');
 const database = require('../database');
 const router = express.Router();
 const requireLogin = require('../middleware/auth');
+const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
 
 // List posts (Home)
@@ -9,52 +10,14 @@ router.get('/', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/');
     const limit = 30;
-    const offset = (page - 1) * limit;
 
     try {
-        const posts = await database.query(`
-      SELECT 
-        p.*, 
-        u.username, 
-        COUNT(c.id) as comment_count,
-        (
-          100 / POW(TIMESTAMPDIFF(HOUR, p.created_at, NOW()) + 2, 1.8) + 
-          COALESCE(SUM(10 / POW(TIMESTAMPDIFF(HOUR, c.created_at, NOW()) + 2, 1.8)), 0)
-        ) as activity_score,
-        EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
-      FROM posts p 
-      JOIN users u ON p.user_id = u.id 
-      LEFT JOIN comments c ON p.id = c.post_id
-      WHERE NOT (p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE())
-      GROUP BY p.id
-      ORDER BY activity_score DESC
-      LIMIT ? OFFSET ?
-    `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
-
-        // If we are on the first page, fetch and inject today's promoted post
-        if (page === 1) {
-            const promoted = await database.query(`
-                SELECT 
-                    p.*, 
-                    u.username, 
-                    COUNT(c.id) as comment_count,
-                    EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
-                FROM posts p
-                JOIN users u ON p.user_id = u.id
-                LEFT JOIN comments c ON p.id = c.post_id
-                WHERE p.is_promoted = TRUE AND p.promoted_date = CURRENT_DATE()
-                GROUP BY p.id
-                LIMIT 1
-            `, [req.session.user ? req.session.user.id : -1]);
-
-            if (promoted.length > 0) {
-                posts.unshift(promoted[0]);
-            }
-        }
+        const userId = req.session.user ? req.session.user.id : -1;
+        const posts = await PostService.getPosts({ userId, page, limit, type: 'home' });
 
         let nextPageUrl = null;
         if (posts.length > limit) {
-            posts.pop(); // Remove the extra item
+            posts.pop();
             nextPageUrl = `/?page=${page + 1}`;
         }
 
@@ -70,27 +33,10 @@ router.get('/newest', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/newest');
     const limit = 30;
-    const offset = (page - 1) * limit;
 
     try {
-        const posts = await database.query(`
-      SELECT 
-        p.*, 
-        u.username, 
-        COUNT(c.id) as comment_count,
-        EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
-      FROM posts p 
-      JOIN users u ON p.user_id = u.id 
-      LEFT JOIN comments c ON p.id = c.post_id
-      WHERE NOT (p.is_promoted = TRUE AND p.promoted_date > CURRENT_DATE())
-      GROUP BY p.id
-      ORDER BY 
-        CASE 
-          WHEN p.is_promoted = TRUE THEN p.promoted_date 
-          ELSE p.created_at 
-        END DESC
-      LIMIT ? OFFSET ?
-    `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
+        const userId = req.session.user ? req.session.user.id : -1;
+        const posts = await PostService.getPosts({ userId, page, limit, type: 'newest' });
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -122,10 +68,12 @@ router.post('/submit', requireLogin, async (req, res, next) => {
     }
 
     try {
-        await database.query(
-            'INSERT INTO posts (user_id, title, url, content) VALUES (?, ?, ?, ?)',
-            [req.session.user.id, title, url || null, text || null]
-        );
+        await PostService.createPost({
+            userId: req.session.user.id,
+            title,
+            url,
+            text
+        });
         res.redirect('/');
     } catch (err) {
         console.error(err);
@@ -137,34 +85,24 @@ router.post('/submit', requireLogin, async (req, res, next) => {
 router.get('/item/:id', async (req, res, next) => {
     const postId = req.params.id;
     try {
-        const posts = await database.query(`
-      SELECT p.*, u.username 
-      FROM posts p 
-      JOIN users u ON p.user_id = u.id 
-      WHERE p.id = ?
-    `, [postId]);
+        const userId = req.session.user ? req.session.user.id : -1;
+        const post = await PostService.getPostById(postId, userId);
 
-        if (posts.length === 0) {
+        if (!post) {
             const err = new Error('Post not found');
             err.status = 404;
             return next(err);
         }
 
-        const post = posts[0];
         const rootComments = await fetchCommentsForPost(postId);
 
-        let isFavorited = false;
-        if (req.session.user) {
-            const favCheck = await database.query(
-                'SELECT 1 FROM favourites WHERE user_id = ? AND post_id = ?',
-                [req.session.user.id, postId]
-            );
-            if (favCheck.length > 0) {
-                isFavorited = true;
-            }
-        }
-
-        res.render('pages/post-item-page', { post, comments: rootComments, error: null, title: post.title, isFavorited });
+        res.render('pages/post-item-page', { 
+            post, 
+            comments: rootComments, 
+            error: null, 
+            title: post.title, 
+            isFavorited: !!post.isFavorited 
+        });
     } catch (err) {
         console.error('Error rendering item page:', err);
         next(err);
@@ -183,10 +121,12 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
     }
 
     try {
-        const result = await database.query(
-            'INSERT INTO comments (post_id, user_id, content, parent_comment_id) VALUES (?, ?, ?, ?)',
-            [postId, req.session.user.id, content, parent_comment_id || null]
-        );
+        const result = await PostService.addComment({
+            postId,
+            userId: req.session.user.id,
+            content,
+            parentCommentId: parent_comment_id || null
+        });
 
         if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             const newComment = {
@@ -229,10 +169,7 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
 router.post('/favorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
-        await database.query(
-            'INSERT IGNORE INTO favourites (user_id, post_id) VALUES (?, ?)',
-            [req.session.user.id, postId]
-        );
+        await PostService.favorite(req.session.user.id, postId);
         res.redirect(req.get('Referrer') || `/item/${postId}`);
     } catch (err) {
         console.error(err);
@@ -243,10 +180,7 @@ router.post('/favorite/:id', requireLogin, async (req, res, next) => {
 router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
-        await database.query(
-            'DELETE FROM favourites WHERE user_id = ? AND post_id = ?',
-            [req.session.user.id, postId]
-        );
+        await PostService.unfavorite(req.session.user.id, postId);
         res.redirect(req.get('Referrer') || `/item/${postId}`);
     } catch (err) {
         console.error(err);

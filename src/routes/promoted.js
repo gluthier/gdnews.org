@@ -1,8 +1,8 @@
 const express = require('express');
-const database = require('../database');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const router = express.Router();
+
 const requireLogin = require('../middleware/auth');
+const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
 
 // Upcoming Promoted Posts
@@ -10,23 +10,10 @@ router.get('/upcoming', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     if (page < 1) return res.redirect('/upcoming');
     const limit = 30;
-    const offset = (page - 1) * limit;
 
     try {
-        const posts = await database.query(`
-            SELECT 
-                p.*, 
-                u.username,
-                COUNT(c.id) as comment_count,
-                EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
-            FROM posts p
-            JOIN users u ON p.user_id = u.id
-            LEFT JOIN comments c ON p.id = c.post_id
-            WHERE p.is_promoted = TRUE AND p.promoted_date > CURRENT_DATE()
-            GROUP BY p.id
-            ORDER BY p.promoted_date ASC
-            LIMIT ? OFFSET ?
-        `, [req.session.user ? req.session.user.id : -1, limit + 1, offset]);
+        const userId = req.session.user ? req.session.user.id : -1;
+        const posts = await PostService.getPosts({ userId, page, limit, type: 'upcoming' });
 
         let nextPageUrl = null;
         if (posts.length > limit) {
@@ -84,13 +71,9 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
     }
 
     try {
-        // Check for collision
-        const existing = await database.query(
-            'SELECT id FROM posts WHERE is_promoted = TRUE AND promoted_date = ?',
-            [promoted_date]
-        );
+        const collision = await PostService.checkPromotedCollision(promoted_date);
 
-        if (existing.length > 0) {
+        if (collision) {
             return res.render('pages/schedule-promoted', { 
                 error: 'A promoted post is already scheduled for this date. Please choose another day.', 
                 title: title,
@@ -166,22 +149,23 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
         const { user_id, title, url, text, promoted_date, pricing_tier } = session.metadata;
 
         // Double check collision just in case (race condition)
-         const existing = await database.query(
-            'SELECT id FROM posts WHERE is_promoted = TRUE AND promoted_date = ?',
-            [promoted_date]
-        );
+        const collision = await PostService.checkPromotedCollision(promoted_date);
 
-        if (existing.length > 0) {
+        if (collision) {
              return res.render('pages/schedule-promoted', { 
                 error: 'Slot was taken during payment. Please contact support for refund.',
                 minDate: new Date().toISOString().split('T')[0]
              });
         }
 
-        await database.query(
-            'INSERT INTO posts (user_id, title, url, content, is_promoted, promoted_date) VALUES (?, ?, ?, ?, TRUE, ?)',
-            [user_id, title, url || null, text || null, promoted_date]
-        );
+        await PostService.createPost({
+            userId: user_id,
+            title,
+            url,
+            content: text,
+            isPromoted: true,
+            promotedDate: promoted_date
+        });
 
         res.redirect('/upcoming');
 
@@ -202,14 +186,10 @@ router.get('/promoted-cancel', requireLogin, (req, res) => {
 router.get('/promoted/:id', async (req, res, next) => {
     const promotedId = req.params.id;
     try {
-        const posts = await database.query(`
-            SELECT p.*, u.username 
-            FROM posts p 
-            JOIN users u ON p.user_id = u.id 
-            WHERE p.id = ? AND p.is_promoted = TRUE
-        `, [promotedId]);
+        const userId = req.session.user ? req.session.user.id : -1;
+        const post = await PostService.getPostById(promotedId, userId);
 
-        if (posts.length === 0) {
+        if (!post || !post.is_promoted) {
             const err = new Error('Promoted post not found');
             err.status = 404;
             return next(err);
@@ -217,7 +197,12 @@ router.get('/promoted/:id', async (req, res, next) => {
 
         const comments = await fetchCommentsForPost(promotedId);
 
-        res.render('pages/promoted', { post: posts[0], title: posts[0].title, comments });
+        res.render('pages/promoted', { 
+            post, 
+            title: post.title, 
+            comments,
+            isFavorited: !!post.isFavorited
+        });
     } catch (err) {
         console.error('Error rendering promoted post page:', err);
         next(err);
