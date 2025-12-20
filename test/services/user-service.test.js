@@ -23,7 +23,7 @@ describe('UserService', () => {
             
             expect(database.query).toHaveBeenNthCalledWith(1,
                 expect.stringContaining('INSERT INTO users'),
-                ['user', 'hash', 'email@example.com', false]
+                ['user', 'hash', 'email@example.com', false, 'normal']
             );
             // Verify email confirmation initiated
             expect(database.query).toHaveBeenNthCalledWith(2,
@@ -40,7 +40,7 @@ describe('UserService', () => {
              
              expect(database.query).toHaveBeenCalledWith(
                 expect.stringContaining('INSERT INTO users'),
-                ['noemail', 'hash', null, false]
+                ['noemail', 'hash', null, false, 'normal']
             );
             expect(EmailService.sendConfirmationEmail).not.toHaveBeenCalled();
         });
@@ -171,7 +171,8 @@ describe('UserService', () => {
             expect(createUserSpy).toHaveBeenCalledWith({
                 username: 'gdnews-bot',
                 password_hash: 'hashed_bot_password',
-                email: 'gdnews-bot@gdnews.org'
+                email: 'gdnews-bot@gdnews.org',
+                user_type: 'bot'
             });
         });
 

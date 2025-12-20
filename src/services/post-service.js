@@ -23,6 +23,7 @@ const PostService = {
             SELECT 
                 p.*, 
                 u.username, 
+                u.user_type,
                 COUNT(c.id) as comment_count,
                 EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
         `;
@@ -98,6 +99,7 @@ const PostService = {
                     SELECT 
                         p.*, 
                         u.username, 
+                        u.user_type,
                         (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count,
                         TRUE as isFavorited
                     FROM favourites f
@@ -122,6 +124,7 @@ const PostService = {
                     SELECT 
                         p.*, 
                         u.username, 
+                        u.user_type,
                         COUNT(c.id) as comment_count,
                         (
                           100 / POW(TIMESTAMPDIFF(HOUR, p.created_at, NOW()) + 2, 1.8) + 
@@ -148,6 +151,7 @@ const PostService = {
                 SELECT 
                     p.*, 
                     u.username, 
+                    u.user_type,
                     COUNT(c.id) as comment_count,
                     EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
                 FROM posts p
@@ -173,7 +177,7 @@ const PostService = {
      */
     async getPostById(id, userId = -1) {
         const posts = await database.query(`
-            SELECT p.*, u.username,
+            SELECT p.*, u.username, u.user_type,
             EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
             FROM posts p 
             JOIN users u ON p.user_id = u.id 

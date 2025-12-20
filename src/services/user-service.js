@@ -12,10 +12,10 @@ const UserService = {
      * Create a new user
      * @param {Object} userData 
      */
-    async createUser({ username, password_hash, email }) {
+    async createUser({ username, password_hash, email, user_type = 'normal' }) {
         const result = await database.query(
-            'INSERT INTO users (username, password_hash, email, email_verified) VALUES (?, ?, ?, ?)',
-            [username, password_hash, email || null, false]
+            'INSERT INTO users (username, password_hash, email, email_verified, user_type) VALUES (?, ?, ?, ?, ?)',
+            [username, password_hash, email || null, false, user_type]
         );
         
         if (email) {
@@ -127,7 +127,8 @@ const UserService = {
             await this.createUser({
                 username: 'gdnews-bot',
                 password_hash: hashedPassword,
-                email: 'gdnews-bot@gdnews.org'
+                email: 'gdnews-bot@gdnews.org',
+                user_type: 'bot'
             });
             console.log("'gdnews-bot' user created.");
         }
