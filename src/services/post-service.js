@@ -192,6 +192,9 @@ const PostService = {
      * Create a new post
      */
     async createPost({ userId, title, url, description, isJob = false, isPromoted = false, promotedDate = null }) {
+        if (title.length > 180) {
+            throw new Error('Title must be 180 characters or less');
+        }
         return await database.query(
             'INSERT INTO posts (user_id, title, url, description, is_job, is_promoted, promoted_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [userId, title, url || null, description || null, isJob, isPromoted, promotedDate]

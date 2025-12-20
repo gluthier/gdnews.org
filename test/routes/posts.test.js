@@ -155,7 +155,7 @@ describe('Post Routes', () => {
                 .send({ title: 'PostPersist', url: 'http://persist.com', description: 'TextPersist' });
             
             expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Submission failed');
+            expect(res.text).toContain('DB Fail');
             
             // Check if GET /submit loads it
             const getRes = await agent.get('/post/submit');

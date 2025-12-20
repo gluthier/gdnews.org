@@ -93,6 +93,16 @@ describe('PostService', () => {
     });
 
     describe('createPost', () => {
+        it('should throw error if title is too long', async () => {
+            const postData = {
+                userId: 1,
+                title: 'a'.repeat(181),
+                url: 'http://example.com'
+            };
+            await expect(PostService.createPost(postData)).rejects.toThrow('Title must be 180 characters or less');
+            expect(database.query).not.toHaveBeenCalled();
+        });
+
         it('should insert new post', async () => {
             const postData = {
                 userId: 1,

@@ -80,7 +80,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
     } catch (err) {
         console.error(err);
         req.session.postFormData = { title, url, description };
-        res.render('pages/post/submit', { error: 'Submission failed', title, url, description });
+        res.render('pages/post/submit', { error: err.message || 'Submission failed', title, url, description });
     }
 });
 

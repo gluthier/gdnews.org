@@ -1,6 +1,6 @@
 <div>
     <label for="title">title{{#if (eq titleRequired false)}} (optional){{/if}}:</label>
-    <input type="text" id="title" name="title" {{#if (eq titleRequired false)}}{{else}}required{{/if}} value="{{title}}">
+    <input type="text" id="title" name="title" maxlength="180" {{#if (eq titleRequired false)}}{{else}}required{{/if}} value="{{title}}">
 </div>
 <div>
     <label for="url">url{{#if (eq urlRequired true)}}{{else}} (optional){{/if}}:</label>
