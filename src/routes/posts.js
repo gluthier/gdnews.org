@@ -21,7 +21,7 @@ router.get('/list', async (req, res, next) => {
             nextPageUrl = `/post/list?page=${page + 1}`;
         }
 
-        res.render('pages/index', { posts, nextPageUrl });
+        res.render('pages/post/list', { posts, nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -44,7 +44,7 @@ router.get('/newest', async (req, res, next) => {
             nextPageUrl = `/post/newest?page=${page + 1}`;
         }
 
-        res.render('pages/newest', { posts, title: 'newest', nextPageUrl });
+        res.render('pages/post/newest', { posts, title: 'newest', nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -53,18 +53,18 @@ router.get('/newest', async (req, res, next) => {
 
 // Show submit form
 router.get('/submit', requireLogin, (req, res) => {
-    res.render('pages/submit-post', { error: null });
+    res.render('pages/post/submit', { error: null });
 });
 
 // Handle submission
 router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, url, text } = req.body;
     if (!title) {
-        return res.render('pages/submit-post', { error: 'Title is required' });
+        return res.render('pages/post/submit', { error: 'Title is required' });
     }
 
     if (url && (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:'))) {
-        return res.render('pages/submit-post', { error: 'Invalid URL scheme' });
+        return res.render('pages/post/submit', { error: 'Invalid URL scheme' });
     }
 
     try {
@@ -77,7 +77,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         res.redirect('/post/list');
     } catch (err) {
         console.error(err);
-        res.render('pages/submit-post', { error: 'Submission failed' });
+        res.render('pages/post/submit', { error: 'Submission failed' });
     }
 });
 
@@ -96,7 +96,7 @@ router.get('/item/:id', async (req, res, next) => {
 
         const rootComments = await fetchCommentsForPost(postId);
 
-        res.render('pages/post-item-page', { 
+        res.render('pages/post/item', { 
             post, 
             basePath: '/post/item/',
             comments: rootComments, 

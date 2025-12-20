@@ -127,7 +127,7 @@ router.get('/', async (req, res, next) => {
             nextPageUrl = `/?page=${page + 1}`;
         }
 
-        res.render('pages/index', { posts, nextPageUrl });
+        res.render('pages/post/list', { posts, nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -168,7 +168,7 @@ router.get('/newest', async (req, res, next) => {
             nextPageUrl = `/newest?page=${page + 1}`;
         }
 
-        res.render('pages/newest', { posts, title: 'newest', nextPageUrl });
+        res.render('pages/post/newest', { posts, title: 'newest', nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -177,18 +177,18 @@ router.get('/newest', async (req, res, next) => {
 
 // Show submit form
 router.get('/submit', requireLogin, (req, res) => {
-    res.render('pages/submit-post', { error: null });
+    res.render('pages/post/submit', { error: null });
 });
 
 // Handle submission
 router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, url, text } = req.body;
     if (!title) {
-        return res.render('pages/submit-post', { error: 'Title is required' });
+        return res.render('pages/post/submit', { error: 'Title is required' });
     }
 
     if (url && (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:'))) {
-        return res.render('pages/submit-post', { error: 'Invalid URL scheme' });
+        return res.render('pages/post/submit', { error: 'Invalid URL scheme' });
     }
 
     try {
@@ -199,7 +199,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         res.redirect('/');
     } catch (err) {
         console.error(err);
-        res.render('pages/submit-post', { error: 'Submission failed' });
+        res.render('pages/post/submit', { error: 'Submission failed' });
     }
 });
 
@@ -236,7 +236,7 @@ router.get('/item/:id', async (req, res, next) => {
             }
         }
 
-        res.render('pages/post-item-page', { post, comments: rootComments, error: null, title: post.title, isFavorited });
+        res.render('pages/post/item', { post, comments: rootComments, error: null, title: post.title, isFavorited });
     } catch (err) {
         console.error('Error rendering item page:', err);
         next(err);
@@ -356,7 +356,7 @@ router.get('/upcoming', async (req, res, next) => {
             nextPageUrl = `/upcoming?page=${page + 1}`;
         }
 
-        res.render('pages/upcoming', { posts, title: 'upcoming', nextPageUrl });
+        res.render('pages/promoted/list', { posts, title: 'upcoming', nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -365,7 +365,7 @@ router.get('/upcoming', async (req, res, next) => {
 
 // Buy Promoted Post Form
 router.get('/schedule-promoted', requireLogin, (req, res) => {
-    res.render('pages/schedule-promoted', { error: null, minDate: new Date().toISOString().split('T')[0] });
+    res.render('pages/promoted/schedule', { error: null, minDate: new Date().toISOString().split('T')[0] });
 });
 
 // Process Promoted Post Purchase
@@ -382,7 +382,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
     };
 
     if (!title || !promoted_date || !pricing_tier || !validTiers.includes(pricing_tier)) {
-        return res.render('pages/schedule-promoted', { 
+        return res.render('pages/promoted/schedule', { 
             error: 'Title, Date, and a valid Pricing Tier are required',
             title: title,
             url: url,
@@ -396,7 +396,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
     today.setHours(0, 0, 0, 0);
     
     if (selectedDate <= today) {
-         return res.render('pages/schedule-promoted', { 
+         return res.render('pages/promoted/schedule', { 
             error: 'Date must be in the future', 
             title: title,
             url: url,
@@ -413,7 +413,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
         );
 
         if (existing.length > 0) {
-            return res.render('pages/schedule-promoted', { 
+            return res.render('pages/promoted/schedule', { 
                 error: 'A promoted post is already scheduled for this date. Please choose another day.', 
                 title: title,
                 url: url,
@@ -457,7 +457,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
 
     } catch (err) {
         console.error(err);
-        res.render('pages/schedule-promoted', { 
+        res.render('pages/promoted/schedule', { 
             error: 'Transaction failed: ' + err.message, 
             title: title,
             url: url,
@@ -479,7 +479,7 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
 
         // Verify that the payment was successful
         if (session.payment_status !== 'paid') {
-             return res.render('pages/schedule-promoted', { 
+             return res.render('pages/promoted/schedule', { 
                 error: 'Payment was not successful.',
                 minDate: new Date().toISOString().split('T')[0]
              });
@@ -497,7 +497,7 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
             // Edge case: someone else took the spot while payment was happening
             // In a real app we might refund or allow rescheduling. 
             // For now, we error.
-             return res.render('pages/schedule-promoted', { 
+             return res.render('pages/promoted/schedule', { 
                 error: 'Slot was taken during payment. Please contact support for refund.',
                 minDate: new Date().toISOString().split('T')[0]
              });
@@ -514,7 +514,7 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
 
     } catch (err) {
         console.error(err);
-        res.render('pages/error', { message: 'Error verifying payment', statusCode: 500, title: 'Error' });
+        res.render('pages/common/error', { message: 'Error verifying payment', statusCode: 500, title: 'Error' });
     }
 });
 
@@ -554,7 +554,7 @@ router.get('/jobs', async (req, res, next) => {
             nextPageUrl = `/jobs?page=${page + 1}`;
         }
 
-        res.render('pages/jobs', { posts, title: 'jobs', nextPageUrl });
+        res.render('pages/job/list', { posts, title: 'jobs', nextPageUrl });
     } catch (err) {
         console.error(err);
         next(err);
@@ -563,7 +563,7 @@ router.get('/jobs', async (req, res, next) => {
 
 // Submit Job Form
 router.get('/submit-job', requireLogin, (req, res) => {
-    res.render('pages/submit-job', { error: null });
+    res.render('pages/job/submit', { error: null });
 });
 
 // Handle Job Submission
@@ -571,7 +571,7 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
     const { title, text, url } = req.body;
 
     if (!title || !text) {
-        return res.render('pages/submit-job', { 
+        return res.render('pages/job/submit', { 
             error: 'Title and Description are required', 
             title, 
             url, 
@@ -587,7 +587,7 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
         res.redirect('/jobs');
     } catch (err) {
         console.error(err);
-        res.render('pages/submit-job', { 
+        res.render('pages/job/submit', { 
             error: 'Submission failed', 
             title, 
             url, 
@@ -663,7 +663,7 @@ router.get('/user', async (req, res, next) => {
             nextPageUrl = `/user?id=${username}&page=${page + 1}&tab=${currentTab}`;
         }
 
-        res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
+        res.render('pages/user/profile', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
     } catch (err) {
         console.error(err);
         next(err);
@@ -689,7 +689,7 @@ router.get('/job/:id', async (req, res, next) => {
 
         const comments = await fetchCommentsForPost(jobId);
 
-        res.render('pages/job', { job: posts[0], title: posts[0].title, comments });
+        res.render('pages/job/item', { job: posts[0], title: posts[0].title, comments });
     } catch (err) {
         console.error('Error rendering job page:', err);
         next(err);
@@ -715,7 +715,7 @@ router.get('/promoted/:id', async (req, res, next) => {
 
         const comments = await fetchCommentsForPost(promotedId);
 
-        res.render('pages/promoted', { post: posts[0], title: posts[0].title, comments });
+        res.render('pages/promoted/item', { post: posts[0], title: posts[0].title, comments });
     } catch (err) {
         console.error('Error rendering promoted post page:', err);
         next(err);
@@ -724,15 +724,15 @@ router.get('/promoted/:id', async (req, res, next) => {
 
 // Static pages
 router.get('/about', (req, res) => {
-    res.render('pages/about', { title: 'About' });
+    res.render('pages/info/about', { title: 'About' });
 });
 
 router.get('/guidelines', (req, res) => {
-    res.render('pages/guidelines', { title: 'Guidelines' });
+    res.render('pages/info/guidelines', { title: 'Guidelines' });
 });
 
 router.get('/legal', (req, res) => {
-    res.render('pages/legal', { title: 'Legal' });
+    res.render('pages/info/legal', { title: 'Legal' });
 });
 
 

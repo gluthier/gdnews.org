@@ -103,7 +103,7 @@ app.use((err, req, res, next) => {
         return res.json({ error: err.message });
     }
 
-    res.render('pages/error', {
+    res.render('pages/common/error', {
         message: err.message,
         statusCode: status,
         title: 'Error'

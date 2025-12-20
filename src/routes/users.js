@@ -48,7 +48,7 @@ router.get('/profile/:username', async (req, res, next) => {
             nextPageUrl = `/user/profile/${username}?page=${page + 1}&tab=${currentTab}`;
         }
 
-        res.render('pages/user', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
+        res.render('pages/user/profile', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
     } catch (err) {
         console.error(err);
         next(err);
@@ -67,7 +67,7 @@ router.get('/change-email', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/auth/login');
     }
-    res.render('pages/change-email', { error: null, user: req.session.user, title: 'change email' });
+    res.render('pages/auth/change-email', { error: null, user: req.session.user, title: 'change email' });
 });
 
 router.post('/change-email', async (req, res, next) => {

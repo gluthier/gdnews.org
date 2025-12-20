@@ -5,13 +5,13 @@ const router = express.Router();
 const UserService = require('../services/user-service');
 
 router.get('/register', (req, res) => {
-    res.render('pages/register', { error: null, title: 'register' });
+    res.render('pages/auth/register', { error: null, title: 'register' });
 });
 
 router.post('/register', async (req, res, next) => {
     const { username, password, email } = req.body;
     if (!username || !password) {
-        return res.render('pages/register', { error: 'All fields are required', title: 'register' });
+        return res.render('pages/auth/register', { error: 'All fields are required', title: 'register' });
     }
 
     try {
@@ -21,14 +21,14 @@ router.post('/register', async (req, res, next) => {
     } catch (err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.render('pages/register', { error: 'Username already exists', title: 'register' });
+            return res.render('pages/auth/register', { error: 'Username already exists', title: 'register' });
         }
         next(err);
     }
 });
 
 router.get('/login', (req, res) => {
-    res.render('pages/login', { error: null, title: 'login' });
+    res.render('pages/auth/login', { error: null, title: 'login' });
 });
 
 router.post('/login', async (req, res, next) => {
@@ -36,11 +36,11 @@ router.post('/login', async (req, res, next) => {
     try {
         const user = await UserService.getUserByUsername(username);
         if (!user) {
-            return res.render('pages/login', { error: 'Invalid username or password', title: 'login' });
+            return res.render('pages/auth/login', { error: 'Invalid username or password', title: 'login' });
         }
         const match = await bcrypt.compare(password, user.password_hash);
         if (!match) {
-            return res.render('pages/login', { error: 'Invalid username or password', title: 'login' });
+            return res.render('pages/auth/login', { error: 'Invalid username or password', title: 'login' });
         }
 
         req.session.user = { id: user.id, username: user.username };

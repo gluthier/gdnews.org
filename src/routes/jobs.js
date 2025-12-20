@@ -22,7 +22,7 @@ router.get('/list', async (req, res, next) => {
             nextPageUrl = `/job/list?page=${page + 1}`;
         }
 
-        res.render('pages/jobs', { posts, title: 'jobs', nextPageUrl, basePath: '/job/item/' });
+        res.render('pages/job/list', { posts, title: 'jobs', nextPageUrl, basePath: '/job/item/' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -31,7 +31,7 @@ router.get('/list', async (req, res, next) => {
 
 // Submit Job Form
 router.get('/submit', requireLogin, (req, res) => {
-    res.render('pages/submit-job', { error: null });
+    res.render('pages/job/submit', { error: null });
 });
 
 // Handle Job Submission
@@ -39,7 +39,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, text, url } = req.body;
 
     if (!title || !text) {
-        return res.render('pages/submit-job', { 
+        return res.render('pages/job/submit', { 
             error: 'Title and Description are required', 
             title, 
             url, 
@@ -58,7 +58,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         res.redirect('/job/list');
     } catch (err) {
         console.error(err);
-        res.render('pages/submit-job', { 
+        res.render('pages/job/submit', { 
             error: 'Submission failed', 
             title, 
             url, 
@@ -82,7 +82,7 @@ router.get('/item/:id', async (req, res, next) => {
 
         const comments = await fetchCommentsForPost(jobId);
 
-        res.render('pages/job', { 
+        res.render('pages/job/item', { 
             job: post, 
             basePath: '/job/item/',
             title: post.title, 

@@ -21,7 +21,7 @@ router.get('/upcoming', async (req, res, next) => {
             nextPageUrl = `/promoted/upcoming?page=${page + 1}`;
         }
 
-        res.render('pages/upcoming', { posts, title: 'upcoming', nextPageUrl, basePath: '/promoted/item/' });
+        res.render('pages/promoted/list', { posts, title: 'upcoming', nextPageUrl, basePath: '/promoted/item/' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -30,7 +30,7 @@ router.get('/upcoming', async (req, res, next) => {
 
 // Buy Promoted Post Form
 router.get('/schedule', requireLogin, (req, res) => {
-    res.render('pages/schedule-promoted', { error: null, minDate: new Date().toISOString().split('T')[0] });
+    res.render('pages/promoted/schedule', { error: null, minDate: new Date().toISOString().split('T')[0] });
 });
 
 // Process Promoted Post Purchase
@@ -47,7 +47,7 @@ router.post('/schedule', requireLogin, async (req, res, next) => {
     };
 
     if (!title || !promoted_date || !pricing_tier || !validTiers.includes(pricing_tier)) {
-        return res.render('pages/schedule-promoted', { 
+        return res.render('pages/promoted/schedule', { 
             error: 'Title, Date, and a valid Pricing Tier are required',
             title: title,
             url: url,
@@ -61,7 +61,7 @@ router.post('/schedule', requireLogin, async (req, res, next) => {
     today.setHours(0, 0, 0, 0);
     
     if (selectedDate <= today) {
-         return res.render('pages/schedule-promoted', { 
+         return res.render('pages/promoted/schedule', { 
             error: 'Date must be in the future', 
             title: title,
             url: url,
@@ -74,7 +74,7 @@ router.post('/schedule', requireLogin, async (req, res, next) => {
         const collision = await PostService.checkPromotedCollision(promoted_date);
 
         if (collision) {
-            return res.render('pages/schedule-promoted', { 
+            return res.render('pages/promoted/schedule', { 
                 error: 'A promoted post is already scheduled for this date. Please choose another day.', 
                 title: title,
                 url: url,
@@ -118,7 +118,7 @@ router.post('/schedule', requireLogin, async (req, res, next) => {
 
     } catch (err) {
         console.error(err);
-        res.render('pages/schedule-promoted', { 
+        res.render('pages/promoted/schedule', { 
             error: 'Transaction failed: ' + err.message, 
             title: title,
             url: url,
@@ -140,7 +140,7 @@ router.get('/success', requireLogin, async (req, res, next) => {
 
         // Verify that the payment was successful
         if (session.payment_status !== 'paid') {
-             return res.render('pages/schedule-promoted', { 
+             return res.render('pages/promoted/schedule', { 
                 error: 'Payment was not successful.',
                 minDate: new Date().toISOString().split('T')[0]
              });
@@ -152,7 +152,7 @@ router.get('/success', requireLogin, async (req, res, next) => {
         const collision = await PostService.checkPromotedCollision(promoted_date);
 
         if (collision) {
-             return res.render('pages/schedule-promoted', { 
+             return res.render('pages/promoted/schedule', { 
                 error: 'Slot was taken during payment. Please contact support for refund.',
                 minDate: new Date().toISOString().split('T')[0]
              });
@@ -171,12 +171,12 @@ router.get('/success', requireLogin, async (req, res, next) => {
 
     } catch (err) {
         console.error(err);
-        res.render('pages/error', { message: 'Error verifying payment', statusCode: 500, title: 'Error' });
+        res.render('pages/common/error', { message: 'Error verifying payment', statusCode: 500, title: 'Error' });
     }
 });
 
 router.get('/cancel', requireLogin, (req, res) => {
-    res.render('pages/schedule-promoted', { 
+    res.render('pages/promoted/schedule', { 
         error: 'Payment cancelled.',
         minDate: new Date().toISOString().split('T')[0]
     });
@@ -197,7 +197,7 @@ router.get('/item/:id', async (req, res, next) => {
 
         const comments = await fetchCommentsForPost(promotedId);
 
-        res.render('pages/promoted', { 
+        res.render('pages/promoted/item', { 
             post, 
             basePath: '/promoted/item/',
             title: post.title, 
