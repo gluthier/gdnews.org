@@ -170,7 +170,7 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
     }
 });
 
-router.post('/favorite/:id', requireLogin, async (req, res, next) => {
+router.get('/favorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
         await PostService.favorite(req.session.user.id, postId);
@@ -181,7 +181,7 @@ router.post('/favorite/:id', requireLogin, async (req, res, next) => {
     }
 });
 
-router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
+router.get('/unfavorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
         await PostService.unfavorite(req.session.user.id, postId);

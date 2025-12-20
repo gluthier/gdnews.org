@@ -47,20 +47,14 @@
                 {{#if user}}
                     <li>
                         {{#if isFavorited}}
-                        <form action="/post/unfavorite/{{id}}" method="POST" style="display:inline">
-                            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-                            <button type="submit" class="text-button">unfavourite</button>
-                        </form>
+                        <a href="/post/unfavorite/{{id}}">unfavourite</a>
                         {{else}}
-                        <form action="/post/favorite/{{id}}" method="POST" style="display:inline">
-                            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-                            <button type="submit" class="text-button">favourite</button>
-                        </form>
+                        <a href="/post/favorite/{{id}}">favourite</a>
                         {{/if}}
                     </li>
                     {{#if (and isDetail is_job (eq user.id user_id))}}
                     <li>
-                        <a href="/job/item/{{id}}/remove" class="remove-link">remove offer</a>
+                        <a href="/job/item/{{id}}/remove">remove offer</a>
                     </li>
                     {{/if}}
                 {{/if}}

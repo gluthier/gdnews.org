@@ -266,36 +266,36 @@ describe('Post Routes', () => {
         });
     });
 
-    describe('POST /favorite/:id', () => {
+    describe('GET /favorite/:id', () => {
         test('favorites a post', async () => {
             PostService.favorite.mockResolvedValue();
             
-            const res = await request(app).post('/post/favorite/1');
+            const res = await request(app).get('/post/favorite/1');
             expect(res.statusCode).toEqual(302);
             expect(PostService.favorite).toHaveBeenCalledWith(1, '1');
         });
     });
 
-    describe('POST /unfavorite/:id', () => {
+    describe('GET /unfavorite/:id', () => {
         test('unfavorites a post', async () => {
             PostService.unfavorite.mockResolvedValue();
             
-            const res = await request(app).post('/post/unfavorite/1');
+            const res = await request(app).get('/post/unfavorite/1');
             expect(res.statusCode).toEqual(302);
             expect(PostService.unfavorite).toHaveBeenCalledWith(1, '1');
         });
 
         test('handles errors', async () => {
             PostService.unfavorite.mockRejectedValue(new Error('DB Fail'));
-            const res = await request(app).post('/post/unfavorite/1');
+            const res = await request(app).get('/post/unfavorite/1');
             expect(res.statusCode).toBe(500);
         });
     });
 
-    describe('POST /favorite/:id error', () => {
+    describe('GET /favorite/:id error', () => {
          test('handles errors', async () => {
             PostService.favorite.mockRejectedValue(new Error('DB Fail'));
-            const res = await request(app).post('/post/favorite/1');
+            const res = await request(app).get('/post/favorite/1');
             expect(res.statusCode).toBe(500);
         });
     });
