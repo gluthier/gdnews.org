@@ -71,12 +71,19 @@ app.use((req, res, next) => {
 });
 
 const authRoutes = require('./routes/auth');
-
-const indexRoutes = require('./routes/index');
+const postRoutes = require('./routes/posts');
+const promotedRoutes = require('./routes/promoted');
+const jobRoutes = require('./routes/jobs');
+const userRoutes = require('./routes/users');
+const staticRoutes = require('./routes/static');
 
 // Routes
 app.use('/', authRoutes);
-app.use('/', indexRoutes);
+app.use('/', postRoutes);
+app.use('/', promotedRoutes);
+app.use('/', jobRoutes);
+app.use('/', userRoutes);
+app.use('/', staticRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
