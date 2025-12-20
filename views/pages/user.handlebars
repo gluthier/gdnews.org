@@ -10,8 +10,8 @@
         {{#if user}}
         {{#if (eq user.id profileUser.id)}}
         <ul class="inline-list">
-            <li><a href="/change-email">change email</a></li>
-            <li><a href="/logout">logout</a></li>
+            <li><a href="/user/change-email">change email</a></li>
+            <li><a href="/auth/logout">logout</a></li>
         </ul>
         {{/if}}
         {{/if}}
@@ -28,14 +28,14 @@
     {{/if}}
 
     <div class="tabs">
-        <a href="/user/{{profileUser.username}}?tab=submissions" class="{{#if (eq currentTab 'submissions')}}active{{/if}}">Posts</a>
+        <a href="/user/profile/{{profileUser.username}}?tab=submissions" class="{{#if (eq currentTab 'submissions')}}active{{/if}}">Posts</a>
         {{#if user}}
         {{#if (eq user.id profileUser.id)}}
-        <a href="/user/{{profileUser.username}}?tab=favorites" class="{{#if (eq currentTab 'favorites')}}active{{/if}}">Favourites</a>
+        <a href="/user/profile/{{profileUser.username}}?tab=favorites" class="{{#if (eq currentTab 'favorites')}}active{{/if}}">Favourites</a>
         {{/if}}
         {{/if}}
     </div>
-    {{> list items=posts type="post" basePath="/item/" emptyMessage="No posts found." nextPageUrl=nextPageUrl}}
+    {{> list items=posts type="post" basePath="/post/item/" emptyMessage="No posts found." nextPageUrl=nextPageUrl}}
 </div>
 
 {{> footer}}

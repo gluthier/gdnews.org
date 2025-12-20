@@ -18,10 +18,10 @@ router.get('/upcoming', async (req, res, next) => {
         let nextPageUrl = null;
         if (posts.length > limit) {
             posts.pop();
-            nextPageUrl = `/upcoming?page=${page + 1}`;
+            nextPageUrl = `/promoted/upcoming?page=${page + 1}`;
         }
 
-        res.render('pages/upcoming', { posts, title: 'upcoming', nextPageUrl });
+        res.render('pages/upcoming', { posts, title: 'upcoming', nextPageUrl, basePath: '/promoted/item/' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -29,12 +29,12 @@ router.get('/upcoming', async (req, res, next) => {
 });
 
 // Buy Promoted Post Form
-router.get('/schedule-promoted', requireLogin, (req, res) => {
+router.get('/schedule', requireLogin, (req, res) => {
     res.render('pages/schedule-promoted', { error: null, minDate: new Date().toISOString().split('T')[0] });
 });
 
 // Process Promoted Post Purchase
-router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
+router.post('/schedule', requireLogin, async (req, res, next) => {
     const { title, url, text, promoted_date, pricing_tier } = req.body;
     
     // Simple validation for pricing tier
@@ -102,8 +102,8 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${domain}/promoted-success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${domain}/promoted-cancel`,
+            success_url: `${domain}/promoted/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${domain}/promoted/cancel`,
             metadata: {
                 user_id: req.session.user.id,
                 title: title,
@@ -128,11 +128,11 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
     }
 });
 
-router.get('/promoted-success', requireLogin, async (req, res, next) => {
+router.get('/success', requireLogin, async (req, res, next) => {
     const sessionId = req.query.session_id;
 
     if (!sessionId) {
-        return res.redirect('/schedule-promoted');
+        return res.redirect('/promoted/schedule');
     }
 
     try {
@@ -167,7 +167,7 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
             promotedDate: promoted_date
         });
 
-        res.redirect('/upcoming');
+        res.redirect('/promoted/upcoming');
 
     } catch (err) {
         console.error(err);
@@ -175,7 +175,7 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
     }
 });
 
-router.get('/promoted-cancel', requireLogin, (req, res) => {
+router.get('/cancel', requireLogin, (req, res) => {
     res.render('pages/schedule-promoted', { 
         error: 'Payment cancelled.',
         minDate: new Date().toISOString().split('T')[0]
@@ -183,7 +183,7 @@ router.get('/promoted-cancel', requireLogin, (req, res) => {
 });
 
 // Show promoted post details
-router.get('/promoted/:id', async (req, res, next) => {
+router.get('/item/:id', async (req, res, next) => {
     const promotedId = req.params.id;
     try {
         const userId = req.session.user ? req.session.user.id : -1;
@@ -199,6 +199,7 @@ router.get('/promoted/:id', async (req, res, next) => {
 
         res.render('pages/promoted', { 
             post, 
+            basePath: '/promoted/item/',
             title: post.title, 
             comments,
             isFavorited: !!post.isFavorited

@@ -89,7 +89,7 @@ function renderNewComment(commentHtml, parentId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('submit', async (e) => {
-        if (e.target.tagName === 'FORM' && e.target.action.includes('/comment')) {
+        if (e.target.tagName === 'FORM' && e.target.action.includes('/post/item/') && e.target.action.includes('/comment')) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (replyFormDiv) replyFormDiv.style.display = 'none';
                     }
                 } else if (response.status === 401) {
-                    window.location.href = '/login';
+                    window.location.href = '/auth/login';
                 } else {
                     console.error('Submission failed');
                     alert('Failed to submit comment. Please try again.');

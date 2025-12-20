@@ -1,6 +1,6 @@
 {{> header}}
 <h2>New job offer</h2>
-<form action="/submit-job" method="POST">
+<form action="/job/submit" method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     {{> submit-form-fields}}
     

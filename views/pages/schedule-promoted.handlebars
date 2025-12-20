@@ -39,7 +39,7 @@
     });
 </script>
 
-<form action="/schedule-promoted" method="POST">
+<form action="/promoted/schedule" method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <input type="hidden" name="pricing_tier" id="pricing_tier" required>
     {{> submit-form-fields}}

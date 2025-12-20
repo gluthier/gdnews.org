@@ -78,11 +78,12 @@ const userRoutes = require('./routes/users');
 const staticRoutes = require('./routes/static');
 
 // Routes
-app.use('/', authRoutes);
-app.use('/', postRoutes);
-app.use('/', promotedRoutes);
-app.use('/', jobRoutes);
-app.use('/', userRoutes);
+app.get('/', (req, res) => res.redirect('/post/list'));
+app.use('/auth', authRoutes);
+app.use('/post', postRoutes);
+app.use('/promoted', promotedRoutes);
+app.use('/job', jobRoutes);
+app.use('/user', userRoutes);
 app.use('/', staticRoutes);
 
 // 404 Handler

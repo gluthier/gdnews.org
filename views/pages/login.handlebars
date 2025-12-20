@@ -5,7 +5,7 @@
     {{error}}
 </div>
 {{/if}}
-<form action="/login" method="POST">
+<form action="/auth/login" method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>
         <label for="username">username:</label>
@@ -17,5 +17,5 @@
     </div>
     <button class="primary-button" type="submit">login</button>
 </form>
-<p class="user-switch">Don't have an account? <a href="/register">create account</a></p>
+<p class="user-switch">Don't have an account? <a href="/auth/register">create account</a></p>
 {{> footer}}

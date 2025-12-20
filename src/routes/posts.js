@@ -6,9 +6,9 @@ const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
 
 // List posts (Home)
-router.get('/', async (req, res, next) => {
+router.get('/list', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
-    if (page < 1) return res.redirect('/');
+    if (page < 1) return res.redirect('/post/list');
     const limit = 30;
 
     try {
@@ -18,7 +18,7 @@ router.get('/', async (req, res, next) => {
         let nextPageUrl = null;
         if (posts.length > limit) {
             posts.pop();
-            nextPageUrl = `/?page=${page + 1}`;
+            nextPageUrl = `/post/list?page=${page + 1}`;
         }
 
         res.render('pages/index', { posts, nextPageUrl });
@@ -31,7 +31,7 @@ router.get('/', async (req, res, next) => {
 // List posts (Newest)
 router.get('/newest', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
-    if (page < 1) return res.redirect('/newest');
+    if (page < 1) return res.redirect('/post/newest');
     const limit = 30;
 
     try {
@@ -41,7 +41,7 @@ router.get('/newest', async (req, res, next) => {
         let nextPageUrl = null;
         if (posts.length > limit) {
             posts.pop();
-            nextPageUrl = `/newest?page=${page + 1}`;
+            nextPageUrl = `/post/newest?page=${page + 1}`;
         }
 
         res.render('pages/newest', { posts, title: 'newest', nextPageUrl });
@@ -74,7 +74,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
             url,
             text
         });
-        res.redirect('/');
+        res.redirect('/post/list');
     } catch (err) {
         console.error(err);
         res.render('pages/submit-post', { error: 'Submission failed' });
@@ -98,6 +98,7 @@ router.get('/item/:id', async (req, res, next) => {
 
         res.render('pages/post-item-page', { 
             post, 
+            basePath: '/post/item/',
             comments: rootComments, 
             error: null, 
             title: post.title, 
@@ -114,7 +115,7 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     const { content, parent_comment_id } = req.body;
 
-    const redirectUrl = req.get('Referrer') || `/item/${postId}`;
+    const redirectUrl = req.get('Referrer') || `/post/item/${postId}`;
 
     if (!content) {
         return res.redirect(redirectUrl);
@@ -170,7 +171,7 @@ router.post('/favorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
         await PostService.favorite(req.session.user.id, postId);
-        res.redirect(req.get('Referrer') || `/item/${postId}`);
+        res.redirect(req.get('Referrer') || `/post/item/${postId}`);
     } catch (err) {
         console.error(err);
         next(err);
@@ -181,7 +182,7 @@ router.post('/unfavorite/:id', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
         await PostService.unfavorite(req.session.user.id, postId);
-        res.redirect(req.get('Referrer') || `/item/${postId}`);
+        res.redirect(req.get('Referrer') || `/post/item/${postId}`);
     } catch (err) {
         console.error(err);
         next(err);

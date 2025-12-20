@@ -17,7 +17,7 @@ router.post('/register', async (req, res, next) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         await UserService.createUser({ username, password_hash: hashedPassword, email });
-        res.redirect('/login');
+        res.redirect('/auth/login');
     } catch (err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {
@@ -44,7 +44,7 @@ router.post('/login', async (req, res, next) => {
         }
 
         req.session.user = { id: user.id, username: user.username };
-        res.redirect('/');
+        res.redirect('/post/list');
     } catch (err) {
         console.error(err);
         next(err);
@@ -53,34 +53,12 @@ router.post('/login', async (req, res, next) => {
 
 router.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/');
+    res.redirect('/post/list');
 });
 
 router.post('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/');
-});
-
-router.get('/change-email', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    res.render('pages/change-email', { error: null, user: req.session.user, title: 'change email' });
-});
-
-router.post('/change-email', async (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
-    const { email } = req.body;
-
-    try {
-        await UserService.updateUserEmail(req.session.user.id, email);
-        res.redirect(`/user/${req.session.user.username}`);
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
+    res.redirect('/post/list');
 });
 
 module.exports = router;

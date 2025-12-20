@@ -7,9 +7,9 @@ const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
 
 // Jobs Page
-router.get('/jobs', async (req, res, next) => {
+router.get('/list', async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
-    if (page < 1) return res.redirect('/jobs');
+    if (page < 1) return res.redirect('/job/list');
     const limit = 30;
 
     try {
@@ -19,10 +19,10 @@ router.get('/jobs', async (req, res, next) => {
         let nextPageUrl = null;
         if (posts.length > limit) {
             posts.pop();
-            nextPageUrl = `/jobs?page=${page + 1}`;
+            nextPageUrl = `/job/list?page=${page + 1}`;
         }
 
-        res.render('pages/jobs', { posts, title: 'jobs', nextPageUrl });
+        res.render('pages/jobs', { posts, title: 'jobs', nextPageUrl, basePath: '/job/item/' });
     } catch (err) {
         console.error(err);
         next(err);
@@ -30,12 +30,12 @@ router.get('/jobs', async (req, res, next) => {
 });
 
 // Submit Job Form
-router.get('/submit-job', requireLogin, (req, res) => {
+router.get('/submit', requireLogin, (req, res) => {
     res.render('pages/submit-job', { error: null });
 });
 
 // Handle Job Submission
-router.post('/submit-job', requireLogin, async (req, res, next) => {
+router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, text, url } = req.body;
 
     if (!title || !text) {
@@ -55,7 +55,7 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
             content: text,
             isJob: true
         });
-        res.redirect('/jobs');
+        res.redirect('/job/list');
     } catch (err) {
         console.error(err);
         res.render('pages/submit-job', { 
@@ -68,7 +68,7 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
 });
 
 // Show job details
-router.get('/job/:id', async (req, res, next) => {
+router.get('/item/:id', async (req, res, next) => {
     const jobId = req.params.id;
     try {
         const userId = req.session.user ? req.session.user.id : -1;
@@ -84,6 +84,7 @@ router.get('/job/:id', async (req, res, next) => {
 
         res.render('pages/job', { 
             job: post, 
+            basePath: '/job/item/',
             title: post.title, 
             comments,
             isFavorited: !!post.isFavorited
