@@ -31,12 +31,20 @@ router.get('/upcoming', async (req, res, next) => {
 
 // Buy Promoted Post Form
 router.get('/schedule', requireLogin, (req, res) => {
-    res.render('pages/promoted/schedule', { error: null, minDate: new Date().toISOString().split('T')[0] });
+    const formData = req.session.promotedFormData || {};
+    res.render('pages/promoted/schedule', { 
+        ...formData,
+        error: req.query.error === 'cancelled' ? 'Payment cancelled.' : null, 
+        minDate: new Date().toISOString().split('T')[0] 
+    });
 });
 
 // Process Promoted Post Purchase
 router.post('/schedule', requireLogin, async (req, res, next) => {
     const { title, url, text, promoted_date, pricing_tier } = req.body;
+    
+    // Store data in session to persist across redirects/cancelled payments
+    req.session.promotedFormData = { title, url, text, promoted_date, pricing_tier };
     
     // Simple validation for pricing tier
     const validTiers = ['personal', 'indie', 'mid', 'aaa'];
@@ -89,6 +97,7 @@ router.post('/schedule', requireLogin, async (req, res, next) => {
         // Create Stripe Checkout Session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
+            customer_email: req.session.user.email,
             line_items: [
                 {
                     price_data: {
@@ -159,7 +168,7 @@ router.get('/success', requireLogin, async (req, res, next) => {
              });
         }
 
-        await PostService.createPost({
+        const result = await PostService.createPost({
             userId: user_id,
             title,
             url,
@@ -168,7 +177,10 @@ router.get('/success', requireLogin, async (req, res, next) => {
             promotedDate: promoted_date
         });
 
-        res.redirect('/promoted/upcoming');
+        // Clear session data on success
+        delete req.session.promotedFormData;
+
+        res.redirect(`/promoted/item/${result.insertId}?success=true`);
 
     } catch (err) {
         console.error(err);
@@ -177,10 +189,7 @@ router.get('/success', requireLogin, async (req, res, next) => {
 });
 
 router.get('/cancel', requireLogin, (req, res) => {
-    res.render('pages/promoted/schedule', { 
-        error: 'Payment cancelled.',
-        minDate: new Date().toISOString().split('T')[0]
-    });
+    res.redirect('/promoted/schedule?error=cancelled');
 });
 
 // Show promoted post details
@@ -203,7 +212,8 @@ router.get('/item/:id', async (req, res, next) => {
             basePath: '/promoted/item/',
             title: post.title, 
             comments,
-            isFavorited: !!post.isFavorited
+            isFavorited: !!post.isFavorited,
+            success: req.query.success === 'true'
         });
     } catch (err) {
         console.error('Error rendering promoted post page:', err);
