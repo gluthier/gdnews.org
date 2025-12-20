@@ -112,30 +112,40 @@ app.use((err, req, res, next) => {
 
 
 
-const server = app.listen(PORT, () => {
-    const protocol = process.env.APP_PROTOCOL || 'http';
-    const domain = process.env.APP_DOMAIN || 'localhost';
-    console.log(`Server running on ${protocol}://${domain}:${PORT}`);
-});
-
-const gracefulShutdown = () => {
-    console.log('Received kill signal, shutting down gracefully');
-    server.close(() => {
-        console.log('Closed out remaining connections');
-        database.close().then(() => {
-             console.log('Database pool closed');
-             process.exit(0);
-        }).catch((err) => {
-             console.error('Error closing database pool', err);
-             process.exit(1);
-        });
+const startServer = () => {
+    const server = app.listen(PORT, () => {
+        const protocol = process.env.APP_PROTOCOL || 'http';
+        const domain = process.env.APP_DOMAIN || 'localhost';
+        console.log(`Server running on ${protocol}://${domain}:${PORT}`);
     });
 
-    setTimeout(() => {
-        console.error('Could not close connections in time, forcefully shutting down');
-        process.exit(1);
-    }, 10000);
+    const gracefulShutdown = () => {
+        console.log('Received kill signal, shutting down gracefully');
+        server.close(() => {
+            console.log('Closed out remaining connections');
+            database.close().then(() => {
+                 console.log('Database pool closed');
+                 process.exit(0);
+            }).catch((err) => {
+                 console.error('Error closing database pool', err);
+                 process.exit(1);
+            });
+        });
+
+        setTimeout(() => {
+            console.error('Could not close connections in time, forcefully shutting down');
+            process.exit(1);
+        }, 10000);
+    };
+
+    process.on('SIGTERM', gracefulShutdown);
+    process.on('SIGINT', gracefulShutdown);
+    
+    return server;
 };
 
-process.on('SIGTERM', gracefulShutdown);
-process.on('SIGINT', gracefulShutdown);
+if (require.main === module) {
+    startServer();
+}
+
+module.exports = app;

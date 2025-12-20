@@ -19,4 +19,7 @@ yarn-error.log*
 
 # Editor specific
 .vscode/
-.idea/
+
+# Testing
+coverage/
+
