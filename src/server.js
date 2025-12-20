@@ -19,12 +19,16 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
-            "frame-src": ["'self'", "https://js.stripe.com"],
-            "connect-src": ["'self'", "https://api.stripe.com"]
+            "script-src": ["'self'", "'unsafe-inline'", "https://js.stripe.com", "https://*.stripe.com"],
+            "img-src": ["'self'", "data:", "https://*.stripe.com"],
+            "frame-src": ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://*.stripe.com"],
+            "connect-src": ["'self'", "https://api.stripe.com", "https://*.stripe.com"],
+            "form-action": ["'self'", "https://checkout.stripe.com", "https://*.stripe.com"],
+            "upgrade-insecure-requests": process.env.NODE_ENV === 'production' ? [] : null
         }
     },
-    crossOriginEmbedderPolicy: { policy: "require-corp" }
+    // crossOriginEmbedderPolicy: { policy: "require-corp" }
+    crossOriginEmbedderPolicy: false // Disable COEP if it causes issues with external resources like Stripe
 }));
 
 // Set Cross-Origin-Resource-Policy for local assets to satisfy COEP
@@ -52,7 +56,21 @@ app.use(session({
 const csrfProtection = process.env.NODE_ENV === 'test' 
     ? (req, res, next) => { req.csrfToken = () => 'test-token'; next(); }
     : csurf();
-app.use(csrfProtection);
+
+app.use((req, res, next) => {
+    csrfProtection(req, res, (err) => {
+        if (err && err.code === 'EBADCSRF') {
+            console.error('CSRF validation failed');
+            console.error('Method:', req.method);
+            console.error('URL:', req.url);
+            console.error('Session ID:', req.sessionID);
+            console.error('Session User:', req.session && req.session.user ? req.session.user.username : 'No session');
+            console.error('Body has _csrf:', req.body && '_csrf' in req.body);
+            // Don't log the full token/secret for security, but check existence
+        }
+        next(err);
+    });
+});
 
 // View Engine
 const { engine } = require('express-handlebars');
