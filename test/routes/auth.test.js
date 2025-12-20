@@ -39,6 +39,20 @@ describe('Authentication Routes', () => {
         }
     });
 
+    describe('GET Routes', () => {
+        test('GET /auth/register renders register page', async () => {
+            const res = await agent.get('/auth/register');
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('register');
+        });
+
+        test('GET /auth/login renders login page', async () => {
+            const res = await agent.get('/auth/login');
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('login');
+        });
+    });
+
     describe('Login', () => {
         test('Fails with invalid credentials', async () => {
             UserService.getUserByUsername.mockResolvedValue({
@@ -227,6 +241,70 @@ describe('Authentication Routes', () => {
             const res = await request(app).post('/auth/logout');
             expect(res.statusCode).toBe(302);
             expect(res.headers.location).toBe('/post/list');
+        });
+    });
+
+    describe('Email Confirmation', () => {
+        test('GET /auth/confirm-email succeeds with valid token', async () => {
+            UserService.verifyAndComplete.mockResolvedValue(true);
+
+            const res = await agent.get('/auth/confirm-email?token=valid-token');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Email verified!');
+            expect(UserService.verifyAndComplete).toHaveBeenCalledWith('valid-token');
+        });
+
+        test('GET /auth/confirm-email fails with invalid token', async () => {
+            UserService.verifyAndComplete.mockRejectedValue(new Error('Invalid token'));
+
+            const res = await agent.get('/auth/confirm-email?token=invalid-token');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Invalid or expired confirmation token.');
+        });
+    });
+
+    describe('Email Change Confirmation', () => {
+        test('GET /auth/confirm-change-email succeeds and redirects to profile when logged in', async () => {
+            UserService.verifyAndComplete.mockResolvedValue(true);
+            
+            // Mock session
+            UserService.getUserByUsername.mockResolvedValue({
+                id: 1, 
+                username: 'testuser', 
+                password_hash: 'hashedpassword',
+                email: 'test@example.com'
+            });
+            bcrypt.compare.mockResolvedValue(true);
+            await agent.post('/auth/login').type('form').send({
+                username: 'testuser',
+                password: 'password',
+                _csrf: csrfToken
+            });
+
+            const res = await agent.get('/auth/confirm-change-email?token=valid-token');
+
+            expect(res.statusCode).toBe(302);
+            expect(res.headers.location).toBe('/user/profile/testuser');
+        });
+
+        test('GET /auth/confirm-change-email succeeds and shows login when logged out', async () => {
+            UserService.verifyAndComplete.mockResolvedValue(true);
+
+            const res = await agent.get('/auth/confirm-change-email?token=valid-token');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Email changed successfully!');
+        });
+
+        test('GET /auth/confirm-change-email fails with invalid token', async () => {
+            UserService.verifyAndComplete.mockRejectedValue(new Error('Invalid token'));
+
+            const res = await agent.get('/auth/confirm-change-email?token=invalid-token');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Invalid or expired confirmation token.');
         });
     });
 });

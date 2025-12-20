@@ -123,16 +123,40 @@ describe('Promoted Routes', () => {
             expect(res.text).toContain('schedule');
         });
 
-        test('repopulates from session data', async () => {
-            // We need a way to set the session for this test
-            // Since our mock auth middleware sets req.session.user, we can hook into it
-            // but the mock is fixed. Let's try to pass it via a custom middleware or just check if it's used.
-            // Actually, if I modify the mock to allow setting session data:
+        test('repopulates from session data after cancellation', async () => {
+            const agent = request.agent(app);
             
-            // For now, let's just check if the fields are in the HTML when we "force" them via query or session
-            // But I don't have an easy way to set the session here without changing the mock.
-            
-            // Let's just fix the broken test first.
+            // 1. Submit form to trigger session storage
+            PostService.checkPromotedCollision.mockResolvedValue(false);
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 10);
+            const dateStr = futureDate.toISOString().split('T')[0];
+
+            await agent
+                .post('/promoted/schedule')
+                .type('form')
+                .send({ 
+                    title: 'Persistent Title', 
+                    url: 'http://persistent.com', 
+                    text: 'Persistent Text', 
+                    promoted_date: dateStr, 
+                    pricing_tier: 'indie' 
+                });
+
+            // 2. Go to cancel (which redirects back to schedule)
+            const cancelRes = await agent.get('/promoted/cancel');
+            expect(cancelRes.statusCode).toEqual(302);
+            expect(cancelRes.headers.location).toBe('/promoted/schedule?error=cancelled');
+
+            // 3. Check the schedule page via the agent (session should still have data)
+            const scheduleRes = await agent.get('/promoted/schedule?error=cancelled');
+            expect(scheduleRes.statusCode).toEqual(200);
+            expect(scheduleRes.text).toContain('Persistent Title');
+            expect(scheduleRes.text).toContain('http://persistent.com');
+            expect(scheduleRes.text).toContain('Persistent Text');
+            expect(scheduleRes.text).toContain(dateStr);
+            expect(scheduleRes.text).toContain('data-value="indie"');
+            expect(scheduleRes.text).toContain('Payment cancelled.');
         });
     });
 

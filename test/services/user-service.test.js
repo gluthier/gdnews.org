@@ -90,6 +90,68 @@ describe('UserService', () => {
         });
     });
 
+    describe('initiateEmailConfirmation', () => {
+        it('should insert confirmation and send email', async () => {
+            database.query.mockResolvedValue({ insertId: 100 });
+            
+            const token = await UserService.initiateEmailConfirmation(1, 'test@example.com', 'REGISTER');
+            
+            expect(token).toHaveLength(64); // 32 bytes hex
+            expect(database.query).toHaveBeenCalledWith(
+                expect.stringContaining('INSERT INTO email_confirmations'),
+                expect.arrayContaining([1, 'test@example.com', token, 'REGISTER'])
+            );
+            expect(EmailService.sendConfirmationEmail).toHaveBeenCalledWith('test@example.com', token, 'REGISTER');
+        });
+    });
+
+    describe('verifyAndComplete', () => {
+        it('should verify REGISTER token and update user', async () => {
+            const mockRequest = { id: 50, user_id: 1, email: 'test@example.com', type: 'REGISTER' };
+            database.query.mockResolvedValueOnce([mockRequest]); // For select
+            database.query.mockResolvedValueOnce({ affectedRows: 1 }); // For user update
+            database.query.mockResolvedValueOnce({ affectedRows: 1 }); // For delete
+
+            const result = await UserService.verifyAndComplete('valid_token');
+
+            expect(result).toEqual(mockRequest);
+            expect(database.query).toHaveBeenNthCalledWith(1,
+                expect.stringContaining('SELECT * FROM email_confirmations'),
+                ['valid_token']
+            );
+            expect(database.query).toHaveBeenNthCalledWith(2,
+                expect.stringContaining('UPDATE users SET email_verified = TRUE'),
+                [1]
+            );
+            expect(database.query).toHaveBeenNthCalledWith(3,
+                expect.stringContaining('DELETE FROM email_confirmations'),
+                [50]
+            );
+        });
+
+        it('should verify CHANGE_EMAIL token and update email', async () => {
+            const mockRequest = { id: 51, user_id: 1, email: 'new@example.com', type: 'CHANGE_EMAIL' };
+            database.query.mockResolvedValueOnce([mockRequest]);
+            database.query.mockResolvedValueOnce({ affectedRows: 1 });
+            database.query.mockResolvedValueOnce({ affectedRows: 1 });
+
+            const result = await UserService.verifyAndComplete('valid_change_token');
+
+            expect(result).toEqual(mockRequest);
+            expect(database.query).toHaveBeenNthCalledWith(2,
+                expect.stringContaining('UPDATE users SET email = ?, email_verified = TRUE'),
+                ['new@example.com', 1]
+            );
+        });
+
+        it('should throw error if token is invalid or expired', async () => {
+            database.query.mockResolvedValueOnce([]); // No request found
+
+            await expect(UserService.verifyAndComplete('invalid_token'))
+                .rejects.toThrow('Invalid or expired token');
+        });
+    });
+
     describe('ensureBotUser', () => {
         it('should create bot user if not exists', async () => {
             // First check returns empty

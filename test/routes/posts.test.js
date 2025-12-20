@@ -145,17 +145,23 @@ describe('Post Routes', () => {
              expect(res.text).toContain('Invalid URL scheme');
         });
 
-        test('fails when service throws error', async () => {
+        test('fails when service throws error and persists in session', async () => {
             PostService.createPost.mockRejectedValue(new Error('DB Fail'));
-            const res = await request(app)
+            const agent = request.agent(app);
+
+            const res = await agent
                 .post('/post/submit')
                 .type('form')
-                .send({ title: 'Post', url: '', text: 'Text' });
+                .send({ title: 'PostPersist', url: 'http://persist.com', text: 'TextPersist' });
             
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Submission failed');
-            expect(res.text).toContain('Post');
-            expect(res.text).toContain('Text');
+            
+            // Check if GET /submit loads it
+            const getRes = await agent.get('/post/submit');
+            expect(getRes.text).toContain('PostPersist');
+            expect(getRes.text).toContain('http://persist.com');
+            expect(getRes.text).toContain('TextPersist');
         });
     });
     

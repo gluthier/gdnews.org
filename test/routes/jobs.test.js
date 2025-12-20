@@ -114,18 +114,23 @@ describe('Job Routes', () => {
             expect(resWithData.text).toContain('value="http://preserve.url"');
         });
 
-        test('fails when service throws error', async () => {
+        test('fails when service throws error and persists in session', async () => {
             PostService.createPost.mockRejectedValue(new Error('Service Error'));
+            const agent = request.agent(app);
 
-             const res = await request(app)
+             const res = await agent
                 .post('/job/submit')
                 .type('form')
-                .send({ title: 'T', text: 'D', url: '' });
+                .send({ title: 'SessTitle', text: 'SessText', url: 'http://sess.com' });
 
-             expect(res.statusCode).toBe(200); // Renders form with error
+             expect(res.statusCode).toBe(200); 
              expect(res.text).toContain('Submission failed');
-             expect(res.text).toContain('value="T"');
-             expect(res.text).toContain('D'); // Textarea content
+             
+             // Now check if GET /submit loads it from session
+             const getRes = await agent.get('/job/submit');
+             expect(getRes.text).toContain('SessTitle');
+             expect(getRes.text).toContain('http://sess.com');
+             expect(getRes.text).toContain('SessText');
         });
     });
     
