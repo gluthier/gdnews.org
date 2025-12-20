@@ -56,6 +56,11 @@ const helpers = {
     gt: (v1, v2) => v1 > v2,
     lt: (v1, v2) => v1 < v2,
     add: (v1, v2) => v1 + v2,
+    and: (...args) => {
+        // Remove the last argument (Handlebars options object)
+        args.pop();
+        return args.every(val => !!val);
+    },
     or: (v1, v2) => v1 || v2,
     slice: (arr, start, end) => {
         if (!arr || !Array.isArray(arr)) return [];

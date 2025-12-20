@@ -546,3 +546,61 @@ button {
         }
     }
 }
+
+/* Removal Options */
+.removal-options {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    align-items: stretch;
+
+    .option-card {
+        flex: 1;
+        border: 1px solid @color-highlight-border;
+        padding: 15px;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: @color-white;
+
+        h2 {
+           font-size: 1.1em;
+           margin-bottom: 10px;
+           color: @color-dark-font;
+           margin-top: 0px;
+        }
+
+        p {
+           font-size: 0.9em;
+           color: @color-light-font;
+           margin-bottom: 15px;
+        }
+
+        strong {
+             color: @color-dark-font;
+        }
+
+        form {
+            margin-top: auto; // Push button to bottom
+            div {
+                 margin-bottom: 0;
+            }
+        }
+        
+        button {
+             width: 100%;
+        }
+    }
+
+    .option-divider {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        color: @color-light-font;
+    }
+}
+
+.back-link {
+    margin-top: 20px;
+}
