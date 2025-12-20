@@ -98,7 +98,7 @@ describe('PostService', () => {
                 userId: 1,
                 title: 'New Post',
                 url: 'http://example.com',
-                content: 'Content',
+                description: 'Content',
                 isJob: false,
                 isPromoted: false,
                 promotedDate: null

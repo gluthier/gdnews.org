@@ -41,9 +41,9 @@ const helpers = {
             return '';
         }
     },
-    formatTextBlockContent: (text) => {
-        if (text == null) return '';
-        return String(text).trim()
+    formatTextBlockContent: (description) => {
+        if (description == null) return '';
+        return String(description).trim()
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")

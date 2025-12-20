@@ -11,10 +11,11 @@ CREATE TABLE IF NOT EXISTS posts (
     user_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     url VARCHAR(2048),
-    content TEXT,
+    description TEXT,
     is_promoted BOOLEAN DEFAULT FALSE,
     promoted_date DATE,
     is_job BOOLEAN DEFAULT FALSE,
+    status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

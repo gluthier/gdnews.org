@@ -182,7 +182,7 @@ router.get('/submit', requireLogin, (req, res) => {
 
 // Handle submission
 router.post('/submit', requireLogin, async (req, res, next) => {
-    const { title, url, text } = req.body;
+    const { title, url, description } = req.body;
     if (!title) {
         return res.render('pages/post/submit', { error: 'Title is required' });
     }
@@ -193,8 +193,8 @@ router.post('/submit', requireLogin, async (req, res, next) => {
 
     try {
         await database.query(
-            'INSERT INTO posts (user_id, title, url, content) VALUES (?, ?, ?, ?)',
-            [req.session.user.id, title, url || null, text || null]
+            'INSERT INTO posts (user_id, title, url, description) VALUES (?, ?, ?, ?)',
+            [req.session.user.id, title, url || null, description || null]
         );
         res.redirect('/');
     } catch (err) {
@@ -370,7 +370,7 @@ router.get('/schedule-promoted', requireLogin, (req, res) => {
 
 // Process Promoted Post Purchase
 router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
-    const { title, url, text, promoted_date, pricing_tier } = req.body;
+    const { title, url, description, promoted_date, pricing_tier } = req.body;
     
     // Simple validation for pricing tier
     const validTiers = ['personal', 'indie', 'mid', 'aaa'];
@@ -386,7 +386,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
             error: 'Title, Date, and a valid Pricing Tier are required',
             title: title,
             url: url,
-            text: text,
+            description: description,
             minDate: new Date().toISOString().split('T')[0]
         });
     }
@@ -400,7 +400,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
             error: 'Date must be in the future', 
             title: title,
             url: url,
-            text: text,
+            description: description,
             minDate: new Date().toISOString().split('T')[0]
         });
     }
@@ -417,7 +417,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
                 error: 'A promoted post is already scheduled for this date. Please choose another day.', 
                 title: title,
                 url: url,
-                text: text,
+                description: description,
                 minDate: new Date().toISOString().split('T')[0]
             });
         }
@@ -447,7 +447,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
                 user_id: req.session.user.id,
                 title: title,
                 url: url || '',
-                text: text || '',
+                description: description || '',
                 promoted_date: promoted_date,
                 pricing_tier: pricing_tier
             }
@@ -461,7 +461,7 @@ router.post('/schedule-promoted', requireLogin, async (req, res, next) => {
             error: 'Transaction failed: ' + err.message, 
             title: title,
             url: url,
-            text: text,
+            description: description,
             minDate: new Date().toISOString().split('T')[0]
         });
     }
@@ -485,7 +485,7 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
              });
         }
 
-        const { user_id, title, url, text, promoted_date, pricing_tier } = session.metadata;
+        const { user_id, title, url, description, promoted_date, pricing_tier } = session.metadata;
 
         // Double check collision just in case (race condition)
          const existing = await database.query(
@@ -504,8 +504,8 @@ router.get('/promoted-success', requireLogin, async (req, res, next) => {
         }
 
         await database.query(
-            'INSERT INTO posts (user_id, title, url, content, is_promoted, promoted_date) VALUES (?, ?, ?, ?, TRUE, ?)',
-            [user_id, title, url || null, text || null, promoted_date]
+            'INSERT INTO posts (user_id, title, url, description, is_promoted, promoted_date) VALUES (?, ?, ?, ?, TRUE, ?)',
+            [user_id, title, url || null, description || null, promoted_date]
         );
 
         // We could render a specific success page, but redirecting to upcoming is standard flow
@@ -568,21 +568,21 @@ router.get('/submit-job', requireLogin, (req, res) => {
 
 // Handle Job Submission
 router.post('/submit-job', requireLogin, async (req, res, next) => {
-    const { title, text, url } = req.body;
+    const { title, description, url } = req.body;
 
-    if (!title || !text) {
+    if (!title || !description) {
         return res.render('pages/job/submit', { 
             error: 'Title and Description are required', 
             title, 
             url, 
-            text,
+            description,
         });
     }
 
     try {
         await database.query(
-            'INSERT INTO posts (user_id, title, url, content, is_job) VALUES (?, ?, ?, ?, TRUE)',
-            [req.session.user.id, title, url || null, text]
+            'INSERT INTO posts (user_id, title, url, description, is_job) VALUES (?, ?, ?, ?, TRUE)',
+            [req.session.user.id, title, url || null, description]
         );
         res.redirect('/jobs');
     } catch (err) {
@@ -591,7 +591,7 @@ router.post('/submit-job', requireLogin, async (req, res, next) => {
             error: 'Submission failed', 
             title, 
             url, 
-            text 
+            description 
         });
     }
 });

@@ -85,7 +85,7 @@ describe('Promoted Routes', () => {
                 .send({ 
                     title: 'Promo', 
                     url: 'http://a.com', 
-                    text: 'txt', 
+                    description: 'txt', 
                     promoted_date: dateStr, 
                     pricing_tier: 'indie' 
                 });
@@ -106,7 +106,7 @@ describe('Promoted Routes', () => {
                 .send({ 
                     title: 'Promo', 
                     url: 'http://a.com', 
-                    text: 'txt', 
+                    description: 'txt', 
                     promoted_date: dateStr, 
                     pricing_tier: 'indie' 
                 });
@@ -138,7 +138,7 @@ describe('Promoted Routes', () => {
                 .send({ 
                     title: 'Persistent Title', 
                     url: 'http://persistent.com', 
-                    text: 'Persistent Text', 
+                    description: 'Persistent Text', 
                     promoted_date: dateStr, 
                     pricing_tier: 'indie' 
                 });
@@ -174,7 +174,7 @@ describe('Promoted Routes', () => {
                     user_id: 1,
                     title: 'New Promo',
                     url: 'http://b.com',
-                    text: 'promo text',
+                    description: 'promo text',
                     promoted_date: '2025-01-01',
                     pricing_tier: 'mid'
                 }

@@ -39,6 +39,7 @@ const PostService = {
                     ${selectPart}
                     ${fromPart}
                     WHERE NOT (p.is_promoted = TRUE AND p.promoted_date > CURRENT_DATE())
+                    AND p.status = 'active'
                     ${groupByPart}
                     ORDER BY 
                         CASE 
@@ -54,7 +55,7 @@ const PostService = {
                 query = `
                     ${selectPart}
                     ${fromPart}
-                    WHERE p.is_job = TRUE
+                    WHERE p.is_job = TRUE AND p.status = 'active'
                     ${groupByPart}
                     ORDER BY p.created_at DESC
                     LIMIT ? OFFSET ?
@@ -128,6 +129,7 @@ const PostService = {
                     JOIN users u ON p.user_id = u.id 
                     LEFT JOIN comments c ON p.id = c.post_id
                     WHERE NOT (p.is_promoted = TRUE AND p.promoted_date >= CURRENT_DATE())
+                    AND p.status = 'active'
                     GROUP BY p.id
                     ORDER BY activity_score DESC
                     LIMIT ? OFFSET ?
@@ -182,10 +184,10 @@ const PostService = {
     /**
      * Create a new post
      */
-    async createPost({ userId, title, url, content, isJob = false, isPromoted = false, promotedDate = null }) {
+    async createPost({ userId, title, url, description, isJob = false, isPromoted = false, promotedDate = null }) {
         return await database.query(
-            'INSERT INTO posts (user_id, title, url, content, is_job, is_promoted, promoted_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [userId, title, url || null, content || null, isJob, isPromoted, promotedDate]
+            'INSERT INTO posts (user_id, title, url, description, is_job, is_promoted, promoted_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [userId, title, url || null, description || null, isJob, isPromoted, promotedDate]
         );
     },
 
@@ -248,6 +250,18 @@ const PostService = {
                 END DESC
         `;
         return await database.query(query);
+    },
+
+    /**
+     * Update a post's status
+     * @param {number} id
+     * @param {string} status
+     */
+    async updatePostStatus(id, status) {
+        return await database.query(
+            'UPDATE posts SET status = ? WHERE id = ?',
+            [status, id]
+        );
     }
 };
 

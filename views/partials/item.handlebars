@@ -58,14 +58,19 @@
                         </form>
                         {{/if}}
                     </li>
+                    {{#if (and isDetail is_job (eq user.id user_id))}}
+                    <li>
+                        | <a href="/job/item/{{id}}/remove" class="remove-link">remove offer</a>
+                    </li>
+                    {{/if}}
                 {{/if}}
             {{/if}}
         </ul>
     </div>
     
-    {{#if content}}
+    {{#if description}}
         {{#if isDetail}}
-        <div class="post-content">{{{formatTextBlockContent content}}}</div>
+        <div class="post-content">{{{formatTextBlockContent description}}}</div>
         {{/if}}
     {{/if}}
 </div>

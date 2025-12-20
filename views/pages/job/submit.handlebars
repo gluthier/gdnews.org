@@ -2,7 +2,7 @@
 <h2>New job offer</h2>
 <form action="/job/submit" method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    {{> submit-form-fields}}
+    {{> submit-form-fields descriptionRequired=true}}
     
     {{#if error}}
     <div class="error-message">

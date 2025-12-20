@@ -59,13 +59,13 @@ router.get('/submit', requireLogin, (req, res) => {
 
 // Handle submission
 router.post('/submit', requireLogin, async (req, res, next) => {
-    const { title, url, text } = req.body;
+    const { title, url, description } = req.body;
     if (!title) {
-        return res.render('pages/post/submit', { error: 'Title is required', title, url, text });
+        return res.render('pages/post/submit', { error: 'Title is required', title, url, description });
     }
 
     if (url && (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:'))) {
-        return res.render('pages/post/submit', { error: 'Invalid URL scheme', title, url, text });
+        return res.render('pages/post/submit', { error: 'Invalid URL scheme', title, url, description });
     }
 
     try {
@@ -73,14 +73,14 @@ router.post('/submit', requireLogin, async (req, res, next) => {
             userId: req.session.user.id,
             title,
             url,
-            text
+            description
         });
         delete req.session.postFormData;
         res.redirect('/post/list');
     } catch (err) {
         console.error(err);
-        req.session.postFormData = { title, url, text };
-        res.render('pages/post/submit', { error: 'Submission failed', title, url, text });
+        req.session.postFormData = { title, url, description };
+        res.render('pages/post/submit', { error: 'Submission failed', title, url, description });
     }
 });
 

@@ -110,7 +110,7 @@ describe('Post Routes', () => {
             const res = await request(app)
                 .post('/post/submit')
                 .type('form')
-                .send({ title: 'New Post', url: 'http://example.com', text: '' });
+                .send({ title: 'New Post', url: 'http://example.com', description: '' });
                 
             expect(res.statusCode).toEqual(302);
             expect(res.headers.location).toBe('/post/list');
@@ -139,7 +139,7 @@ describe('Post Routes', () => {
              const res = await request(app)
                 .post('/post/submit')
                 .type('form')
-                .send({ title: 'Bad Link', url: 'javascript:alert(1)', text: '' });
+                .send({ title: 'Bad Link', url: 'javascript:alert(1)', description: '' });
              
              expect(res.statusCode).toBe(200);
              expect(res.text).toContain('Invalid URL scheme');
@@ -152,7 +152,7 @@ describe('Post Routes', () => {
             const res = await agent
                 .post('/post/submit')
                 .type('form')
-                .send({ title: 'PostPersist', url: 'http://persist.com', text: 'TextPersist' });
+                .send({ title: 'PostPersist', url: 'http://persist.com', description: 'TextPersist' });
             
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Submission failed');

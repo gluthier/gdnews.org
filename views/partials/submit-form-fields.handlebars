@@ -1,12 +1,12 @@
 <div>
-    <label for="title">title:</label>
-    <input type="text" id="title" name="title" required value="{{title}}">
+    <label for="title">title{{#if (eq titleRequired false)}} (optional){{/if}}:</label>
+    <input type="text" id="title" name="title" {{#if (eq titleRequired false)}}{{else}}required{{/if}} value="{{title}}">
 </div>
 <div>
-    <label for="url">url (optional):</label>
-    <input type="url" id="url" name="url" value="{{url}}">
+    <label for="url">url{{#if (eq urlRequired true)}}{{else}} (optional){{/if}}:</label>
+    <input type="url" id="url" name="url" {{#if (eq urlRequired true)}}required{{/if}} value="{{url}}">
 </div>
 <div>
-    <label for="text">text (optional):</label>
-    <textarea id="text" name="text" rows="4" cols="50">{{text}}</textarea>
+    <label for="description">description{{#if (eq descriptionRequired true)}}{{else}} (optional){{/if}}:</label>
+    <textarea id="description" name="description" rows="4" cols="50" {{#if (eq descriptionRequired true)}}required{{/if}}>{{description}}</textarea>
 </div>

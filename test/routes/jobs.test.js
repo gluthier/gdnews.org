@@ -89,7 +89,7 @@ describe('Job Routes', () => {
             const res = await request(app)
                 .post('/job/submit')
                 .type('form')
-                .send({ title: 'Hiring Dev', text: 'Great job', url: '' });
+                .send({ title: 'Hiring Dev', description: 'Great job', url: '' });
 
             expect(res.statusCode).toEqual(302);
             expect(res.headers.location).toBe('/job/list');
@@ -100,7 +100,7 @@ describe('Job Routes', () => {
             const res = await request(app)
                 .post('/job/submit')
                 .type('form')
-                .send({ title: '', text: '', url: '' });
+                .send({ title: '', description: '', url: '' });
             
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Title and Description are required');
@@ -108,7 +108,7 @@ describe('Job Routes', () => {
             const resWithData = await request(app)
                 .post('/job/submit')
                 .type('form')
-                .send({ title: 'Preserve Title', text: '', url: 'http://preserve.url' });
+                .send({ title: 'Preserve Title', description: '', url: 'http://preserve.url' });
             
             expect(resWithData.text).toContain('value="Preserve Title"');
             expect(resWithData.text).toContain('value="http://preserve.url"');
@@ -121,7 +121,7 @@ describe('Job Routes', () => {
              const res = await agent
                 .post('/job/submit')
                 .type('form')
-                .send({ title: 'SessTitle', text: 'SessText', url: 'http://sess.com' });
+                .send({ title: 'SessTitle', description: 'SessText', url: 'http://sess.com' });
 
              expect(res.statusCode).toBe(200); 
              expect(res.text).toContain('Submission failed');
