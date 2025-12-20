@@ -13,8 +13,50 @@ jest.mock('mariadb', () => {
     };
 });
 
+// Mock dotenv
+jest.mock('dotenv', () => ({
+    config: jest.fn()
+}));
+
 describe('Database Module', () => {
     let pool;
+    const originalEnv = process.env;
+
+    beforeEach(() => {
+        jest.resetModules();
+        process.env = { ...originalEnv };
+    });
+
+    afterAll(() => {
+        process.env = originalEnv;
+    });
+
+    test('loads production env in production mode', () => {
+        process.env.NODE_ENV = 'production';
+        // We need to re-require to trigger the top-level code
+        jest.isolateModules(() => {
+            require('../../src/database/database');
+            const dotenv = require('dotenv');
+            expect(dotenv.config).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    path: expect.stringContaining('.env.production')
+                })
+            );
+        });
+    });
+
+    test('loads development env in development mode', () => {
+        process.env.NODE_ENV = 'development';
+        jest.isolateModules(() => {
+            require('../../src/database/database');
+            const dotenv = require('dotenv');
+            expect(dotenv.config).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    path: expect.stringContaining('.env.development')
+                })
+            );
+        });
+    });
 
     beforeAll(() => {
         pool = mariadb.createPool();

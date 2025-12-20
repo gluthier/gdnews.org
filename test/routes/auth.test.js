@@ -1,22 +1,22 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
-const UserService = require('../src/services/user-service');
+const UserService = require('../../src/services/user-service');
 
 // Mocks
-jest.mock('../src/database/database', () => ({
+jest.mock('../../src/database/database', () => ({
     getConnection: jest.fn(),
     query: jest.fn(),
     close: jest.fn().mockResolvedValue()
 }));
-jest.mock('../src/services/user-service');
+jest.mock('../../src/services/user-service');
 jest.mock('bcrypt');
 
 // Also mock PostService because successful login redirects to /post/list which uses it
-jest.mock('../src/services/post-service', () => ({
+jest.mock('../../src/services/post-service', () => ({
     getPosts: jest.fn().mockResolvedValue([])
 }));
 
-const app = require('../src/server');
+const app = require('../../src/server');
 
 describe('Authentication Routes', () => {
     let csrfToken;
@@ -60,6 +60,37 @@ describe('Authentication Routes', () => {
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Invalid username or password');
             expect(UserService.getUserByUsername).toHaveBeenCalledWith('testuser');
+        });
+
+        test('Fails when user does not exist', async () => {
+            UserService.getUserByUsername.mockResolvedValue(null);
+
+            const res = await agent
+                .post('/auth/login')
+                .type('form')
+                .send({
+                    username: 'nonexistent',
+                    password: 'password',
+                    _csrf: csrfToken
+                });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Invalid username or password');
+        });
+
+        test('Handles errors during login', async () => {
+            UserService.getUserByUsername.mockRejectedValue(new Error('DB Error'));
+
+            const res = await agent
+                .post('/auth/login')
+                .type('form')
+                .send({
+                    username: 'user',
+                    password: 'password',
+                    _csrf: csrfToken
+                });
+            
+            expect(res.statusCode).toBe(500);
         });
 
         test('Succeeds with valid credentials', async () => {
@@ -137,6 +168,20 @@ describe('Authentication Routes', () => {
 
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Username already exists');
+        });
+
+        test('Fails with missing fields', async () => {
+            const res = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: '',
+                    password: '',
+                    _csrf: csrfToken
+                });
+            
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('All fields are required');
         });
 
         test('Handles generic errors during registration', async () => {

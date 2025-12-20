@@ -61,6 +61,46 @@ describe('Post Routes', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.text).toContain('Test Post');
         });
+        test('handles pagination', async () => {
+             const posts = Array(31).fill({ id: 1, title: 'Post' });
+             PostService.getPosts.mockResolvedValue(posts);
+
+             const res = await request(app).get('/post/list');
+             expect(res.text).toContain('/post/list?page=2');
+        });
+
+        test('handles errors', async () => {
+            PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
+            const res = await request(app).get('/post/list');
+            expect(res.statusCode).toBe(500);
+        });
+    });
+
+    describe('GET /post/newest', () => {
+        test('renders newest posts', async () => {
+            PostService.getPosts.mockResolvedValue([
+                { id: 3, title: 'Newest Post' }
+            ]);
+
+            const res = await request(app).get('/post/newest');
+            expect(res.statusCode).toEqual(200);
+            expect(res.text).toContain('Newest Post');
+            expect(res.text).toContain('newest');
+        });
+
+        test('handles pagination', async () => {
+             const posts = Array(31).fill({ id: 1, title: 'Post' });
+             PostService.getPosts.mockResolvedValue(posts);
+
+             const res = await request(app).get('/post/newest');
+             expect(res.text).toContain('/post/newest?page=2');
+        });
+
+        test('handles errors', async () => {
+             PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
+             const res = await request(app).get('/post/newest');
+             expect(res.statusCode).toBe(500);
+        });
     });
 
     describe('POST /post/submit', () => {
@@ -97,6 +137,17 @@ describe('Post Routes', () => {
              expect(res.statusCode).toBe(200);
              expect(res.text).toContain('Invalid URL scheme');
         });
+
+        test('fails when service throws error', async () => {
+            PostService.createPost.mockRejectedValue(new Error('DB Fail'));
+            const res = await request(app)
+                .post('/post/submit')
+                .type('form')
+                .send({ title: 'Post', url: '', text: 'Text' });
+            
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Submission failed');
+        });
     });
     
     describe('GET /post/item/:id', () => {
@@ -113,6 +164,12 @@ describe('Post Routes', () => {
             
             const res = await request(app).get('/post/item/999');
             expect(res.statusCode).toEqual(404);
+        });
+
+        test('handles errors', async () => {
+            PostService.getPostById.mockRejectedValue(new Error('BD Fail'));
+            const res = await request(app).get('/post/item/1');
+            expect(res.statusCode).toBe(500);
         });
     });
 
@@ -168,15 +225,29 @@ describe('Post Routes', () => {
             expect(res.text).toContain('comment.handlebars');
         });
 
-        test('redirects back if content is empty', async () => {
+
+
+        test('handles errors during JSON comment', async () => {
+            PostService.addComment.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app)
+                .post('/post/item/1/comment')
+                .set('Accept', 'application/json')
+                .type('form')
+                .send({ content: 'Comment' });
+            
+            expect(res.statusCode).toBe(500);
+        });
+
+        test('redirects on error for regular comment', async () => {
+             PostService.addComment.mockRejectedValue(new Error('DB Fail'));
+             const res = await request(app)
                 .post('/post/item/1/comment')
                 .set('Referer', '/post/item/1')
                 .type('form')
-                .send({ content: '' });
-            
-            expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/post/item/1');
+                .send({ content: 'Comment' });
+
+             expect(res.statusCode).toBe(302);
+             expect(res.headers.location).toBe('/post/item/1');
         });
     });
 
@@ -197,6 +268,20 @@ describe('Post Routes', () => {
             const res = await request(app).post('/post/unfavorite/1');
             expect(res.statusCode).toEqual(302);
             expect(PostService.unfavorite).toHaveBeenCalledWith(1, '1');
+        });
+
+        test('handles errors', async () => {
+            PostService.unfavorite.mockRejectedValue(new Error('DB Fail'));
+            const res = await request(app).post('/post/unfavorite/1');
+            expect(res.statusCode).toBe(500);
+        });
+    });
+
+    describe('POST /favorite/:id error', () => {
+         test('handles errors', async () => {
+            PostService.favorite.mockRejectedValue(new Error('DB Fail'));
+            const res = await request(app).post('/post/favorite/1');
+            expect(res.statusCode).toBe(500);
         });
     });
 });

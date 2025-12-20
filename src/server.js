@@ -124,31 +124,47 @@ const startServer = () => {
 
     const gracefulShutdown = () => {
         console.log('Received kill signal, shutting down gracefully');
+        
+        const forceShutdownTimer = setTimeout(() => {
+            console.error('Could not close connections in time, forcefully shutting down');
+            process.exit(1);
+        }, 10000);
+
+        // Unref the timer so it doesn't prevent the process from exiting if everything else closes
+        if (forceShutdownTimer.unref) forceShutdownTimer.unref();
+
         server.close(() => {
             console.log('Closed out remaining connections');
             database.close().then(() => {
                  console.log('Database pool closed');
+                 clearTimeout(forceShutdownTimer);
                  process.exit(0);
             }).catch((err) => {
                  console.error('Error closing database pool', err);
+                 clearTimeout(forceShutdownTimer);
                  process.exit(1);
             });
         });
-
-        setTimeout(() => {
-            console.error('Could not close connections in time, forcefully shutting down');
-            process.exit(1);
-        }, 10000);
     };
 
     process.on('SIGTERM', gracefulShutdown);
     process.on('SIGINT', gracefulShutdown);
     
+    // Ensure listeners are removed when server closes to prevent leaks in tests
+    const originalClose = server.close.bind(server);
+    server.close = (cb) => {
+        process.removeListener('SIGTERM', gracefulShutdown);
+        process.removeListener('SIGINT', gracefulShutdown);
+        return originalClose(cb);
+    };
+
     return server;
 };
 
 if (require.main === module) {
     startServer();
 }
+
+app.startServer = startServer;
 
 module.exports = app;

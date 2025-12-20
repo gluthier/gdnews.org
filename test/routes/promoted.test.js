@@ -57,6 +57,19 @@ describe('Promoted Routes', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.text).toContain('upcoming');
         });
+        test('handles pagination', async () => {
+             const posts = Array(31).fill({ id: 1, title: 'Promo' });
+             PostService.getPosts.mockResolvedValue(posts);
+
+             const res = await request(app).get('/promoted/upcoming');
+             expect(res.text).toContain('/promoted/upcoming?page&#x3D;2');
+        });
+
+        test('handles errors', async () => {
+            PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
+            const res = await request(app).get('/promoted/upcoming');
+            expect(res.statusCode).toBe(500);
+        });
     });
 
     describe('POST /promoted/schedule', () => {

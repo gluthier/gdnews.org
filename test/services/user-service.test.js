@@ -21,6 +21,16 @@ describe('UserService', () => {
             );
             expect(result).toEqual({ insertId: 1 });
         });
+
+        it('should insert user without email', async () => {
+             database.query.mockResolvedValue({ insertId: 2 });
+             await UserService.createUser({ username: 'noemail', password_hash: 'hash' });
+             
+             expect(database.query).toHaveBeenCalledWith(
+                expect.stringContaining('INSERT INTO users'),
+                ['noemail', 'hash', null]
+            );
+        });
     });
 
     describe('getUserByUsername', () => {

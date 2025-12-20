@@ -58,6 +58,21 @@ describe('Job Routes', () => {
              await request(app).get('/job/list?page=2');
              expect(PostService.getPosts).toHaveBeenCalledWith(expect.objectContaining({ page: 2 }));
         });
+
+        test('sets nextPageUrl when more posts exist', async () => {
+             // Mock 31 posts
+             const posts = Array(31).fill({ id: 1, title: 'Job', is_job: true });
+             PostService.getPosts.mockResolvedValue(posts);
+
+             const res = await request(app).get('/job/list');
+             expect(res.text).toContain('/job/list?page&#x3D;2');
+        });
+
+        test('handles errors in list route', async () => {
+            PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
+            const res = await request(app).get('/job/list');
+            expect(res.statusCode).toBe(500);
+        });
     });
 
     describe('GET /job/submit', () => {
@@ -125,6 +140,12 @@ describe('Job Routes', () => {
 
             const res = await request(app).get('/job/item/2');
             expect(res.statusCode).toBe(404);
+        });
+
+        test('handles errors in item route', async () => {
+            PostService.getPostById.mockRejectedValue(new Error('DB Error'));
+            const res = await request(app).get('/job/item/1');
+            expect(res.statusCode).toBe(500);
         });
     });
 });

@@ -82,6 +82,11 @@ describe('User Routes', () => {
              expect(res.statusCode).toBe(302);
              expect(res.headers.location).toBe('/user/profile/otheruser');
         });
+        test('handles errors', async () => {
+             UserService.getUserByUsername.mockRejectedValue(new Error('DB Fail'));
+             const res = await request(app).get('/user/profile/testuser');
+             expect(res.statusCode).toBe(500);
+        });
     });
 
     describe('GET /user/profile', () => {
