@@ -9,7 +9,7 @@
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>
         <label for="username">username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" value="{{username}}" required>
     </div>
     <div>
         <label for="password">password:</label>
@@ -17,7 +17,7 @@
     </div>
     <div>
         <label for="email">email (optional, used for password reset):</label>
-        <input type="email" id="email" name="email">
+        <input type="email" id="email" name="email" value="{{email}}">
     </div>
     <button class="primary-button" type="submit">create account</button>
 </form>

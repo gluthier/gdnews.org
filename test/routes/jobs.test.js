@@ -104,6 +104,14 @@ describe('Job Routes', () => {
             
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Title and Description are required');
+
+            const resWithData = await request(app)
+                .post('/job/submit')
+                .type('form')
+                .send({ title: 'Preserve Title', text: '', url: 'http://preserve.url' });
+            
+            expect(resWithData.text).toContain('value="Preserve Title"');
+            expect(resWithData.text).toContain('value="http://preserve.url"');
         });
 
         test('fails when service throws error', async () => {
@@ -116,6 +124,8 @@ describe('Job Routes', () => {
 
              expect(res.statusCode).toBe(200); // Renders form with error
              expect(res.text).toContain('Submission failed');
+             expect(res.text).toContain('value="T"');
+             expect(res.text).toContain('D'); // Textarea content
         });
     });
     

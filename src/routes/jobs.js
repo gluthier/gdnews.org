@@ -31,7 +31,8 @@ router.get('/list', async (req, res, next) => {
 
 // Submit Job Form
 router.get('/submit', requireLogin, (req, res) => {
-    res.render('pages/job/submit', { error: null });
+    const formData = req.session.jobFormData || {};
+    res.render('pages/job/submit', { ...formData, error: null });
 });
 
 // Handle Job Submission
@@ -55,9 +56,11 @@ router.post('/submit', requireLogin, async (req, res, next) => {
             content: text,
             isJob: true
         });
+        delete req.session.jobFormData;
         res.redirect('/job/list');
     } catch (err) {
         console.error(err);
+        req.session.jobFormData = { title, url, text };
         res.render('pages/job/submit', { 
             error: 'Submission failed', 
             title, 

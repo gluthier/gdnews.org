@@ -168,6 +168,8 @@ describe('Authentication Routes', () => {
 
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Username already exists');
+            expect(res.text).toContain('value="existinguser"');
+            expect(res.text).toContain('value="test@example.com"');
         });
 
         test('Fails with missing fields', async () => {
@@ -182,6 +184,17 @@ describe('Authentication Routes', () => {
             
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('All fields are required');
+            // email should be preserved even if password/username is missing
+            const resWithEmail = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: '',
+                    password: '',
+                    email: 'preserve@me.com',
+                    _csrf: csrfToken
+                });
+            expect(resWithEmail.text).toContain('value="preserve@me.com"');
         });
 
         test('Handles generic errors during registration', async () => {

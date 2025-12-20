@@ -11,7 +11,12 @@ router.get('/register', (req, res) => {
 router.post('/register', async (req, res, next) => {
     const { username, password, email } = req.body;
     if (!username || !password) {
-        return res.render('pages/auth/register', { error: 'All fields are required', title: 'register' });
+        return res.render('pages/auth/register', { 
+            error: 'All fields are required', 
+            title: 'register',
+            username,
+            email
+        });
     }
 
     try {
@@ -22,7 +27,12 @@ router.post('/register', async (req, res, next) => {
     } catch (err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {
-            return res.render('pages/auth/register', { error: 'Username already exists', title: 'register' });
+            return res.render('pages/auth/register', { 
+                error: 'Username already exists', 
+                title: 'register',
+                username,
+                email
+            });
         }
         next(err);
     }

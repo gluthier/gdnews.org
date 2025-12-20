@@ -125,6 +125,13 @@ describe('Post Routes', () => {
                 
             expect(res.statusCode).toEqual(200);
             expect(res.text).toContain('Title is required');
+            
+            const resWithUrl = await request(app)
+                .post('/post/submit')
+                .type('form')
+                .send({ title: '', url: 'http://preserve-me.com' });
+            
+            expect(resWithUrl.text).toContain('http://preserve-me.com');
         });
 
 
@@ -147,6 +154,8 @@ describe('Post Routes', () => {
             
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Submission failed');
+            expect(res.text).toContain('Post');
+            expect(res.text).toContain('Text');
         });
     });
     
