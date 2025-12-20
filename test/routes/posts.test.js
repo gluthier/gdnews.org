@@ -86,6 +86,17 @@ describe('Post Routes', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.text).toContain('Title is required');
         });
+
+
+        test('fails with invalid URL scheme', async () => {
+             const res = await request(app)
+                .post('/post/submit')
+                .type('form')
+                .send({ title: 'Bad Link', url: 'javascript:alert(1)', text: '' });
+             
+             expect(res.statusCode).toBe(200);
+             expect(res.text).toContain('Invalid URL scheme');
+        });
     });
     
     describe('GET /post/item/:id', () => {
@@ -144,26 +155,28 @@ describe('Post Routes', () => {
             });
         });
 
-        test.skip('returns JSON when requested via AJAX', async () => {
+        test('returns JSON when requested via AJAX', async () => {
              PostService.addComment.mockResolvedValue({ insertId: 51 });
              
              const res = await request(app)
                 .post('/post/item/1/comment')
                 .set('Accept', 'application/json')
+                .type('form')
                 .send({ content: 'JSON Comment' });
             
-            // FIXME: This fails with 500 due to view rendering issues in test environment
-            // expect(res.statusCode).toEqual(200);
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('comment.handlebars');
         });
 
-        test.skip('redirects back if content is empty', async () => {
+        test('redirects back if content is empty', async () => {
             const res = await request(app)
                 .post('/post/item/1/comment')
                 .set('Referer', '/post/item/1')
+                .type('form')
                 .send({ content: '' });
             
-            // FIXME: Fails with 500 in test environment
-            expect(res.statusCode).toEqual(302);
+            expect(res.statusCode).toBe(302);
+            expect(res.headers.location).toBe('/post/item/1');
         });
     });
 

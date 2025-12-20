@@ -120,5 +120,55 @@ describe('Authentication Routes', () => {
             expect(res.headers.location).toBe('/auth/login');
             expect(UserService.createUser).toHaveBeenCalled();
         });
+
+        test('Fails with duplicate username', async () => {
+            UserService.createUser.mockRejectedValue({ code: 'ER_DUP_ENTRY' });
+            bcrypt.hash.mockResolvedValue('hashed');
+
+            const res = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: 'existinguser',
+                    password: 'password',
+                    email: 'test@example.com',
+                    _csrf: csrfToken
+                });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Username already exists');
+        });
+
+        test('Handles generic errors during registration', async () => {
+             UserService.createUser.mockRejectedValue(new Error('DB Error'));
+             bcrypt.hash.mockResolvedValue('hashed');
+
+             const res = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: 'user', 
+                    password: 'pass',
+                    _csrf: csrfToken
+                });
+            
+             // Express error handler should catch it
+             // In test env, it might print stack trace or return 500
+             expect(res.statusCode).toBe(500); 
+        });
+    });
+
+    describe('Logout', () => {
+        test('GET /auth/logout redirects to /post/list', async () => {
+            const res = await request(app).get('/auth/logout');
+            expect(res.statusCode).toBe(302);
+            expect(res.headers.location).toBe('/post/list');
+        });
+
+        test('POST /auth/logout redirects to /post/list', async () => {
+            const res = await request(app).post('/auth/logout');
+            expect(res.statusCode).toBe(302);
+            expect(res.headers.location).toBe('/post/list');
+        });
     });
 });

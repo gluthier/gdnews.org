@@ -62,6 +62,47 @@ describe('User Routes', () => {
             const res = await request(app).get('/user/profile/nobody');
             expect(res.statusCode).toEqual(404);
         });
+    
+        test('handles pagination and tabs', async () => {
+             UserService.getUserByUsername.mockResolvedValue({ id: 1, username: 'testuser' });
+             PostService.getPosts.mockResolvedValue([]);
+
+             const res = await request(app).get('/user/profile/testuser?page=2&tab=favorites');
+             expect(res.statusCode).toBe(200);
+             expect(PostService.getPosts).toHaveBeenCalledWith(expect.objectContaining({ 
+                 page: 2, 
+                 type: 'user_favorites' 
+             }));
+        });
+        
+        test('redirects if user is not authorized for favorites', async () => {
+             UserService.getUserByUsername.mockResolvedValue({ id: 2, username: 'otheruser' });
+             
+             const res = await request(app).get('/user/profile/otheruser?tab=favorites');
+             expect(res.statusCode).toBe(302);
+             expect(res.headers.location).toBe('/user/profile/otheruser');
+        });
+    });
+
+    describe('GET /user/profile', () => {
+        test('redirects to specific profile if id query param exists', async () => {
+             const res = await request(app).get('/user/profile?id=someuser');
+             expect(res.statusCode).toBe(302);
+             expect(res.headers.location).toBe('/user/profile/someuser');
+        });
+
+        test('redirects to post list if no id', async () => {
+             const res = await request(app).get('/user/profile');
+             expect(res.statusCode).toBe(302);
+             expect(res.headers.location).toBe('/post/list');
+        });
+    });
+
+    describe('GET /user/change-email', () => {
+        test('renders change email page', async () => {
+            const res = await request(app).get('/user/change-email');
+            expect(res.statusCode).toBe(200);
+        });
     });
 
     describe('POST /user/change-email', () => {
