@@ -4,6 +4,7 @@ const router = express.Router();
 const requireLogin = require('../middleware/auth');
 const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Upcoming Promoted Posts
 router.get('/upcoming', async (req, res, next) => {

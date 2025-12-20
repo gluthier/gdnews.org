@@ -49,7 +49,9 @@ app.use(session({
 }));
 
 // CSRF Protection
-const csrfProtection = csurf();
+const csrfProtection = process.env.NODE_ENV === 'test' 
+    ? (req, res, next) => { req.csrfToken = () => 'test-token'; next(); }
+    : csurf();
 app.use(csrfProtection);
 
 // View Engine
@@ -96,6 +98,7 @@ app.use((req, res, next) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
     const status = err.status || 500;
+    if (status >= 500) console.error(err);
     res.status(status);
 
     // For API requests, return JSON
