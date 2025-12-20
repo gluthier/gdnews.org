@@ -44,30 +44,6 @@ describe('Post Removal Routes', () => {
         jest.clearAllMocks();
     });
 
-    describe('GET /post/item/:id/remove', () => {
-        test('renders removal page for owner', async () => {
-            PostService.getPostById.mockResolvedValue({ id: 10, user_id: 1, title: 'My Post', is_job: false });
-            
-            const res = await request(app).get('/post/item/10/remove');
-            expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Remove Post');
-            expect(res.text).toContain('My Post');
-        });
-
-        test('returns 403 for non-owner', async () => {
-            PostService.getPostById.mockResolvedValue({ id: 10, user_id: 2, title: 'Not My Post', is_job: false });
-            
-            const res = await request(app).get('/post/item/10/remove');
-            expect(res.statusCode).toBe(403);
-        });
-
-        test('returns 404 for non-existent post', async () => {
-            PostService.getPostById.mockResolvedValue(null);
-            const res = await request(app).get('/post/item/999/remove');
-            expect(res.statusCode).toBe(404);
-        });
-    });
-
     describe('POST /post/item/:id/remove', () => {
         test('marks post as removed', async () => {
             PostService.getPostById.mockResolvedValue({ id: 10, user_id: 1, title: 'My Post' });

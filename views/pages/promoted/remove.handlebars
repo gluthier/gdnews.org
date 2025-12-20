@@ -2,20 +2,10 @@
 <h1>Remove Promoted Post</h1>
 <p>You are about to remove your promoted post: <strong>{{post.title}}</strong></p>
 
-{{#if error}}
-<div class="error-message">{{error}}</div>
-{{/if}}
-
-<div class="removal-options">
-    <div class="option-card">
-        <h2>Confirm Removal</h2>
-        <p>This action cannot be undone. You will forfeit your scheduled slot.</p>
-        <form action="/promoted/item/{{post.id}}/remove" method="POST">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button type="submit" class="secondary-button" style="background-color: #d9534f; border-color: #d43f3a; color: white;">Remove Promoted Post</button>
-        </form>
-    </div>
-</div>
+<form action="/promoted/item/{{post.id}}/remove" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" class="primary-button">Confirm Remove</button>
+</form>
 
 <div class="back-link">
     <a href="/promoted/item/{{post.id}}">← back to promoted post</a>

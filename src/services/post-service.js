@@ -230,7 +230,7 @@ const PostService = {
      */
     async checkPromotedCollision(promotedDate) {
         const existing = await database.query(
-            'SELECT id FROM posts WHERE is_promoted = TRUE AND promoted_date = ?',
+            "SELECT id FROM posts WHERE is_promoted = TRUE AND promoted_date = ? AND status != 'removed'",
             [promotedDate]
         );
         return existing.length > 0;

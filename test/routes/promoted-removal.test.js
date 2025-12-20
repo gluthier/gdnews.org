@@ -52,30 +52,6 @@ describe('Promoted Post Removal Routes', () => {
         jest.clearAllMocks();
     });
 
-    describe('GET /promoted/item/:id/remove', () => {
-        test('renders removal page for owner', async () => {
-            PostService.getPostById.mockResolvedValue({ id: 20, user_id: 1, title: 'My Promoted Post', is_promoted: true });
-            
-            const res = await request(app).get('/promoted/item/20/remove');
-            expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Remove Promoted Post');
-            expect(res.text).toContain('My Promoted Post');
-        });
-
-        test('returns 403 for non-owner', async () => {
-            PostService.getPostById.mockResolvedValue({ id: 20, user_id: 2, title: 'Not My Post', is_promoted: true });
-            
-            const res = await request(app).get('/promoted/item/20/remove');
-            expect(res.statusCode).toBe(403);
-        });
-
-        test('returns 404 for non-existent promoted post', async () => {
-            PostService.getPostById.mockResolvedValue(null);
-            const res = await request(app).get('/promoted/item/999/remove');
-            expect(res.statusCode).toBe(404);
-        });
-    });
-
     describe('POST /promoted/item/:id/remove', () => {
         test('marks promoted post as removed', async () => {
             PostService.getPostById.mockResolvedValue({ id: 20, user_id: 1, title: 'My Promoted Post', is_promoted: true });

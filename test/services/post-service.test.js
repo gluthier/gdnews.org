@@ -155,6 +155,20 @@ describe('PostService', () => {
             const result = await PostService.checkPromotedCollision('2023-01-01');
             expect(result).toBe(false);
         });
+
+        it('should return false if collision is with a removed post', async () => {
+            // This test simulates the DB returning rows (which means the current implementation finds them),
+            // but we want the SERVICE to filter them out OR the query to filter them out.
+            // Since we are mocking the DB query result, we can't test the SQL query modification directly here 
+            // without inspecting the query string passed to database.query.
+            // So we will verify that the query string contains the status check.
+            
+            database.query.mockResolvedValue([]);
+            await PostService.checkPromotedCollision('2023-01-01');
+            
+            const callArgs = database.query.mock.calls[0];
+            expect(callArgs[0]).toContain("status != 'removed'");
+        });
     });
 
     describe('getWeeklyLinks', () => {
