@@ -4,8 +4,13 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "start": "NODE_ENV=production concurrently -k \"npm run server\" \"npm run batch\"",
-    "dev": "NODE_ENV=development concurrently -k \"nodemon src/server.js\" \"nodemon src/batch_server/batch_server.js\"",
+    "start": "pm2 start ecosystem.config.js --env production",
+    "stop": "pm2 stop ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "delete": "pm2 delete ecosystem.config.js",
+    "logs": "pm2 logs",
+    
+    "dev": "pm2-dev ecosystem.config.js --env development",
     "server": "node src/server.js",
     "batch": "node src/batch_server/batch_server.js",
     "test": "cross-env NODE_ENV=test jest"
@@ -28,10 +33,10 @@
     "less-middleware": "^3.1.0",
     "mariadb": "^3.4.5",
     "nodemailer": "^7.0.11",
+    "pm2": "^6.0.14",
     "stripe": "^20.0.0"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
