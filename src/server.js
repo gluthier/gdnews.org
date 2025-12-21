@@ -8,6 +8,8 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const csurf = require('csurf');
 const database = require('./database/database');
+const UserService = require('./services/user-service');
+const apiRoutes = require('./routes/api');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -37,6 +39,11 @@ app.use((req, res, next) => {
     next();
 });
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf;
+    }
+}));
 if (process.env.NODE_ENV !== 'production') {
     app.use(lessMiddleware(path.join(__dirname, '../styles'), {
         dest: path.join(__dirname, '../public')
@@ -66,6 +73,9 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(session(sessionConfig));
+
+// API Routes (Bypass CSRF)
+app.use('/', apiRoutes);
 
 // CSRF Protection
 const csrfProtection = process.env.NODE_ENV === 'test' 
@@ -153,7 +163,14 @@ app.use((err, req, res, next) => {
 
 
 
-const startServer = () => {
+const startServer = async () => {
+    try {
+        await UserService.ensureBotUser();
+    } catch (err) {
+        console.error("Error ensuring gdnews-bot user:", err);
+        process.exit(1);
+    }
+
     const server = app.listen(PORT, () => {
         const protocol = process.env.APP_PROTOCOL || 'http';
         const domain = process.env.APP_DOMAIN || 'localhost';
