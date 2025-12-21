@@ -23,6 +23,7 @@ describe('Post Visibility (Removed Status)', () => {
     afterAll(async () => {
         // Cleanup if necessary, usually database is persistent or reset by test runner
         // For now we assume we can leave data or db is reset
+        await database.close();
     });
 
     test('getPostById should not return removed post', async () => {

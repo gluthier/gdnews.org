@@ -4,17 +4,33 @@ require('dotenv').config({ path: path.join(__dirname, '../../', envFile) });
 
 const mariadb = require('mariadb');
 
-const pool = mariadb.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  connectionLimit: 5
-});
+let poolInstance = null;
+
+function getPool() {
+  if (!poolInstance) {
+    poolInstance = mariadb.createPool({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      connectionLimit: 5
+    });
+  }
+  return poolInstance;
+}
 
 module.exports = {
-  pool: pool,
-  getConnection: () => pool.getConnection(),
-  query: (sql, params) => pool.query(sql, params),
-  close: () => pool.end()
+  get pool() {
+    return getPool();
+  },
+  getConnection: () => getPool().getConnection(),
+  query: (sql, params) => getPool().query(sql, params),
+  close: () => {
+    if (poolInstance) {
+      return poolInstance.end().then(() => {
+        poolInstance = null;
+      });
+    }
+    return Promise.resolve();
+  }
 };
