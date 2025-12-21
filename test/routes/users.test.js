@@ -102,7 +102,7 @@ describe('User Routes', () => {
         test('redirects to post list if no id', async () => {
              const res = await request(app).get('/user/profile');
              expect(res.statusCode).toBe(302);
-             expect(res.headers.location).toBe('/post/list');
+             expect(res.headers.location).toBe('/');
         });
     });
 

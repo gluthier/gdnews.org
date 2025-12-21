@@ -4,16 +4,15 @@ const app = require('../src/server');
 // Mock database to prevent actual connections
 jest.mock('../src/database/database', () => ({
     getConnection: jest.fn(),
-    query: jest.fn(),
+    query: jest.fn().mockResolvedValue([]),
     close: jest.fn().mockResolvedValue()
 }));
 
 describe('Server', () => {
     describe('Startup', () => {
-        test('GET / redirects to /post/list', async () => {
+        test('GET / renders home page', async () => {
             const res = await request(app).get('/');
-            expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/post/list');
+            expect(res.statusCode).toBe(200);
         });
     });
 

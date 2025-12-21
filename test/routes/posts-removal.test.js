@@ -53,7 +53,7 @@ describe('Post Removal Routes', () => {
             
             expect(PostService.updatePostStatus).toHaveBeenCalledWith('10', 'removed');
             expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/post/list');
+            expect(res.headers.location).toBe('/');
         });
 
         test('returns 403 for non-owner', async () => {

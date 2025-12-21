@@ -58,22 +58,25 @@ describe('Post Routes', () => {
             ]);
 
             const res = await request(app).get('/post/list');
-            expect(res.statusCode).toEqual(200);
-            expect(res.text).toContain('Test Post');
+            expect(res.statusCode).toEqual(302);
+            expect(res.headers.location).toBe('/');
         });
         test('handles pagination', async () => {
              const posts = Array(31).fill({ id: 1, title: 'Post' });
              PostService.getPosts.mockResolvedValue(posts);
 
              const res = await request(app).get('/post/list');
-             expect(res.text).toContain('/post/list?page=2');
+             expect(res.statusCode).toBe(302);
+             expect(res.headers.location).toBe('/');
         });
 
         test('handles errors', async () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app).get('/post/list');
-            expect(res.statusCode).toBe(500);
+            // /post/list just redirects to /, so it won't trigger 500 from PostService.getPosts
+            expect(res.statusCode).toBe(302);
+            expect(res.headers.location).toBe('/');
             consoleSpy.mockRestore();
         });
     });
@@ -117,7 +120,7 @@ describe('Post Routes', () => {
                 .send({ title: 'New Post', url: 'http://example.com', description: '' });
                 
             expect(res.statusCode).toEqual(302);
-            expect(res.headers.location).toBe('/post/list');
+            expect(res.headers.location).toBe('/');
             expect(PostService.createPost).toHaveBeenCalled();
         });
 

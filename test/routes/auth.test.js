@@ -127,7 +127,7 @@ describe('Authentication Routes', () => {
                 });
 
             expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/post/list');
+            expect(res.headers.location).toBe('/');
         });
 
         test.skip('Fails with missing CSRF token', async () => {
@@ -241,13 +241,13 @@ describe('Authentication Routes', () => {
         test('GET /auth/logout redirects to /post/list', async () => {
             const res = await request(app).get('/auth/logout');
             expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/post/list');
+            expect(res.headers.location).toBe('/');
         });
 
         test('POST /auth/logout redirects to /post/list', async () => {
             const res = await request(app).post('/auth/logout');
             expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/post/list');
+            expect(res.headers.location).toBe('/');
         });
     });
 
