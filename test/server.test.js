@@ -8,6 +8,11 @@ jest.mock('../src/database/database', () => ({
     close: jest.fn().mockResolvedValue()
 }));
 
+// Mock UserService to prevent side effects
+jest.mock('../src/services/user-service', () => ({
+    ensureBotUser: jest.fn().mockResolvedValue()
+}));
+
 describe('Server', () => {
     describe('Startup', () => {
         test('GET / renders home page', async () => {
@@ -46,12 +51,12 @@ describe('Server', () => {
 
         afterEach(() => {
             jest.restoreAllMocks();
-            if (server) {
+            if (server && server.close) {
                 server.close();
             }
         });
 
-        test('startServer starts listening and handles shutdown', (done) => {
+        test('startServer starts listening and handles shutdown', async () => {
             // We need to mock app.listen to avoid actually binding port
             const mockClose = jest.fn((cb) => { if(cb) cb(); });
             const mockListen = jest.spyOn(app, 'listen').mockImplementation((port, cb) => {
@@ -59,7 +64,7 @@ describe('Server', () => {
                 return { close: mockClose };
             });
 
-            server = app.startServer();
+            server = await app.startServer();
 
             expect(mockListen).toHaveBeenCalled();
             
@@ -67,17 +72,16 @@ describe('Server', () => {
             process.emit('SIGTERM');
 
             // Wait for async operations in shutdown
-            setTimeout(() => {
-                expect(mockClose).toHaveBeenCalled();
-                // database check is tricky because we mock it at top level but we verified DB close is called
-                const database = require('../src/database/database');
-                expect(database.close).toHaveBeenCalled();
-                expect(mockExit).toHaveBeenCalledWith(0);
-                done();
-            }, 100);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            expect(mockClose).toHaveBeenCalled();
+            // database check is tricky because we mock it at top level but we verified DB close is called
+            const database = require('../src/database/database');
+            expect(database.close).toHaveBeenCalled();
+            expect(mockExit).toHaveBeenCalledWith(0);
         });
 
-        test('shutdown handles database error', (done) => {
+        test('shutdown handles database error', async () => {
              const mockClose = jest.fn((cb) => { if(cb) cb(); });
              jest.spyOn(app, 'listen').mockImplementation((port, cb) => {
                 cb();
@@ -87,19 +91,18 @@ describe('Server', () => {
             const database = require('../src/database/database');
             database.close.mockRejectedValueOnce(new Error('DB Error'));
 
-            server = app.startServer();
+            server = await app.startServer();
 
             process.emit('SIGINT');
 
-            setTimeout(() => {
-                expect(mockClose).toHaveBeenCalled();
-                expect(console.error).toHaveBeenCalledWith('Error closing database pool', expect.any(Error));
-                 expect(mockExit).toHaveBeenCalledWith(1);
-                done();
-            }, 100);
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            expect(mockClose).toHaveBeenCalled();
+            expect(console.error).toHaveBeenCalledWith('Error closing database pool', expect.any(Error));
+            expect(mockExit).toHaveBeenCalledWith(1);
         });
         
-        test('forceful shutdown after timeout', (done) => {
+        test('forceful shutdown after timeout', async () => {
             jest.useFakeTimers();
             const mockClose = jest.fn(); // close never callbacks
              jest.spyOn(app, 'listen').mockImplementation((port, cb) => {
@@ -107,7 +110,7 @@ describe('Server', () => {
                 return { close: mockClose };
             });
 
-            server = app.startServer();
+            server = await app.startServer();
 
             process.emit('SIGTERM');
 
@@ -118,7 +121,6 @@ describe('Server', () => {
             expect(console.error).toHaveBeenCalledWith(expect.stringContaining('forcefully shutting down'));
             
             jest.useRealTimers();
-            done();
          });
     });
 });
