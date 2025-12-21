@@ -7,7 +7,7 @@
 </div>
 
 <div class="comments">
-    <script src="/js/item.js" defer></script>
+    <script src="{{assetUrl '/js/item.js'}}" defer></script>
     {{#each comments}}
     {{> comment this depth=0 maxDepth=2}}
     {{/each}}

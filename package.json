@@ -13,7 +13,10 @@
     "dev": "pm2-dev ecosystem.config.js --env development",
     "server": "node src/server.js",
     "batch": "node src/batch_server/batch_server.js",
-    "test": "cross-env NODE_ENV=test jest"
+    "test": "cross-env NODE_ENV=test jest",
+    "build:css": "lessc --clean-css styles/style.less public/style.min.css",
+    "build:js": "terser public/js/item.js -o public/js/item.min.js --compress --mangle && terser public/js/schedule.js -o public/js/schedule.min.js --compress --mangle",
+    "build": "npm run build:css && npm run build:js"
   },
   "keywords": [],
   "author": "",
@@ -37,9 +40,11 @@
     "stripe": "^20.0.0"
   },
   "devDependencies": {
+    "clean-css-cli": "^5.6.3",
     "cross-env": "^10.1.0",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
-    "supertest": "^7.1.4"
+    "supertest": "^7.1.4",
+    "terser": "^5.44.1"
   }
 }

@@ -37,9 +37,11 @@ app.use((req, res, next) => {
     next();
 });
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(lessMiddleware(path.join(__dirname, '../styles'), {
-    dest: path.join(__dirname, '../public')
-}));
+if (process.env.NODE_ENV !== 'production') {
+    app.use(lessMiddleware(path.join(__dirname, '../styles'), {
+        dest: path.join(__dirname, '../public')
+    }));
+}
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Session Configuration

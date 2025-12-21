@@ -87,6 +87,14 @@ const helpers = {
             return '1 comment';
         }
         return `${numCount} comments`;
+    },
+    assetUrl: (url) => {
+        if (process.env.NODE_ENV === 'production') {
+            const parts = url.split('.');
+            const ext = parts.pop();
+            return parts.join('.') + '.min.' + ext;
+        }
+        return url;
     }
 };
 
