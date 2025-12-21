@@ -28,4 +28,10 @@ describe('Static Routes', () => {
         expect(res.statusCode).toEqual(200);
         expect(res.text).toContain('Legal');
     });
+
+    test('GET /tos renders successfully', async () => {
+        const res = await request(app).get('/tos');
+        expect(res.statusCode).toEqual(200);
+        expect(res.text).toContain('Terms of Service');
+    });
 });

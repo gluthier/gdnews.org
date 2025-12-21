@@ -14,4 +14,8 @@ router.get('/legal', (req, res) => {
     res.render('pages/info/legal', { title: 'Legal' });
 });
 
+router.get('/tos', (req, res) => {
+    res.render('pages/info/tos', { title: 'Terms of Service' });
+});
+
 module.exports = router;
