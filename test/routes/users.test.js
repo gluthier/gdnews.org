@@ -84,9 +84,11 @@ describe('User Routes', () => {
              expect(res.headers.location).toBe('/user/profile/otheruser');
         });
         test('handles errors', async () => {
+             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
              UserService.getUserByUsername.mockRejectedValue(new Error('DB Fail'));
              const res = await request(app).get('/user/profile/testuser');
              expect(res.statusCode).toBe(500);
+             consoleSpy.mockRestore();
         });
     });
 

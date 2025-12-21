@@ -69,9 +69,11 @@ describe('Job Routes', () => {
         });
 
         test('handles errors in list route', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app).get('/job/list');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 
@@ -115,6 +117,7 @@ describe('Job Routes', () => {
         });
 
         test('fails when service throws error and persists in session', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.createPost.mockRejectedValue(new Error('Service Error'));
             const agent = request.agent(app);
 
@@ -131,6 +134,7 @@ describe('Job Routes', () => {
              expect(getRes.text).toContain('SessTitle');
              expect(getRes.text).toContain('http://sess.com');
              expect(getRes.text).toContain('SessText');
+             consoleSpy.mockRestore();
         });
     });
     
@@ -158,9 +162,11 @@ describe('Job Routes', () => {
         });
 
         test('handles errors in item route', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.getPostById.mockRejectedValue(new Error('DB Error'));
             const res = await request(app).get('/job/item/1');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 });

@@ -8,7 +8,7 @@
     "dev": "NODE_ENV=development concurrently -k \"nodemon src/server.js\" \"nodemon src/batch_server/batch_server.js\"",
     "server": "node src/server.js",
     "batch": "node src/batch_server/batch_server.js",
-    "test": "cross-env NODE_ENV=test jest --forceExit"
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles"
   },
   "keywords": [],
   "author": "",

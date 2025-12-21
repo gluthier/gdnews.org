@@ -93,6 +93,7 @@ describe('Authentication Routes', () => {
         });
 
         test('Handles errors during login', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             UserService.getUserByUsername.mockRejectedValue(new Error('DB Error'));
 
             const res = await agent
@@ -105,6 +106,7 @@ describe('Authentication Routes', () => {
                 });
             
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
 
         test('Succeeds with valid credentials', async () => {
@@ -167,6 +169,7 @@ describe('Authentication Routes', () => {
         });
 
         test('Fails with duplicate username', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             UserService.createUser.mockRejectedValue({ code: 'ER_DUP_ENTRY' });
             bcrypt.hash.mockResolvedValue('hashed');
 
@@ -184,6 +187,8 @@ describe('Authentication Routes', () => {
             expect(res.text).toContain('Username already exists');
             expect(res.text).toContain('value="existinguser"');
             expect(res.text).toContain('value="test@example.com"');
+            
+            consoleSpy.mockRestore();
         });
 
         test('Fails with missing fields', async () => {
@@ -212,6 +217,7 @@ describe('Authentication Routes', () => {
         });
 
         test('Handles generic errors during registration', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
              UserService.createUser.mockRejectedValue(new Error('DB Error'));
              bcrypt.hash.mockResolvedValue('hashed');
 
@@ -227,6 +233,7 @@ describe('Authentication Routes', () => {
              // Express error handler should catch it
              // In test env, it might print stack trace or return 500
              expect(res.statusCode).toBe(500); 
+             consoleSpy.mockRestore();
         });
     });
 

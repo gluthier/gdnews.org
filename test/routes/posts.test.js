@@ -70,9 +70,11 @@ describe('Post Routes', () => {
         });
 
         test('handles errors', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app).get('/post/list');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 
@@ -97,9 +99,11 @@ describe('Post Routes', () => {
         });
 
         test('handles errors', async () => {
+             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
              PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
              const res = await request(app).get('/post/newest');
              expect(res.statusCode).toBe(500);
+             consoleSpy.mockRestore();
         });
     });
 
@@ -146,6 +150,7 @@ describe('Post Routes', () => {
         });
 
         test('fails when service throws error and persists in session', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.createPost.mockRejectedValue(new Error('DB Fail'));
             const agent = request.agent(app);
 
@@ -162,6 +167,7 @@ describe('Post Routes', () => {
             expect(getRes.text).toContain('PostPersist');
             expect(getRes.text).toContain('http://persist.com');
             expect(getRes.text).toContain('TextPersist');
+            consoleSpy.mockRestore();
         });
     });
     
@@ -182,9 +188,11 @@ describe('Post Routes', () => {
         });
 
         test('handles errors', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.getPostById.mockRejectedValue(new Error('BD Fail'));
             const res = await request(app).get('/post/item/1');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 
@@ -243,6 +251,7 @@ describe('Post Routes', () => {
 
 
         test('handles errors during JSON comment', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.addComment.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app)
                 .post('/post/item/1/comment')
@@ -251,9 +260,11 @@ describe('Post Routes', () => {
                 .send({ content: 'Comment' });
             
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
 
         test('redirects on error for regular comment', async () => {
+             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
              PostService.addComment.mockRejectedValue(new Error('DB Fail'));
              const res = await request(app)
                 .post('/post/item/1/comment')
@@ -263,6 +274,7 @@ describe('Post Routes', () => {
 
              expect(res.statusCode).toBe(302);
              expect(res.headers.location).toBe('/post/item/1');
+             consoleSpy.mockRestore();
         });
     });
 
@@ -286,17 +298,21 @@ describe('Post Routes', () => {
         });
 
         test('handles errors', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.unfavorite.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app).get('/post/unfavorite/1');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 
     describe('GET /favorite/:id error', () => {
          test('handles errors', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.favorite.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app).get('/post/favorite/1');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 });

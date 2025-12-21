@@ -66,9 +66,11 @@ describe('Promoted Routes', () => {
         });
 
         test('handles errors', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             PostService.getPosts.mockRejectedValue(new Error('DB Fail'));
             const res = await request(app).get('/promoted/upcoming');
             expect(res.statusCode).toBe(500);
+            consoleSpy.mockRestore();
         });
     });
 
