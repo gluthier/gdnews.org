@@ -1,10 +1,10 @@
 <div class="post">
     <div class="post-title">
         {{#if is_job}}
-        <a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="job-symbol"><span class="job-tag">hiring: </span></a>
+        <a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="job-symbol" title="Job offer"><span class="job-tag">hiring: </span></a>
         {{/if}}
         {{#if is_promoted}}
-        <a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="promoted-symbol">✨ </a>
+        <a href="{{#if url}}{{url}}{{else}}{{basePath}}{{id}}{{/if}}" class="promoted-symbol" title="Promoted post">✨ </a>
         {{/if}}
         {{#if url}}
         <a href="{{url}}">{{title}}</a>
