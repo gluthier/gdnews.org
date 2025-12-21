@@ -5,27 +5,9 @@ const requireLogin = require('../middleware/auth');
 const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
 
-// List posts (Home)
-router.get('/list', async (req, res, next) => {
-    const page = parseInt(req.query.page) || 1;
-    if (page < 1) return res.redirect('/post/list');
-    const limit = 30;
-
-    try {
-        const userId = req.session.user ? req.session.user.id : -1;
-        const posts = await PostService.getPosts({ userId, page, limit, type: 'home' });
-
-        let nextPageUrl = null;
-        if (posts.length > limit) {
-            posts.pop();
-            nextPageUrl = `/post/list?page=${page + 1}`;
-        }
-
-        res.render('pages/post/list', { posts, nextPageUrl });
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
+// List posts (Home) - Redirect to root
+router.get('/list', (req, res) => {
+    res.redirect('/');
 });
 
 // List posts (Newest)
@@ -76,7 +58,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
             description
         });
         delete req.session.postFormData;
-        res.redirect('/post/list');
+        res.redirect('/');
     } catch (err) {
         console.error(err);
         req.session.postFormData = { title, url, description };
@@ -204,7 +186,7 @@ router.post('/item/:id/remove', requireLogin, async (req, res, next) => {
         }
 
         await PostService.updatePostStatus(postId, 'removed');
-        res.redirect('/post/list');
+        res.redirect('/');
     } catch (err) {
         next(err);
     }

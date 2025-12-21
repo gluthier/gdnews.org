@@ -60,7 +60,7 @@ router.get('/profile', (req, res) => {
     if (req.query.id) {
         return res.redirect(`/user/profile/${req.query.id}`);
     }
-    res.redirect('/post/list');
+    res.redirect('/');
 });
 
 router.get('/change-email', (req, res) => {

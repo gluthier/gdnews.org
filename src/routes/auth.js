@@ -55,7 +55,7 @@ router.post('/login', async (req, res, next) => {
         }
 
         req.session.user = { id: user.id, username: user.username, email: user.email };
-        res.redirect('/post/list');
+        res.redirect('/');
     } catch (err) {
         console.error(err);
         next(err);
@@ -64,12 +64,12 @@ router.post('/login', async (req, res, next) => {
 
 router.get('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/post/list');
+    res.redirect('/');
 });
 
 router.post('/logout', (req, res) => {
     req.session.destroy();
-    res.redirect('/post/list');
+    res.redirect('/');
 });
 
 router.get('/confirm-email', async (req, res, next) => {

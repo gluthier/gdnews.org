@@ -103,6 +103,7 @@ app.use((req, res, next) => {
     next();
 });
 
+const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const promotedRoutes = require('./routes/promoted');
@@ -111,7 +112,7 @@ const userRoutes = require('./routes/users');
 const staticRoutes = require('./routes/static');
 
 // Routes
-app.get('/', (req, res) => res.redirect('/post/list'));
+app.use('/', homeRoutes);
 app.use('/auth', authRoutes);
 app.use('/post', postRoutes);
 app.use('/promoted', promotedRoutes);
