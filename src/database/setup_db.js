@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const mariadb = require('mariadb');
 const fs = require('fs');
 const path = require('path');
