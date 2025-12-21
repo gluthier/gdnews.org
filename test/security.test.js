@@ -29,7 +29,7 @@ describe('Security Headers', () => {
     test('CSP should restrict sources', async () => {
          const res = await request(app).get('/');
          const csp = res.headers['content-security-policy'];
-         expect(csp).toContain("script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.stripe.com");
+         expect(csp).toContain("script-src 'self' https://js.stripe.com https://*.stripe.com");
          expect(csp).toContain("img-src 'self' data: https://*.stripe.com");
          expect(csp).toContain("frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.stripe.com");
          expect(csp).toContain("connect-src 'self' https://api.stripe.com https://*.stripe.com");

@@ -19,7 +19,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "'unsafe-inline'", "https://js.stripe.com", "https://*.stripe.com"],
+            "script-src": ["'self'", "https://js.stripe.com", "https://*.stripe.com"],
             "img-src": ["'self'", "data:", "https://*.stripe.com"],
             "frame-src": ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://*.stripe.com"],
             "connect-src": ["'self'", "https://api.stripe.com", "https://*.stripe.com"],
@@ -41,7 +41,9 @@ app.use(lessMiddleware(path.join(__dirname, '../styles'), {
     dest: path.join(__dirname, '../public')
 }));
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(session({
+
+// Session Configuration
+const sessionConfig = {
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -50,7 +52,18 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax'
     }
-}));
+};
+
+if (process.env.NODE_ENV === 'production') {
+    const MySQLStore = require('express-mysql-session')(session);
+    sessionConfig.store = new MySQLStore({ 
+        // express-mysql-session can use the existing mariadb pool if it supports standard pool interface
+        // If not, we might need to pass connection details. 
+        // Trying with pool first.
+    }, database.pool);
+}
+
+app.use(session(sessionConfig));
 
 // CSRF Protection
 const csrfProtection = process.env.NODE_ENV === 'test' 
@@ -124,8 +137,12 @@ app.use((err, req, res, next) => {
         return res.json({ error: err.message });
     }
 
+    const message = (process.env.NODE_ENV === 'production' && status >= 500) 
+        ? 'An unexpected error occurred.' 
+        : err.message;
+
     res.render('pages/common/error', {
-        message: err.message,
+        message: message,
         statusCode: status,
         title: 'Error'
     });
