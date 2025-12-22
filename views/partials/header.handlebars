@@ -13,24 +13,18 @@
     <div class="container">
         <header>
             <nav>
-                <div class="links">
-                    <ul class="inline-list">
-                        <li><div title="Home" class="logo"><a href="/" class="logo-symbol">🐉&nbsp;</a><a href="/">gdnews</a></div></li>
-                        <li><a href="/post/newest">newest</a></li>
-                        <li><a href="/promoted/upcoming">upcoming</a></li>
-                        <li><a href="/job/list">jobs</a></li>
-                    </ul>
-                </div>
-                <div class="auth">
-                    <ul class="inline-list">
-                        <li><a href="/post/submit">submit</a></li>
-                        {{#if user}}
-                        <li><a href="/user/profile/{{user.username}}">{{user.username}}</a></li>
-                        {{else}}
-                        <li><a href="/auth/login">login</a></li>
-                        {{/if}}
-                    </ul>
-                </div>
+                <ul class="inline-list">
+                    <li><div title="Home" class="logo"><a href="/" class="logo-symbol">🐉&nbsp;</a><a href="/">gdnews</a></div></li>
+                    <li><a href="/post/newest">newest</a></li>
+                    <li><a href="/promoted/upcoming">upcoming</a></li>
+                    <li><a href="/job/list">jobs</a></li>
+                    <li class="auth-separator"><a href="/post/submit">submit</a></li>
+                    {{#if user}}
+                    <li><a href="/user/profile/{{user.username}}">{{user.username}}</a></li>
+                    {{else}}
+                    <li><a href="/auth/login">login</a></li>
+                    {{/if}}
+                </ul>
             </nav>
         </header>
         <main>

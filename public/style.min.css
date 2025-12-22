@@ -43,6 +43,9 @@ header {
 header nav {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
   font-size: 0.875rem;
   color: #ffffff;
   line-height: 1.1rem;
@@ -68,9 +71,6 @@ header nav .links ul li a {
 header nav .links ul li a:hover {
   color: #ffffff;
   text-decoration: underline;
-}
-header nav .auth {
-  margin-left: auto;
 }
 header nav .auth ul {
   font-size: 0.875rem;
@@ -116,6 +116,7 @@ footer .footer-content .links .inline-list {
   align-items: center;
   color: #7b8b7e;
   font-size: 0.75rem;
+  /* Small Screen Adjustment */
 }
 .inline-list li {
   display: flex;
@@ -136,6 +137,15 @@ footer .footer-content .links .inline-list {
 .inline-list button:hover .bot-emoji {
   text-decoration: none;
   display: inline-block;
+}
+@media (max-width: 350px) {
+  .inline-list {
+    flex-wrap: wrap;
+    gap: 5px;
+    /* Reduce gap to prevent overflow */
+    justify-content: center;
+    /* Center items when wrapped */
+  }
 }
 .bot-emoji {
   text-decoration: none !important;
