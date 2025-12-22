@@ -12,7 +12,7 @@
         {{success}}
     </div>
     {{/if}}
-    <form action="/change-email" method="POST">
+    <form action="/user/change-email" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
             <label for="email">new email:</label>

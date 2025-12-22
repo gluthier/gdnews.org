@@ -110,6 +110,7 @@ describe('User Routes', () => {
         test('renders change email page', async () => {
             const res = await request(app).get('/user/change-email');
             expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('action="/user/change-email"');
         });
     });
 

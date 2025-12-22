@@ -49,6 +49,7 @@ describe('EmailService', () => {
                 host: 'smtp.example.com',
                 port: '587',
                 secure: false, // 587 is not 465
+                requireTLS: true,
                 auth: {
                     user: 'user',
                     pass: 'pass',
