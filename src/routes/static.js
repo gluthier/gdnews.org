@@ -18,4 +18,8 @@ router.get('/tos', (req, res) => {
     res.render('pages/info/tos', { title: 'Terms of Service' });
 });
 
+router.get('/favicon.ico', (req, res) => {
+    res.status(204).end();
+});
+
 module.exports = router;
