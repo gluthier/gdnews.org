@@ -12,7 +12,7 @@
     "status": "pm2 status",
     "dev": "pm2-dev ecosystem.config.js --env development",
     "server": "node src/server.js",
-
+    "batch": "node src/batch_server/batch_server.js",
     "test": "cross-env NODE_ENV=test jest",
     "build:css": "lessc --clean-css styles/style.less public/style.min.css",
     "build:js": "terser public/js/item.js -o public/js/item.min.js --compress --mangle && terser public/js/schedule.js -o public/js/schedule.min.js --compress --mangle",
