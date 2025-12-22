@@ -88,7 +88,7 @@ app.post('/batch', authenticate, async (req, res) => {
                 userId,
                 title: post.title,
                 url: post.url,
-                content: post.content
+                description: ""
             });
             addedCount++;
         }
