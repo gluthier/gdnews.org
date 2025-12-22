@@ -21,15 +21,16 @@
         {{/if}}
         {{/if}}
     </div>
-    <div>account creation: <span title="{{formatDateFull profileUser.created_at}}">{{formatDate
-            profileUser.created_at}}</span>
-    </div>
 
     {{#if success}}
-    <div class="message success">
+    <p class="message success">
         {{success}}
-    </div>
+    </p>
     {{/if}}
+
+    <p>account creation: <span title="{{formatDateFull profileUser.created_at}}">{{formatDate
+            profileUser.created_at}}</span>
+    </p>
 
     {{#if user}}
     {{#if (eq user.id profileUser.id)}}
