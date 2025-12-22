@@ -70,6 +70,9 @@ header {
     nav {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: @spacing-md;
         font-size: @font-size-medium;
         color: @color-white;
         line-height: 1.1rem;
@@ -103,7 +106,7 @@ header {
         }
 
         .auth {
-            margin-left: auto;
+            // margin-left: auto;
 
             ul {
                 font-size: @font-size-medium;
