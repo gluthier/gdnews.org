@@ -54,6 +54,7 @@ header nav {
 header nav .inline-list {
   width: 100%;
   flex-wrap: wrap;
+  font-size: 0.875rem;
 }
 header nav .inline-list .auth-separator {
   margin-left: auto;
