@@ -48,7 +48,9 @@ router.get('/profile/:username', async (req, res, next) => {
             nextPageUrl = `/user/profile/${username}?page=${page + 1}&tab=${currentTab}`;
         }
 
-        res.render('pages/user/profile', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab });
+        const success = req.query.success;
+
+        res.render('pages/user/profile', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab, success });
     } catch (err) {
         console.error(err);
         next(err);

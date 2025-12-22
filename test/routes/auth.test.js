@@ -293,7 +293,7 @@ describe('Authentication Routes', () => {
             const res = await agent.get('/auth/confirm-change-email?token=valid-token');
 
             expect(res.statusCode).toBe(302);
-            expect(res.headers.location).toBe('/user/profile/testuser');
+            expect(res.headers.location).toBe('/user/profile/testuser?success=Email%20changed%20successfully!');
         });
 
         test('GET /auth/confirm-change-email succeeds and shows login when logged out', async () => {

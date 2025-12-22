@@ -88,7 +88,7 @@ router.get('/confirm-change-email', async (req, res, next) => {
         await UserService.verifyAndComplete(token);
         // If user is logged in, redirect to profile. Otherwise login.
         if (req.session.user) {
-             res.redirect(`/user/profile/${req.session.user.username}`);
+             res.redirect(`/user/profile/${req.session.user.username}?success=${encodeURIComponent('Email changed successfully!')}`);
         } else {
              res.render('pages/auth/login', { error: null, success: 'Email changed successfully! Please log in.', title: 'login' });
         }
