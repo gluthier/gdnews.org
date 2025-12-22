@@ -17,6 +17,7 @@ const EmailService = {
             host: process.env.SMTP_HOST,
             port: process.env.SMTP_PORT,
             secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
+            requireTLS: process.env.SMTP_PORT == 587, // Force STARTTLS for port 587
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
