@@ -12,6 +12,9 @@ const database = require('./database/database');
 const app = express();
 const PORT = process.env.PORT;
 
+// Trust the first proxy (Nginx) to correctly handle X-Forwarded-Proto
+app.set('trust proxy', 1);
+
 const lessMiddleware = require('less-middleware');
 
 // Middleware
