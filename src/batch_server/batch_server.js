@@ -13,7 +13,7 @@ const PostService = require('../services/post-service');
 const database = require('../database/database');
 
 const app = express();
-const PORT = process.env.BATCH_UPLOAD_PORT || 3001;
+const BATCH_PORT = process.env.BATCH_PORT;
 
 // Load Public Key
 let PUBLIC_KEY = process.env.BATCH_UPLOAD_PUBLIC_KEY;
@@ -114,10 +114,9 @@ app.get('/weekly-links', async (req, res) => {
 });
 
 // Start Server
-// Start Server
 ensureBotUser().then(() => {
-    const server = app.listen(PORT, () => {
-        console.log(`Batch upload server running on port ${PORT}`);
+    const server = app.listen(BATCH_PORT, () => {
+        console.log(`Batch upload server running on port ${BATCH_PORT}`);
     });
 
     const gracefulShutdown = () => {

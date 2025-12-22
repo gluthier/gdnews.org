@@ -151,8 +151,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-
-
 const startServer = () => {
     const server = app.listen(PORT, () => {
         const protocol = process.env.APP_PROTOCOL || 'http';
