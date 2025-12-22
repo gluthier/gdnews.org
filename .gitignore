@@ -23,3 +23,7 @@ yarn-error.log*
 # Testing
 coverage/
 
+# Configuration
+gdnews.config
+
+setup_production_db.sql

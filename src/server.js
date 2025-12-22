@@ -58,11 +58,19 @@ const sessionConfig = {
 
 if (process.env.NODE_ENV === 'production') {
     const MySQLStore = require('express-mysql-session')(session);
-    sessionConfig.store = new MySQLStore({ 
-        // express-mysql-session can use the existing mariadb pool if it supports standard pool interface
-        // If not, we might need to pass connection details. 
-        // Trying with pool first.
-    }, database.pool);
+    // Use mysql2 driver for session store to avoid ?? placeholder issues with mariadb driver
+    const options = {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        // Optional: clear expired sessions
+        clearExpired: true,
+        checkExpirationInterval: 900000,
+        expiration: 86400000
+    };
+    
+    sessionConfig.store = new MySQLStore(options);
 }
 
 app.use(session(sessionConfig));
