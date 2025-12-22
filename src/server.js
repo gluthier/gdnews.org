@@ -58,19 +58,30 @@ const sessionConfig = {
 
 if (process.env.NODE_ENV === 'production') {
     const MySQLStore = require('express-mysql-session')(session);
-    // Use mysql2 driver for session store to avoid ?? placeholder issues with mariadb driver
-    const options = {
+    const mysql = require('mysql2');
+    
+    // Explicitly create a mysql2 connection pool for the session store
+    // This allows it to handle the '??' placeholders correctly which calls to mariadb driver might fail on
+    const sessionPool = mysql.createPool({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        // Optional: clear expired sessions
+        connectionLimit: 4 // Keep it small for sessions
+    });
+
+    const options = {
+        // Clear expired sessions
         clearExpired: true,
         checkExpirationInterval: 900000,
-        expiration: 86400000
+        expiration: 86400000,
+        createDatabaseTable: false, // We create this manually in the setup script
+        schema: {
+            tableName: 'sessions'
+        }
     };
     
-    sessionConfig.store = new MySQLStore(options);
+    sessionConfig.store = new MySQLStore(options, sessionPool);
 }
 
 app.use(session(sessionConfig));
