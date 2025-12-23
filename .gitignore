@@ -27,3 +27,5 @@ coverage/
 gdnews.config
 
 setup_production_db.sql
+
+public/style.min.css
