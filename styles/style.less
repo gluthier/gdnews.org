@@ -20,6 +20,9 @@
 @font-size-medium: 0.875rem;
 @font-size-small: 0.75rem;
 
+@half-touch-target-size: 12px;
+@touch-target-size: 24px;
+
 /* Global Resets & Typography */
 body {
     font-family: Verdana, Geneva, sans-serif;
@@ -165,6 +168,11 @@ footer {
         color: @color-light-font;
         text-decoration: none;
         font-size: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: @touch-target-size;
+        min-height: @touch-target-size;
 
         &:hover {
             color: @color-dark-font;
@@ -207,6 +215,10 @@ footer {
     padding: 0;
     font-style: normal;
     color: @color-light-font;
+    min-width: @touch-target-size;
+    min-height: @touch-target-size;
+    display: inline-flex;
+    align-items: center;
 
     &:hover {
         color: @color-dark-font;
@@ -216,9 +228,12 @@ footer {
 
 .more-link {
     padding-top: @spacing-md;
+    padding-bottom: @spacing-md;
 
     a {
         color: @color-light-font;
+        display: inline-block;
+        min-height: @touch-target-size;
 
         &:hover {
             text-decoration: underline;
@@ -227,9 +242,13 @@ footer {
     }
 }
 
+.posts {
+    margin-top: @half-touch-target-size;
+}
+
 /* Post Styles */
 .post {
-    margin-bottom: 8px;
+    margin-bottom: @touch-target-size;
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
@@ -240,6 +259,8 @@ footer {
 
         a {
             color: @color-dark-font;
+            display: inline-block;
+            min-height: @touch-target-size;
 
             &:visited {
                 color: @color-light-font;
@@ -249,11 +270,14 @@ footer {
         .domain {
             font-size: @font-size-small;
             color: @color-light-font;
-            // margin-left: @spacing-sm;
         }
         .job-symbol,
         .promoted-symbol {
             text-decoration: none;
+            display: inline-block;
+            min-width: @touch-target-size;
+            min-height: @touch-target-size;
+            text-align: center;
 
             &:hover {
                 text-decoration: none;
@@ -269,7 +293,7 @@ footer {
         font-size: @font-size-small;
         color: @color-light-font;
         width: 100%;
-        margin: @spacing-xs 0;
+        margin: 0;
     }
 
     .post-content {
@@ -338,6 +362,9 @@ footer {
     color: @color-light-font;
     margin-left: @spacing-sm;
     font-size: @font-size-medium;
+    display: inline-block;
+    min-height: @touch-target-size;
+    line-height: @touch-target-size;
 
     &:hover {
         color: @color-dark-font;
@@ -412,6 +439,7 @@ textarea {
     color: @color-dark-font;
     padding: @spacing-sm;
     font-size: @font-size-medium;
+    min-height: @touch-target-size;
 }
 
 button {
@@ -422,6 +450,11 @@ button {
     font-size: @font-size-medium;
     padding: @spacing-sm @spacing-md;
     cursor: pointer;
+    min-height: @touch-target-size;
+    min-width: @touch-target-size;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
         background-color: #e0e0e0;
