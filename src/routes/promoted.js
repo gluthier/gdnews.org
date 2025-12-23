@@ -22,7 +22,13 @@ router.get('/upcoming', async (req, res, next) => {
             nextPageUrl = `/promoted/upcoming?page=${page + 1}`;
         }
 
-        res.render('pages/promoted/list', { posts, title: 'upcoming', nextPageUrl, basePath: '/promoted/item/' });
+        res.render('pages/promoted/list', { 
+            posts, 
+            title: 'upcoming', 
+            nextPageUrl, 
+            basePath: '/promoted/item/',
+            description: "Upcoming promoted posts on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        });
     } catch (err) {
         console.error(err);
         next(err);
@@ -213,7 +219,8 @@ router.get('/item/:id', async (req, res, next) => {
             title: post.title, 
             comments,
             isFavorited: !!post.isFavorited,
-            success: req.query.success === 'true'
+            success: req.query.success === 'true',
+            description: `Promoted post from gdnews: ${post.title}`
         });
     } catch (err) {
         console.error('Error rendering promoted post page:', err);

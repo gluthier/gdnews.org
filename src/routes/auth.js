@@ -5,7 +5,11 @@ const router = express.Router();
 const UserService = require('../services/user-service');
 
 router.get('/register', (req, res) => {
-    res.render('pages/auth/register', { error: null, title: 'register' });
+    res.render('pages/auth/register', { 
+        error: null, 
+        title: 'register',
+        description: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+    });
 });
 
 router.post('/register', async (req, res, next) => {
@@ -15,7 +19,8 @@ router.post('/register', async (req, res, next) => {
             error: 'All fields are required', 
             title: 'register',
             username,
-            email
+            email,
+            description: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
         });
     }
 
@@ -39,7 +44,11 @@ router.post('/register', async (req, res, next) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render('pages/auth/login', { error: null, title: 'login' });
+    res.render('pages/auth/login', { 
+        error: null, 
+        title: 'login',
+        description: "Login to gdnews, a video game design & development news aggregator to share healthy discussions with the community"
+    });
 });
 
 router.post('/login', async (req, res, next) => {

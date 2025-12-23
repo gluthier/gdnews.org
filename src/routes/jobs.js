@@ -23,7 +23,13 @@ router.get('/list', async (req, res, next) => {
             nextPageUrl = `/job/list?page=${page + 1}`;
         }
 
-        res.render('pages/job/list', { posts, title: 'jobs', nextPageUrl, basePath: '/job/item/' });
+        res.render('pages/job/list', { 
+            posts, 
+            title: 'jobs', 
+            nextPageUrl, 
+            basePath: '/job/item/',
+            description: "List of job offers published on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        });
     } catch (err) {
         console.error(err);
         next(err);
@@ -33,7 +39,11 @@ router.get('/list', async (req, res, next) => {
 // Submit Job Form
 router.get('/submit', requireLogin, (req, res) => {
     const formData = req.session.jobFormData || {};
-    res.render('pages/job/submit', { ...formData, error: null });
+    res.render('pages/job/submit', { 
+        ...formData, 
+        error: null,
+        description: "Submit a new job offer on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+    });
 });
 
 // Handle Job Submission
@@ -91,7 +101,8 @@ router.get('/item/:id', async (req, res, next) => {
             basePath: '/job/item/',
             title: post.title, 
             comments,
-            isFavorited: !!post.isFavorited
+            isFavorited: !!post.isFavorited,
+            description: `Job offer from gdnews: ${post.title}`
         });
     } catch (err) {
         console.error('Error rendering job page:', err);

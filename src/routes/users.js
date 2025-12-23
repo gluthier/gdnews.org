@@ -50,7 +50,15 @@ router.get('/profile/:username', async (req, res, next) => {
 
         const success = req.query.success;
 
-        res.render('pages/user/profile', { profileUser: user, posts, title: `${user.username}`, nextPageUrl, currentTab, success });
+        res.render('pages/user/profile', { 
+            profileUser: user, 
+            posts, 
+            title: `${user.username}`, 
+            nextPageUrl, 
+            currentTab, 
+            success,
+            description: `User profile for ${user.username} on gdnews, a video game design & development news aggregator to share healthy discussions with the community.`
+        });
     } catch (err) {
         console.error(err);
         next(err);

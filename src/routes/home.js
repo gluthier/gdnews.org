@@ -18,7 +18,11 @@ router.get('/', async (req, res, next) => {
             nextPageUrl = `/?page=${page + 1}`;
         }
 
-        res.render('pages/post/list', { posts, nextPageUrl });
+        res.render('pages/post/list', { 
+            posts, 
+            nextPageUrl,
+            description: "The noteworthy posts submitted on gdnews, a video game design & development news aggregator to share healthy discussions with the community"
+        });
     } catch (err) {
         console.error(err);
         next(err);
