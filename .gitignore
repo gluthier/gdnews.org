@@ -28,4 +28,6 @@ gdnews.config
 
 setup_production_db.sql
 
+# Public
+public/style.css
 public/style.min.css

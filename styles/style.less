@@ -242,24 +242,21 @@ footer {
     }
 }
 
-.posts {
-    margin-top: @half-touch-target-size;
-}
-
 /* Post Styles */
 .post {
-    margin-bottom: @touch-target-size;
+    margin-bottom: @half-touch-target-size;
     display: flex;
-    align-items: baseline;
     flex-wrap: wrap;
 
     .post-title {
         font-size: @font-size-large;
         color: @color-dark-font;
+        line-height: 1;
 
         a {
             color: @color-dark-font;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             min-height: @touch-target-size;
 
             &:visited {
@@ -271,13 +268,14 @@ footer {
             font-size: @font-size-small;
             color: @color-light-font;
         }
+
         .job-symbol,
         .promoted-symbol {
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
             min-width: @touch-target-size;
             min-height: @touch-target-size;
-            text-align: center;
+            line-height: 1;
 
             &:hover {
                 text-decoration: none;
