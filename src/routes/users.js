@@ -57,7 +57,7 @@ router.get('/profile/:username', async (req, res, next) => {
             nextPageUrl, 
             currentTab, 
             success,
-            description: `User profile for ${user.username} on gdnews, a video game design & development news aggregator to share healthy discussions with the community.`
+            metaDescription: `User profile for ${user.username} on gdnews, a video game design & development news aggregator to share healthy discussions with the community.`
         });
     } catch (err) {
         console.error(err);

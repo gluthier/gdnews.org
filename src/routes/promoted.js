@@ -27,7 +27,7 @@ router.get('/upcoming', async (req, res, next) => {
             title: 'upcoming', 
             nextPageUrl, 
             basePath: '/promoted/item/',
-            description: "Upcoming promoted posts on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+            metaDescription: "Upcoming promoted posts on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
         });
     } catch (err) {
         console.error(err);
@@ -220,7 +220,7 @@ router.get('/item/:id', async (req, res, next) => {
             comments,
             isFavorited: !!post.isFavorited,
             success: req.query.success === 'true',
-            description: `Promoted post from gdnews: ${post.title}`
+            metaDescription: `Promoted post from gdnews: ${post.title}`
         });
     } catch (err) {
         console.error('Error rendering promoted post page:', err);

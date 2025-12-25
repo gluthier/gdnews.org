@@ -30,7 +30,7 @@ router.get('/newest', async (req, res, next) => {
             posts, 
             title: 'newest', 
             nextPageUrl,
-            description: "The newest posts submitted on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+            metaDescription: "The newest posts submitted on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
         });
     } catch (err) {
         console.error(err);
@@ -44,7 +44,7 @@ router.get('/submit', requireLogin, (req, res) => {
     res.render('pages/post/submit', { 
         ...formData, 
         error: null,
-        description: "Submit a new post on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Submit a new post on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
     });
 });
 
@@ -97,7 +97,7 @@ router.get('/item/:id', async (req, res, next) => {
             error: null, 
             title: post.title, 
             isFavorited: !!post.isFavorited,
-            description: `Post from gdnews: ${post.title}`
+            metaDescription: `Post from gdnews: ${post.title}`
         });
     } catch (err) {
         console.error('Error rendering item page:', err);

@@ -8,7 +8,7 @@ router.get('/register', (req, res) => {
     res.render('pages/auth/register', { 
         error: null, 
         title: 'register',
-        description: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
     });
 });
 
@@ -20,7 +20,7 @@ router.post('/register', async (req, res, next) => {
             title: 'register',
             username,
             email,
-            description: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+            metaDescription: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
         });
     }
 
@@ -47,7 +47,7 @@ router.get('/login', (req, res) => {
     res.render('pages/auth/login', { 
         error: null, 
         title: 'login',
-        description: "Login to gdnews, a video game design & development news aggregator to share healthy discussions with the community"
+        metaDescription: "Login to gdnews, a video game design & development news aggregator to share healthy discussions with the community"
     });
 });
 

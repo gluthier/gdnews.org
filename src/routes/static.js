@@ -5,28 +5,28 @@ const router = express.Router();
 router.get('/about', (req, res) => {
     res.render('pages/info/about', { 
         title: 'About',
-        description: "Learn more about gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Learn more about gdnews, a video game design & development news aggregator to share healthy discussions with the community."
     });
 });
 
 router.get('/guidelines', (req, res) => {
     res.render('pages/info/guidelines', { 
         title: 'Guidelines',
-        description: "Community guidelines for gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Community guidelines for gdnews, a video game design & development news aggregator to share healthy discussions with the community."
     });
 });
 
 router.get('/legal', (req, res) => {
     res.render('pages/info/legal', { 
         title: 'Legal',
-        description: "Legal information for gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Legal information for gdnews, a video game design & development news aggregator to share healthy discussions with the community."
     });
 });
 
 router.get('/tos', (req, res) => {
     res.render('pages/info/tos', { 
         title: 'Terms of Service',
-        description: "Terms of Service for gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Terms of Service for gdnews, a video game design & development news aggregator to share healthy discussions with the community."
     });
 });
 
