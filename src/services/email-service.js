@@ -62,6 +62,12 @@ const EmailService = {
                 // Fall through to logging
             }
         }
+
+        // Simulation/Fallback log
+        console.log('[SIMULATED EMAIL due to missing config or error]');
+        console.log(`To: ${to}`);
+        console.log(`Subject: ${subject}`);
+        console.log(`Link: ${link}`);
     },
 
     /**
@@ -95,8 +101,16 @@ const EmailService = {
                 return;
             } catch (error) {
                 console.error('Error sending password reset email:', error);
+                console.warn('Falling back to console log due to error.');
+                // Fall through to logging
             }
         }
+
+        // Simulation/Fallback log
+        console.log('[SIMULATED EMAIL due to missing config or error]');
+        console.log(`To: ${to}`);
+        console.log(`Subject: ${subject}`);
+        console.log(`Link: ${link}`);
     }
 };
 
