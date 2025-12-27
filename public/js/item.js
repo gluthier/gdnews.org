@@ -1,50 +1,4 @@
-/**
- * Handles showing the reply form and toggling visibility of sibling elements.
- * @param {string} commentId - The ID of the comment.
- * @param {HTMLElement} replyBtn - The button element that triggered the action.
- */
-function showReply(commentId, replyBtn) {
-    const replyForm = document.getElementById('reply-' + commentId);
-    if (replyForm) replyForm.style.display = 'block';
 
-    const contentDiv = document.getElementById('content-' + commentId);
-    const childrenDiv = document.getElementById('children-' + commentId);
-    const hideBtn = replyBtn.previousElementSibling;
-
-    if (contentDiv && contentDiv.style.display === 'none') {
-        contentDiv.style.display = 'block';
-        if (childrenDiv) childrenDiv.style.display = 'block';
-        if (hideBtn) hideBtn.innerText = 'hide';
-    }
-}
-
-/**
- * Toggles the visibility of child comments.
- * @param {string} commentId - The ID of the comment.
- * @param {HTMLElement} btn - The button element that triggered the action.
- * @param {number} count - The number of descendants.
- */
-function toggleChildren(commentId, btn, count) {
-    const childrenDiv = document.getElementById('children-' + commentId);
-    const contentDiv = document.getElementById('content-' + commentId);
-    const replyForm = document.getElementById('reply-' + commentId);
-
-    if (childrenDiv.style.display === 'none') {
-        childrenDiv.style.display = 'block';
-        if (contentDiv) contentDiv.style.display = 'block';
-        btn.innerText = 'hide';
-    } else {
-        childrenDiv.style.display = 'none';
-        if (contentDiv) contentDiv.style.display = 'none';
-        if (replyForm) replyForm.style.display = 'none';
-        if (count > 0) {
-            btn.innerText = 'show (' + (count + 1) + ')';
-        } else {
-            p
-            btn.innerText = 'show';
-        }
-    }
-}
 
 
 /**
@@ -134,7 +88,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.body.addEventListener('click', async (e) => {
-        if (e.target.matches('a.confirm-action')) {
+        const target = e.target;
+
+        // Toggle children visibility (hide/show)
+        if (target.classList.contains('toggle-children-btn')) {
+            const commentId = target.dataset.commentId;
+            const count = parseInt(target.dataset.count, 10);
+            const childrenDiv = document.getElementById('children-' + commentId);
+            const contentDiv = document.getElementById('content-' + commentId);
+            const replyForm = document.getElementById('reply-' + commentId);
+
+            if (childrenDiv.style.display === 'none') {
+                childrenDiv.style.display = 'block';
+                if (contentDiv) contentDiv.style.display = 'block';
+                target.innerText = 'hide';
+            } else {
+                childrenDiv.style.display = 'none';
+                if (contentDiv) contentDiv.style.display = 'none';
+                if (replyForm) replyForm.style.display = 'none';
+                if (count > 0) {
+                    target.innerText = 'show (' + (count + 1) + ')';
+                } else {
+                    target.innerText = 'show';
+                }
+            }
+        }
+
+        // Show reply form
+        if (target.classList.contains('show-reply-btn')) {
+            const commentId = target.dataset.commentId;
+            const replyForm = document.getElementById('reply-' + commentId);
+            if (replyForm) replyForm.style.display = 'block';
+
+            const contentDiv = document.getElementById('content-' + commentId);
+            const childrenDiv = document.getElementById('children-' + commentId);
+            
+            // Re-syncing logic similar to showReply but using the new structure
+            if (contentDiv && contentDiv.style.display === 'none') {
+                contentDiv.style.display = 'block';
+                if (childrenDiv) childrenDiv.style.display = 'block';
+                const hideBtn = target.parentElement.parentElement.querySelector('.toggle-children-btn');
+                if (hideBtn) hideBtn.innerText = 'hide';
+            }
+        }
+
+        // Cancel reply form
+        if (target.classList.contains('cancel-reply-btn')) {
+            const commentId = target.dataset.commentId;
+            const replyForm = document.getElementById('reply-' + commentId);
+            if (replyForm) replyForm.style.display = 'none';
+        }
+
+        // Show more comments
+        if (target.classList.contains('show-more-btn')) {
+            const hiddenDiv = target.nextElementSibling;
+            if (hiddenDiv) {
+                hiddenDiv.style.display = 'block';
+                target.style.display = 'none';
+            }
+        }
+
+        if (target.matches('a.confirm-action')) {
             e.preventDefault();
             const link = e.target;
             if (link.dataset.confirmed !== 'true') {

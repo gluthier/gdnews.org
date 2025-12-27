@@ -22,7 +22,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "https://js.stripe.com", "https://*.stripe.com"],
+            "script-src": ["'self'", "blob:", "https://js.stripe.com", "https://*.stripe.com"],
             "img-src": ["'self'", "data:", "https://*.stripe.com"],
             "frame-src": ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://*.stripe.com"],
             "connect-src": ["'self'", "https://api.stripe.com", "https://*.stripe.com"],

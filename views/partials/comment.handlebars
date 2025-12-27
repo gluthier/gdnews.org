@@ -3,21 +3,20 @@
         <ul class="inline-list">
             <li><a href="/user/{{username}}">{{username}}</a></li>
             <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
-            <li><button class="text-button" onclick="toggleChildren('{{id}}', this, {{descendant_count}})">hide</button></li>
-            <li><button class="text-button" onclick="showReply('{{id}}', this)">reply</button></li>
+            <li><button class="text-button toggle-children-btn" data-comment-id="{{id}}" data-count="{{descendant_count}}">hide</button></li>
+            <li><button class="text-button show-reply-btn" data-comment-id="{{id}}">reply</button></li>
         </ul>
     </div>
 
     <div class="comment-content" id="content-{{id}}">{{{formatTextBlockContent content}}}</div>
 
-    <div id="reply-{{id}}" style="display: none; margin-top: 10px;">
+    <div id="reply-{{id}}" class="reply-form-container" style="display: none; margin-top: 10px;">
         <form action="/item/{{post_id}}/comment" method="POST">
             <input type="hidden" name="_csrf" value="{{../csrfToken}}">
             <input type="hidden" name="parent_comment_id" value="{{id}}">
             <textarea name="content" rows="2" cols="50" required></textarea><br>
             <button class="primary-button" type="submit">submit reply</button>
-            <button class="secondary-button" type="button"
-                onclick="document.getElementById('reply-{{id}}').style.display = 'none'">cancel</button>
+            <button class="secondary-button cancel-reply-btn" type="button" data-comment-id="{{id}}">cancel</button>
         </form>
     </div>
 
@@ -33,7 +32,7 @@
 
         {{!-- Hidden Children --}}
         <div class="show-more">
-            <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+            <button class="show-more-btn">
                 show more ({{reduceDescendantCount (slice children 5 (length children))}})
             </button>
             <div style="display: none;">
@@ -52,7 +51,7 @@
         {{else}}
         {{!-- Max Depth Reached - Show More --}}
         <div class="show-more">
-            <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+            <button class="show-more-btn">
                 show more ({{descendant_count}})
             </button>
             <div style="display: none;">
