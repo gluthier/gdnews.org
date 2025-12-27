@@ -127,7 +127,7 @@ describe('Job Routes', () => {
                 .send({ title: 'SessTitle', description: 'SessText', url: 'http://sess.com' });
 
              expect(res.statusCode).toBe(200); 
-             expect(res.text).toContain('Submission failed');
+             expect(res.text).toContain('Service Error');
              
              // Now check if GET /submit loads it from session
              const getRes = await agent.get('/job/submit');
@@ -135,6 +135,21 @@ describe('Job Routes', () => {
              expect(getRes.text).toContain('http://sess.com');
              expect(getRes.text).toContain('SessText');
              consoleSpy.mockRestore();
+        });
+
+        test('displays daily limit error message from service', async () => {
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            const limitError = 'Daily limit reached. You can submit up to 5 jobs per day because your email is not validated.';
+            PostService.createPost.mockRejectedValue(new Error(limitError));
+
+            const res = await request(app)
+                .post('/job/submit')
+                .type('form')
+                .send({ title: 'Job Title', description: 'Description', url: '' });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain(limitError);
+            consoleSpy.mockRestore();
         });
     });
     

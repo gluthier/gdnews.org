@@ -75,7 +75,7 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         console.error(err);
         req.session.jobFormData = { title, url, description };
         res.render('pages/job/submit', { 
-            error: 'Submission failed', 
+            error: err.message || 'Submission failed', 
             title, 
             url, 
             description,

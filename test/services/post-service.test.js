@@ -5,7 +5,7 @@ jest.mock('../../src/database/database');
 
 describe('PostService', () => {
     afterEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
     });
 
     describe('getPosts', () => {
@@ -99,8 +99,9 @@ describe('PostService', () => {
                 title: 'a'.repeat(181),
                 url: 'http://example.com'
             };
+
             await expect(PostService.createPost(postData)).rejects.toThrow('Title must be 180 characters or less');
-            expect(database.query).not.toHaveBeenCalled();
+            expect(database.query).toHaveBeenCalledTimes(0); // Title length check is first
         });
 
         it('should insert new post', async () => {
@@ -113,7 +114,10 @@ describe('PostService', () => {
                 isPromoted: false,
                 promotedDate: null
             };
-            database.query.mockResolvedValue({ insertId: 100 });
+            database.query
+                .mockResolvedValueOnce([{ email_verified: 0 }]) // User check
+                .mockResolvedValueOnce([{ count: 0 }])         // Count check
+                .mockResolvedValue({ insertId: 100 });         // Insert
 
             const result = await PostService.createPost(postData);
             
@@ -122,6 +126,7 @@ describe('PostService', () => {
                 [1, 'New Post', 'http://example.com', 'Content', false, false, null]
             );
             expect(result).toEqual({ insertId: 100 });
+            expect(database.query).toHaveBeenCalledTimes(3);
         });
     });
 

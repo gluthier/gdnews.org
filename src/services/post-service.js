@@ -195,10 +195,48 @@ const PostService = {
         if (title.length > 180) {
             throw new Error('Title must be 180 characters or less');
         }
+
+        await this.checkSubmissionLimit(userId, isJob);
+
         return await database.query(
             'INSERT INTO posts (user_id, title, url, description, is_job, is_promoted, promoted_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [userId, title, url || null, description || null, isJob, isPromoted, promotedDate]
         );
+    },
+
+    /**
+     * Count submissions for a user today
+     * @param {number} userId
+     * @param {boolean} isJob
+     */
+    async countSubmissionsToday(userId, isJob) {
+        const result = await database.query(
+            "SELECT COUNT(*) as count FROM posts WHERE user_id = ? AND is_job = ? AND created_at >= CURDATE() AND status != 'removed'",
+            [userId, isJob]
+        );
+        return result[0].count;
+    },
+
+    /**
+     * Check if a user has reached their submission limit
+     * @param {number} userId
+     * @param {boolean} isJob
+     */
+    async checkSubmissionLimit(userId, isJob) {
+        const users = await database.query('SELECT email_verified FROM users WHERE id = ?', [userId]);
+        if (users.length === 0) {
+            throw new Error('User not found');
+        }
+
+        const isVerified = !!users[0].email_verified;
+        const limit = isVerified ? 10 : 5;
+        const count = await this.countSubmissionsToday(userId, isJob);
+
+        if (count >= limit) {
+            const type = isJob ? 'jobs' : 'posts';
+            const verificationStatus = isVerified ? 'validated' : 'not validated';
+            throw new Error(`Daily limit reached. You can submit up to ${limit} ${type} per day because your email is ${verificationStatus}.`);
+        }
     },
 
     /**
