@@ -47,6 +47,14 @@ router.get('/schedule', requireLogin, (req, res) => {
 
 // Process Promoted Post Purchase
 router.post('/schedule', requireLogin, async (req, res, next) => {
+    return res.render('pages/promoted/schedule', { 
+        error: 'This feature is not available yet.', 
+        title: title,
+        url: url,
+        description: description,
+        minDate: new Date().toISOString().split('T')[0]
+    });
+
     const { title, url, description, promoted_date, pricing_tier } = req.body;
     
     // Store data in session to persist across redirects/cancelled payments

@@ -13,7 +13,7 @@
         <p><strong>Cost: €100.00</strong></p>
         <form action="/job/item/{{job.id}}/remove/successful" method="POST">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button type="submit" class="primary-button">remove for €100</button>
+            <button type="submit" class="primary-button" disabled>remove for €100 (not available yet)</button>
         </form>
     </div>
 

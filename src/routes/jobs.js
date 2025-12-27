@@ -156,6 +156,12 @@ router.post('/item/:id/remove/unsuccessful', requireLogin, async (req, res, next
 
 // Handle Successful Hire removal (Stripe)
 router.post('/item/:id/remove/successful', requireLogin, async (req, res, next) => {
+    return res.render('pages/job/remove', { 
+        job: post,
+        title: 'Remove Offer',
+        error: 'This feature is not available yet.'
+    });
+
     const jobId = req.params.id;
     try {
         const post = await PostService.getPostById(jobId, req.session.user.id);
