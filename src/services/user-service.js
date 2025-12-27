@@ -116,6 +116,63 @@ const UserService = {
     },
 
     /**
+     * Initiate password reset
+     * @param {string} email 
+     */
+    async initiatePasswordReset(email) {
+        const users = await database.query('SELECT id FROM users WHERE email = ?', [email]);
+        if (users.length === 0) {
+            // Don't reveal if email exists, but return early
+            return;
+        }
+
+        const userId = users[0].id;
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000); // 1 hour for reset
+
+        await database.query(
+            'INSERT INTO email_confirmations (user_id, email, token, type, expires_at) VALUES (?, ?, ?, ?, ?)',
+            [userId, email, token, 'PASSWORD_RESET', expiresAt]
+        );
+
+        await EmailService.sendPasswordResetEmail(email, token);
+        return token;
+    },
+
+    /**
+     * Verify password reset token
+     * @param {string} token 
+     */
+    async verifyResetToken(token) {
+        const requests = await database.query(
+            'SELECT * FROM email_confirmations WHERE token = ? AND type = "PASSWORD_RESET" AND expires_at > NOW()',
+            [token]
+        );
+        return requests.length > 0 ? requests[0] : null;
+    },
+
+    /**
+     * Reset password
+     * @param {string} token 
+     * @param {string} newPassword 
+     */
+    async resetPassword(token, newPassword) {
+        const request = await this.verifyResetToken(token);
+        if (!request) {
+            throw new Error('Invalid or expired reset token');
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await database.query(
+            'UPDATE users SET password_hash = ? WHERE id = ?',
+            [hashedPassword, request.user_id]
+        );
+
+        // Delete used token
+        await database.query('DELETE FROM email_confirmations WHERE id = ?', [request.id]);
+    },
+
+    /**
      * Ensure bot user exists
      */
     async ensureBotUser() {

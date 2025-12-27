@@ -48,7 +48,7 @@ const EmailService = {
         if (transporter) {
             try {
                 const info = await transporter.sendMail({
-                    from: process.env.SMTP_FROM || '"GDNews" <noreply@example.com>',
+                    from: process.env.SMTP_FROM || '"gdnews" <noreply@gdnews.org>',
                     to: to,
                     subject: subject,
                     text: text,
@@ -62,13 +62,41 @@ const EmailService = {
                 // Fall through to logging
             }
         }
+    },
 
-        console.log('---------------------------------------------------');
-        console.log(`[SIMULATED EMAIL due to missing config or error]`);
-        console.log(`To: ${to}`);
-        console.log(`Subject: ${subject}`);
-        console.log(`Link: ${link}`);
-        console.log('---------------------------------------------------');
+    /**
+     * Send password reset email
+     * @param {string} to - Recipient email
+     * @param {string} token - Reset token
+     */
+    async sendPasswordResetEmail(to, token) {
+        const protocol = process.env.APP_PROTOCOL || 'http';
+        const domain = process.env.APP_DOMAIN || 'localhost';
+        const port = process.env.NODE_ENV === 'development' && process.env.PORT ? `:${process.env.PORT}` : '';
+        const baseUrl = `${protocol}://${domain}${port}`;
+        
+        const link = `${baseUrl}/auth/reset-password?token=${token}`;
+        const subject = 'Reset your password';
+        const text = `Please click the following link to reset your password:\n\n${link}\n\nThis link will expire in 1 hour.`;
+        const html = `<p>Please click the following link to reset your password:</p><p><a href="${link}">${link}</a></p><p>This link will expire in 1 hour.</p>`;
+
+        const transporter = this.createTransporter();
+
+        if (transporter) {
+            try {
+                const info = await transporter.sendMail({
+                    from: process.env.SMTP_FROM || '"gdnews" <noreply@gdnews.org>',
+                    to: to,
+                    subject: subject,
+                    text: text,
+                    html: html
+                });
+                console.log(`Password reset email sent: ${info.messageId}`);
+                return;
+            } catch (error) {
+                console.error('Error sending password reset email:', error);
+            }
+        }
     }
 };
 

@@ -106,4 +106,69 @@ router.get('/confirm-change-email', async (req, res, next) => {
     }
 });
 
+router.get('/forgot-password', (req, res) => {
+    res.render('pages/auth/forgot-password', { 
+        title: 'forgot password',
+        metaDescription: "Reset your gdnews account password."
+    });
+});
+
+router.post('/forgot-password', async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        await UserService.initiatePasswordReset(email);
+        // Always show success to prevent email enumeration
+        res.render('pages/auth/forgot-password', {
+            success: 'A password reset link has been sent to your email (if it exists).',
+            title: 'forgot password'
+        });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.get('/reset-password', async (req, res, next) => {
+    const { token } = req.query;
+    try {
+        const request = await UserService.verifyResetToken(token);
+        if (!request) {
+            return res.render('pages/auth/login', { error: 'Invalid or expired reset token.', title: 'login' });
+        }
+        res.render('pages/auth/reset-password', {
+            token,
+            title: 'reset password'
+        });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.post('/reset-password', async (req, res, next) => {
+    const { token, password, confirm_password } = req.body;
+    
+    if (password !== confirm_password) {
+        return res.render('pages/auth/reset-password', { 
+            token,
+            error: 'Passwords do not match',
+            title: 'reset password'
+        });
+    }
+
+    try {
+        await UserService.resetPassword(token, password);
+        res.render('pages/auth/login', { 
+            success: 'Password reset successful! You can now log in with your new password.',
+            title: 'login'
+        });
+    } catch (err) {
+        console.error(err);
+        res.render('pages/auth/login', { 
+            error: 'Failed to reset password. The link may have expired.',
+            title: 'login'
+        });
+    }
+});
+
 module.exports = router;
