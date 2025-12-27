@@ -97,7 +97,7 @@ describe('EmailService', () => {
             expect(sendMailMock).toHaveBeenCalledWith(expect.objectContaining({
                 to: to,
                 subject: 'Confirm your account',
-                html: expect.stringContaining('http://test.com/auth/confirm-email?token=test-token')
+                html: expect.stringContaining('/auth/confirm-email?token=test-token')
             }));
             expect(consoleLogSpy).toHaveBeenCalledWith('Message sent: test-message-id');
         });
@@ -107,7 +107,7 @@ describe('EmailService', () => {
 
             expect(sendMailMock).toHaveBeenCalledWith(expect.objectContaining({
                 subject: 'Confirm your new email address',
-                html: expect.stringContaining('http://test.com/auth/confirm-change-email?token=test-token')
+                html: expect.stringContaining('/auth/confirm-change-email?token=test-token')
             }));
         });
 
@@ -119,7 +119,8 @@ describe('EmailService', () => {
             expect(sendMailMock).not.toHaveBeenCalled();
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('[SIMULATED EMAIL due to missing config or error]'));
             expect(consoleLogSpy).toHaveBeenCalledWith(`To: ${to}`);
-            expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('http://test.com/auth/confirm-email?token=test-token'));
+            expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Link:'));
+            expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('/auth/confirm-email?token=test-token'));
         });
 
         it('should log error and fall back to console log if sendMail fails', async () => {
@@ -128,9 +129,25 @@ describe('EmailService', () => {
 
             await EmailService.sendConfirmationEmail(to, token, 'REGISTER');
 
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error sending email:', error);
-            expect(consoleWarnSpy).toHaveBeenCalledWith('Falling back to console log due to error.');
+            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Error sending CONFIRMATION email to test@example.com:'), 'SMTP Error');
+            expect(consoleWarnSpy).toHaveBeenCalledWith('Falling back to console log/simulation due to email sending failure.');
             expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('[SIMULATED EMAIL due to missing config or error]'));
+        });
+
+        it('should handle RBL blacklisting error', async () => {
+            const rblErrorMessage = '554 5.7.1 mipocey919@gmail.com is rbl blacklisted - http://chk.me/rbl';
+            const error = new Error('Message failed');
+            error.response = rblErrorMessage;
+            error.responseCode = 554;
+            
+            sendMailMock.mockRejectedValue(error);
+
+            await EmailService.sendConfirmationEmail(to, token, 'REGISTER');
+
+            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Email Error: RBL Blacklisted while sending CONFIRMATION to test@example.com.'));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Check RBL status here: http://chk.me/rbl'));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining(`SMTP Response: ${rblErrorMessage}`));
+            expect(consoleWarnSpy).toHaveBeenCalledWith('Falling back to console log/simulation due to email sending failure.');
         });
     });
 });

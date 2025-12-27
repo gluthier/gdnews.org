@@ -57,8 +57,7 @@ const EmailService = {
                 console.log(`Message sent: ${info.messageId}`);
                 return;
             } catch (error) {
-                console.error('Error sending email:', error);
-                console.warn('Falling back to console log due to error.');
+                this._handleSmtpError(error, { to, subject, type: 'CONFIRMATION' });
                 // Fall through to logging
             }
         }
@@ -100,8 +99,7 @@ const EmailService = {
                 console.log(`Password reset email sent: ${info.messageId}`);
                 return;
             } catch (error) {
-                console.error('Error sending password reset email:', error);
-                console.warn('Falling back to console log due to error.');
+                this._handleSmtpError(error, { to, subject, type: 'PASSWORD_RESET' });
                 // Fall through to logging
             }
         }
@@ -111,6 +109,44 @@ const EmailService = {
         console.log(`To: ${to}`);
         console.log(`Subject: ${subject}`);
         console.log(`Link: ${link}`);
+    },
+
+    /**
+     * Handle SMTP errors with specific categorization and logging
+     * @param {Error} error - The error from Nodemailer
+     * @param {Object} context - Metadata about the failed email
+     * @private
+     */
+    _handleSmtpError(error, context) {
+        let isRblBlacklisted = false;
+        let rblLink = null;
+
+        if (error.response) {
+            // Check for RBL blacklisting
+            // Example: "554 5.7.1 mipocey919@gmail.com is rbl blacklisted - http://chk.me/rbl"
+            if (error.response.toLowerCase().includes('rbl blacklisted')) {
+                isRblBlacklisted = true;
+                const match = error.response.match(/https?:\/\/[^\s]+/);
+                if (match) {
+                    rblLink = match[0];
+                }
+            }
+        }
+
+        if (isRblBlacklisted) {
+            console.error(`Email Error: RBL Blacklisted while sending ${context.type} to ${context.to}.`);
+            if (rblLink) {
+                console.error(`Check RBL status here: ${rblLink}`);
+            }
+            console.error(`SMTP Response: ${error.response}`);
+        } else {
+            console.error(`Error sending ${context.type} email to ${context.to}:`, error.message || error);
+            if (error.response) {
+                console.error(`SMTP Response: ${error.response}`);
+            }
+        }
+
+        console.warn('Falling back to console log/simulation due to email sending failure.');
     }
 };
 
