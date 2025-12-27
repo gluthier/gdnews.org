@@ -251,13 +251,13 @@ footer {
     .post-title {
         font-size: @font-size-large;
         color: @color-dark-font;
-        line-height: 1;
+        line-height: @touch-target-size;
 
         a {
             color: @color-dark-font;
-            display: inline-flex;
-            align-items: center;
-            min-height: @touch-target-size;
+            line-height: @touch-target-size;
+            display: inline;
+            padding: 2.25px 0;
 
             &:visited {
                 color: @color-light-font;
@@ -267,6 +267,9 @@ footer {
         .domain {
             font-size: @font-size-small;
             color: @color-light-font;
+            line-height: @touch-target-size;
+            display: inline;
+            padding: 2.25px 0;
         }
 
         .job-symbol,
