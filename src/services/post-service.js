@@ -127,8 +127,10 @@ const PostService = {
                         u.user_type,
                         COUNT(c.id) as comment_count,
                         (
-                          100 / POW(TIMESTAMPDIFF(HOUR, p.created_at, NOW()) + 2, 1.8) + 
-                          COALESCE(SUM(10 / POW(TIMESTAMPDIFF(HOUR, c.created_at, NOW()) + 2, 1.8)), 0)
+                          (
+                            100 / POW(TIMESTAMPDIFF(HOUR, p.created_at, NOW()) + 2, 1.8) + 
+                            COALESCE(SUM(10 / POW(TIMESTAMPDIFF(HOUR, c.created_at, NOW()) + 2, 1.8)), 0)
+                          ) * (CASE WHEN u.user_type = 'bot' THEN 0.3 ELSE 1.0 END)
                         ) as activity_score,
                         EXISTS(SELECT 1 FROM favourites f WHERE f.post_id = p.id AND f.user_id = ?) as isFavorited
                     FROM posts p 

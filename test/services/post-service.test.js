@@ -22,6 +22,13 @@ describe('PostService', () => {
             expect(callArgs[0]).toContain('LIMIT ? OFFSET ?');
         });
 
+        it('should include bot penalty in home posts score', async () => {
+            await PostService.getPosts({ type: 'home' });
+            
+            const callArgs = database.query.mock.calls[0];
+            expect(callArgs[0]).toContain("CASE WHEN u.user_type = 'bot' THEN 0.3 ELSE 1.0 END");
+        });
+
         it('should fetch newest posts', async () => {
             await PostService.getPosts({ type: 'newest' });
             
