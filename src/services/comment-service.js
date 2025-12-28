@@ -51,6 +51,39 @@ const fetchCommentsForPost = async (postId) => {
     return rootComments;
 };
 
+/**
+ * Get all comments with pagination
+ * @param {Object} options
+ */
+const getAllComments = async ({ page = 1, limit = 50 }) => {
+    const offset = (page - 1) * limit;
+    const comments = await database.query(`
+        SELECT c.*, u.username, p.title as post_title 
+        FROM comments c 
+        JOIN users u ON c.user_id = u.id 
+        JOIN posts p ON c.post_id = p.id 
+        ORDER BY c.created_at DESC 
+        LIMIT ? OFFSET ?
+    `, [limit, offset]);
+
+    const countResult = await database.query('SELECT COUNT(*) as count FROM comments');
+    
+    return {
+        comments,
+        count: Number(countResult[0].count)
+    };
+};
+
+/**
+ * Get total comment count
+ */
+const getCommentCount = async () => {
+    const countResult = await database.query('SELECT COUNT(*) as count FROM comments');
+    return Number(countResult[0].count);
+};
+
 module.exports = {
-    fetchCommentsForPost
+    fetchCommentsForPost,
+    getAllComments,
+    getCommentCount
 };

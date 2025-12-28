@@ -1,0 +1,128 @@
+
+{{> header}}
+
+<div class="moderation-container">
+    <h1>Moderation</h1>
+    
+    <div class="tabs">
+        <a href="/moderation/comments" class="{{#if (eq moderationType 'comments')}}active{{/if}}">Comments ({{commentCount}})</a>
+        <a href="/moderation/users" class="{{#if (eq moderationType 'users')}}active{{/if}}">Users ({{userCount}})</a>
+    </div>
+
+    {{#if (eq moderationType 'users')}}
+        <table class="moderation-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Created At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td><a href="/user/profile/{{this.username}}">{{this.username}}</a></td>
+                    <td>{{this.email}}</td>
+                    <td>{{this.user_type}}</td>
+                    <td>{{formatDateFull this.created_at}}</td>
+                    <td>
+                        {{#if this.email_verified}}
+                            <span class="status-verified">Verified</span>
+                        {{else}}
+                            <span class="status-unverified">Unverified</span>
+                        {{/if}}
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    {{/if}}
+
+    {{#if (eq moderationType 'comments')}}
+        <div class="moderation-comments-list">
+            {{#each items}}
+            <div class="moderation-comment-item">
+                <div class="comment-meta">
+                    <span class="comment-author">
+                        <a href="/user/profile/{{this.username}}">{{this.username}}</a>
+                    </span>
+                    <span class="comment-date">{{formatDateFull this.created_at}}</span>
+                    <span class="comment-post">
+                        on <a href="/post/item/{{this.post_id}}">{{this.post_title}}</a>
+                    </span>
+                    {{#if this.replied_to_comment_id}}
+                         <span class="comment-reply">
+                            (replying to comment #{{this.replied_to_comment_id}})
+                        </span>
+                    {{/if}}
+                </div>
+                <div class="comment-content">
+                    {{formatTextBlockContent this.content}}
+                </div>
+                 <div class="comment-actions">
+                     <a href="/post/item/{{this.post_id}}#comment-{{this.id}}">View Context</a>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    {{/if}}
+    
+    <div class="pagination">
+        {{#if prevPage}}
+            <a href="/moderation/{{moderationType}}?page={{prevPage}}" class="prev-page">Previous</a>
+        {{/if}}
+        
+        <span class="page-info">Page {{page}} of {{totalPages}}</span>
+        
+        {{#if nextPage}}
+            <a href="/moderation/{{moderationType}}?page={{nextPage}}" class="next-page">Next</a>
+        {{/if}}
+    </div>
+</div>
+
+
+<style>
+    .moderation-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .moderation-table th, .moderation-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .moderation-table th {
+        background-color: #f2f2f2;
+    }
+    .moderation-comments-list {
+        margin-top: 20px;
+    }
+    .moderation-comment-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+    .comment-meta {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 5px;
+    }
+    .comment-content {
+        margin-bottom: 5px;
+    }
+    .comment-actions {
+        font-size: 0.8em;
+    }
+    .pagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+{{> footer}}

@@ -22,7 +22,11 @@
                     <li><a href="/post/newest">newest</a></li>
                     <li><a href="/promoted/upcoming">upcoming</a></li>
                     <li class="nav-break"><a href="/job/list">jobs</a></li>
+                    
                     <div class="nav-auth">
+                        {{#if (eq user.user_type 'admin')}}
+                            <li><a href="/moderation">mod</a></li>
+                        {{/if}}
                         <li><a href="/post/submit">submit</a></li>
                         {{#if user}}
                         <li><a href="/user/profile/{{user.username}}">{{user.username}}</a></li>

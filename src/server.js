@@ -133,6 +133,7 @@ const postRoutes = require('./routes/posts');
 const promotedRoutes = require('./routes/promoted');
 const jobRoutes = require('./routes/jobs');
 const userRoutes = require('./routes/users');
+const moderationRoutes = require('./routes/moderation');
 const staticRoutes = require('./routes/static');
 
 // Routes
@@ -142,6 +143,7 @@ app.use('/post', postRoutes);
 app.use('/promoted', promotedRoutes);
 app.use('/job', jobRoutes);
 app.use('/user', userRoutes);
+app.use('/moderation', moderationRoutes);
 app.use('/', staticRoutes);
 
 // 404 Handler

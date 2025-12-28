@@ -50,6 +50,31 @@ const UserService = {
     },
 
     /**
+     * Get all users with pagination
+     * @param {Object} options
+     */
+    async getAllUsers({ page = 1, limit = 50 }) {
+        const offset = (page - 1) * limit;
+        const users = await database.query(
+            'SELECT * FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
+        const countResult = await database.query('SELECT COUNT(*) as count FROM users');
+        return {
+            users,
+            count: Number(countResult[0].count)
+        };
+    },
+
+    /**
+     * Get total user count
+     */
+    async getUserCount() {
+        const countResult = await database.query('SELECT COUNT(*) as count FROM users');
+        return Number(countResult[0].count);
+    },
+
+    /**
      * Update user email
      * @param {number} userId 
      * @param {string} email 
