@@ -34,12 +34,12 @@
             </a></li>
 
             {{#if (eq type 'promoted')}}
-            <li><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
+            <li><span class="post-date"><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></span></li>
             {{else}}
                 {{#if is_promoted}}
-                <li><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></li>
+                <li><span class="post-date"><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></span></li>
                 {{else}}
-                <li><span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
+                <li><span class="post-date" title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
                 {{/if}}
             {{/if}}
 

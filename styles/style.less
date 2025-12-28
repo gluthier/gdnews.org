@@ -86,13 +86,11 @@ header {
         padding: @spacing-sm @spacing-md;
 
         .inline-list {
-            width: 100%;
             flex-wrap: wrap;
             font-size: @font-size-medium;
-            
-            .auth-separator {
-                margin-left: auto;
-            }
+            gap: @spacing-lg;
+            row-gap: @spacing-md;
+            width: 100%;
 
             li a {
                 color: @color-white;
@@ -101,6 +99,21 @@ header {
             li a:hover {
                 color: @color-white;
                 text-decoration: underline;
+            }
+
+            .nav-break {
+                flex: 1;
+
+                @media (max-width: 330px) {
+                    flex: initial;
+                }
+            }
+
+            .nav-auth {
+                display: flex;
+                flex-wrap: wrap;
+                gap: @spacing-lg;
+                row-gap: @spacing-md;
             }
         }
 
@@ -161,10 +174,17 @@ footer {
     align-items: center;
     color: @color-light-font;
     font-size: @font-size-small;
+    flex-wrap: wrap;
+    row-gap: @spacing-xs;
 
     li {
         display: flex;
         align-items: center;
+
+        .post-date {
+            min-height: @touch-target-size;
+            line-height: @touch-target-size;
+        }
     }
 
     a,
@@ -177,6 +197,7 @@ footer {
         justify-content: center;
         min-width: @touch-target-size;
         min-height: @touch-target-size;
+        line-height: @touch-target-size;
 
         &:hover {
             color: @color-dark-font;
@@ -187,13 +208,6 @@ footer {
                 display: inline-block;
             }
         }
-    }
-
-    /* Small Screen Adjustment */
-    @media (max-width: 350px) {
-        flex-wrap: wrap;
-        gap: @spacing-sm; /* Reduce gap to prevent overflow */
-        justify-content: center; /* Center items when wrapped */
     }
 }
 
