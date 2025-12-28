@@ -24,6 +24,33 @@ router.post('/register', async (req, res, next) => {
         });
     }
 
+    if (username.length < 3) {
+        return res.render('pages/auth/register', { 
+            error: 'Username must be at least 3 characters long', 
+            title: 'register',
+            username,
+            email
+        });
+    }
+
+    if (username.length > 24) {
+        return res.render('pages/auth/register', { 
+            error: 'Username must be at most 24 characters long', 
+            title: 'register',
+            username,
+            email
+        });
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        return res.render('pages/auth/register', { 
+            error: 'Username can only contain letters, numbers, and underscores', 
+            title: 'register',
+            username,
+            email
+        });
+    }
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         await UserService.createUser({ username, password_hash: hashedPassword, email });
