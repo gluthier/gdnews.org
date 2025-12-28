@@ -4,7 +4,7 @@
     <div class="user-header">
         <h2>
             {{#if (eq profileUser.user_type 'bot')}}
-            <span title="This is an automated account"><span class="bot-emoji">☰</span>{{profileUser.username}}</span> <span class="account-type-info">(automated account)</span>
+            <span title="automated account"><span class="bot-emoji">☰</span>{{profileUser.username}}</span> <span class="account-type-info">(automated account)</span>
             {{/if}}
             {{#if (eq profileUser.user_type 'admin')}}
             <span>{{profileUser.username}}</span> <span class="account-type-info">(admin)</span>

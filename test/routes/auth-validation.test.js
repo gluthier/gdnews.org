@@ -38,7 +38,7 @@ describe('Username Validation', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.text).toContain('Username must be at least 3 characters long');
-    });ß
+    });
 
     test('Fails when username is too long (> 24 chars)', async () => {
         const res = await agent

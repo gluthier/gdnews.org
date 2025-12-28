@@ -168,6 +168,27 @@ describe('Helper Functions', () => {
 
              jest.useRealTimers();
         });
+
+        test('isToday returns true for current date', () => {
+             jest.useFakeTimers();
+             jest.setSystemTime(new Date('2025-12-09T14:00:00'));
+             
+             expect(helpers.isToday('2025-12-09T08:00:00')).toBe(true);
+             expect(helpers.isToday('2025-12-09T23:59:59')).toBe(true);
+             
+             jest.useRealTimers();
+        });
+
+        test('isToday returns false for different dates', () => {
+             jest.useFakeTimers();
+             jest.setSystemTime(new Date('2025-12-09T14:00:00'));
+             
+             expect(helpers.isToday('2025-12-08T23:59:59')).toBe(false);
+             expect(helpers.isToday('2025-12-10T00:00:01')).toBe(false);
+             expect(helpers.isToday('2024-12-09T14:00:00')).toBe(false);
+             
+             jest.useRealTimers();
+        });
     });
 
     // Array / Collection Helpers

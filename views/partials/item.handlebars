@@ -28,19 +28,25 @@
             {{/unless}}
 
             <li><a href="/user/profile/{{username}}">
-            {{#if (eq user_type 'bot')}}<span title="This is an automated account"><span class="bot-emoji">☰</span>{{username}}</span>
+            {{#if (eq user_type 'bot')}}<span title="automated account"><span class="bot-emoji">☰</span>{{username}}</span>
             {{else}}{{username}}
             {{/if}}
             </a></li>
 
             {{#if (eq type 'promoted')}}
-            <li><span class="post-date"><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></span></li>
-            {{else}}
-                {{#if is_promoted}}
-                <li><span class="post-date"><strong>scheduled for {{formatDatePromotedPost promoted_date}}</strong></span></li>
+                <li><span class="post-date" title="{{formatDateFull promoted_date}}"><strong>
+                    scheduled for {{formatDatePromotedPost promoted_date}}
+                </strong></span></li>
+            {{else if is_promoted}}
+                {{#if (isToday promoted_date)}}
+                <li><span class="post-date" title="{{formatDateFull promoted_date}}"><strong>
+                    scheduled for today
+                </strong></span></li>
                 {{else}}
-                <li><span class="post-date" title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
+                <li><span class="post-date" title="{{formatDateFull promoted_date}}">scheduled {{formatDate promoted_date}}</span></li>
                 {{/if}}
+            {{else}}
+                <li><span class="post-date" title="{{formatDateFull created_at}}">{{formatDate created_at}}</span></li>
             {{/if}}
 
             {{#if isDetail}}
