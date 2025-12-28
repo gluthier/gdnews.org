@@ -291,13 +291,31 @@ footer {
             padding: 2.25px 0;
         }
 
-        .job-symbol,
-        .promoted-symbol {
+        .job-symbol {
             text-decoration: none;
             display: inline-flex;
             min-width: @touch-target-size;
             min-height: @touch-target-size;
             line-height: 1;
+
+            &:hover {
+                text-decoration: none;
+            }
+
+            &:hover ~ a {
+                text-decoration: underline;
+            }
+        }
+
+        .promoted-symbol {
+            text-decoration: none;
+            display: inline-flex;
+            min-width: @touch-target-size;
+            height: @touch-target-size;
+            line-height: 1;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
 
             &:hover {
                 text-decoration: none;
