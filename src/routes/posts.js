@@ -141,7 +141,9 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
 
             res.render('partials/comment', {
                 layout: false,
-                ...newComment
+                ...newComment,
+                csrfToken: req.csrfToken(),
+                post: { id: postId }
             }, (err, html) => {
                 if (err) {
                     console.error('Render error:', err);

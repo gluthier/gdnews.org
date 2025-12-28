@@ -3,6 +3,7 @@
 @color-light-font: #66756A;
 @color-dark-background: #18311d;
 @color-light-background: #f2f8f4;
+@color-highlight-background: #d3e8d7;
 @color-highlight-border: #bcd6c1;
 @color-white: #ffffff;
 @color-error: #eb0808;
@@ -332,7 +333,16 @@ footer {
 }
 
 .comment {
-    margin: @spacing-md 0;
+    .comment-main {
+        padding: @spacing-xs @spacing-sm;
+        border: 1px solid transparent;
+        border-radius: @border-radius;
+
+        &.target-highlight {
+            border-color: @color-highlight-border;
+            background-color: @color-highlight-background;
+        }
+    }
 
     .comment {
         margin-left: @spacing-lg;

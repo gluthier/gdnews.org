@@ -186,4 +186,71 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+    
+    function handleDeepLink() {
+        // Remove existing highlights
+        document.querySelectorAll('.target-highlight').forEach(el => {
+            el.classList.remove('target-highlight');
+        });
+
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#comment-')) {
+            const targetId = hash.substring(1); // 'comment-123'
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                // Apply highlight class
+                targetElement.classList.add('target-highlight');
+
+                // Walk up the DOM to find any hidden parent containers (e.g. from 'show more')
+                let current = targetElement;
+                while (current && current !== document.body) {
+                    // Check if this element is a hidden container controlled by show-more
+                    // The structure is usually button.show-more-btn + div(hidden)
+                    if (current.style.display === 'none' && current.parentElement.classList.contains('show-more')) {
+                         current.style.display = 'block';
+                         const btn = current.parentElement.querySelector('.show-more-btn');
+                         if (btn) btn.style.display = 'none';
+                    }
+                    
+                    // Also check for the children-{id} container which might be hidden by "toggle children"
+                    // Structure: div.comment -> div.meta -> ul -> li -> button.toggle-children-btn
+                    // The container we are inside is div#children-{id}
+                    if (current.id && current.id.startsWith('children-') && current.style.display === 'none') {
+                         current.style.display = 'block';
+                         // Find the button that controls this
+                         const commentId = current.id.replace('children-', '');
+                         const toggleBtn = document.querySelector(`.toggle-children-btn[data-comment-id="${commentId}"]`);
+                         if (toggleBtn) {
+                             toggleBtn.innerText = 'hide';
+                         }
+                    }
+
+                    current = current.parentElement;
+                }
+                
+                // Scroll to target
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+    }
+
+    // Run on load
+    handleDeepLink();
+    
+    // Run on hash change (e.g. clicking links on the same page)
+    window.addEventListener('hashchange', handleDeepLink);
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            // Remove highlight class manually
+            document.querySelectorAll('.target-highlight').forEach(el => {
+                el.classList.remove('target-highlight');
+            });
+            // Remove hash without scrolling
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    });
 });
