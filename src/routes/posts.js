@@ -219,8 +219,16 @@ router.post('/item/:id/comment/:commentId/remove', requireLogin, async (req, res
         }
         
         await CommentService.deleteComment(commentId);
+        
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.json({ status: 'success' });
+        }
+
         res.redirect(req.get('Referrer') || `/post/item/${postId}`);
     } catch (err) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.status(500).json({ error: 'Deletion failed' });
+        }
         next(err);
     }
 });

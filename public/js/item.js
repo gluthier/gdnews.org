@@ -154,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: `_csrf=${link.dataset.csrf}`
                     });
@@ -161,7 +163,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.redirected) {
                          window.location.href = response.url;
                     } else if (response.ok) {
-                         window.location.reload(); 
+                         // Check if it's a JSON response
+                         const contentType = response.headers.get("content-type");
+                         if (contentType && contentType.indexOf("application/json") !== -1) {
+                             const data = await response.json();
+                             if (data.status === 'success') {
+                                 // Update UI in place
+                                 const commentMeta = link.closest('.comment-meta');
+                                 const commentMain = link.closest('.comment-main');
+                                 
+                                 if (commentMain) {
+                                     // Update content
+                                     const contentDiv = commentMain.querySelector('.comment-content');
+                                     if (contentDiv) {
+                                         contentDiv.textContent = '[removed]';
+                                     }
+                                     
+                                     // Update username in meta
+                                     if (commentMeta) {
+                                         // The first li usually contains the user profile link
+                                         const userLi = commentMeta.querySelector('li:first-child');
+                                         if (userLi) {
+                                            userLi.textContent = '[removed]';
+                                         }
+                                         
+                                         // Remove the delete button li
+                                         const removeLi = link.closest('li');
+                                         if (removeLi) {
+                                             removeLi.remove();
+                                         }
+                                     }
+                                 }
+                             }
+                         } else {
+                            // Fallback if not JSON (though it should be with the headers set)
+                            window.location.reload(); 
+                         }
                     } else {
                         console.error('Removal failed');
                          alert('Failed to remove item.');

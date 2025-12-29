@@ -24,6 +24,9 @@ describe('Auth - Ban Check on Login', () => {
 
     beforeEach(async () => {
         jest.clearAllMocks();
+        // Add mock for updateLastConnection as it is called in successful login and must be a promise
+        UserService.updateLastConnection = jest.fn().mockResolvedValue(); 
+
         agent = request.agent(app);
         
         // Fetch login page to get CSRF token

@@ -65,7 +65,7 @@ describe('Username Validation', () => {
             });
 
         expect(res.statusCode).toBe(200);
-        expect(res.text).toContain('Username can only contain letters, numbers, and underscores');
+        expect(res.text).toContain('Username can only contain letters, numbers, underscores and hyphens');
     });
 
     test('Fails when username contains special characters', async () => {
@@ -79,7 +79,7 @@ describe('Username Validation', () => {
             });
 
         expect(res.statusCode).toBe(200);
-        expect(res.text).toContain('Username can only contain letters, numbers, and underscores');
+        expect(res.text).toContain('Username can only contain letters, numbers, underscores and hyphens');
     });
 
     test('Fails when username contains "gdnews"', async () => {
