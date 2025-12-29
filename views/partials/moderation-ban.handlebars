@@ -1,7 +1,7 @@
 {{#if (and (isAdminNotOwner @root.user this) (neq this.username '[removed]'))}}
     {{#if (eq this.ban_type 'normal')}}
     <li>
-        <form action="/moderation/user/{{this.id}}/ban" method="POST" style="display:inline;" class="ban-form">
+        <form action="/moderation/user/{{commentUserId}}/ban" method="POST" style="display:inline;" class="ban-form">
             <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
             <input type="hidden" name="returnTo" value="/moderation/{{@root.moderationType}}">
             <select name="banType" class="ban-select">

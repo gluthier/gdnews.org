@@ -33,7 +33,7 @@
                 <ul class="inline-list moderation-actions">
                     <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">View Context</a></li>
                     <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">remove</a></li>
-                    {{> moderation-ban this}}
+                    {{> moderation-ban this commentUserId=this.user_id}}
                 </ul>
             </div>
             {{/each}}
@@ -70,11 +70,9 @@
                     {{/if}}
                 </div>
                 
-                <div class="user-actions moderation-actions">
-                    <ul class="inline-list">
-                    {{> moderation-ban this}}
-                    </ul>
-                </div>
+                <ul class="inline-list moderation-actions">
+                    {{> moderation-ban this commentUserId=this.id}}
+                </ul>
             </div>
             {{/each}}
         </div>
@@ -139,10 +137,6 @@
     .detail-item {
         margin-right: 15px;
         display: inline-block;
-    }
-
-    .user-actions {
-        margin-top: 5px;
     }
 
     @media (max-width: 600px) {

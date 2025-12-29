@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const link = e.target;
             // Traverse up to the action list to find the form
-            const container = link.closest('.moderation-actions') || link.closest('.user-actions');
+            const container = link.closest('.moderation-actions');
             if (container) {
                 const form = container.querySelector('form.ban-form');
                 if (form) {

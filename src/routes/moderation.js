@@ -20,32 +20,6 @@ router.get('/', (req, res) => {
     res.redirect('/moderation/comments');
 });
 
-// Users list
-router.get('/users', async (req, res, next) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 50;
-        const { users, count } = await UserService.getAllUsers({ page, limit });
-        const commentCount = await CommentService.getCommentCount();
-
-        res.render('pages/moderation/index', {
-            title: 'Moderation - Users',
-            user: req.session.user,
-            moderationType: 'users',
-            items: users,
-            page,
-            totalPages: Math.ceil(count / limit),
-            nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
-            prevPage: page > 1 ? page - 1 : null,
-            userCount: count,
-            commentCount,
-            csrfToken: req.csrfToken()
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-
 // Comments list
 router.get('/comments', async (req, res, next) => {
     try {
@@ -65,6 +39,32 @@ router.get('/comments', async (req, res, next) => {
             prevPage: page > 1 ? page - 1 : null,
             userCount,
             commentCount: count,
+            csrfToken: req.csrfToken()
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Users list
+router.get('/users', async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 50;
+        const { users, count } = await UserService.getAllUsers({ page, limit });
+        const commentCount = await CommentService.getCommentCount();
+
+        res.render('pages/moderation/index', {
+            title: 'Moderation - Users',
+            user: req.session.user,
+            moderationType: 'users',
+            items: users,
+            page,
+            totalPages: Math.ceil(count / limit),
+            nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
+            prevPage: page > 1 ? page - 1 : null,
+            userCount: count,
+            commentCount,
             csrfToken: req.csrfToken()
         });
     } catch (err) {
