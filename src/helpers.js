@@ -61,6 +61,7 @@ const helpers = {
             .replace(/\n+/g, '\n\n');
     },
     eq: (v1, v2) => v1 === v2,
+    neq: (v1, v2) => v1 !== v2,
     gt: (v1, v2) => v1 > v2,
     lt: (v1, v2) => v1 < v2,
     add: (v1, v2) => v1 + v2,
@@ -119,6 +120,9 @@ const helpers = {
     },
     canUserRemovePromotedPost: (post, user, isDetail) => {
         return (isDetail && post.is_promoted && isUserOwner(user, post));
+    },
+    isAdmin: (user) => {
+        return isUserAdmin(user);
     },
     isAdminNotOwner: (user, post) => {
         return isUserAdmin(user) && !isUserOwner(user, post);

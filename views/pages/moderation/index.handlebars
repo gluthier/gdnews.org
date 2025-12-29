@@ -67,18 +67,35 @@
                 </div>
                 <ul class="inline-list comment-actions">
                     <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">View Context</a></li>
-                    <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action text-danger" data-csrf="{{@root.csrfToken}}">remove</a></li>
-                    <li>
-                        <form action="/moderation/user/{{this.user_id}}/ban" method="POST" style="display:inline;">
-                            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
-                            <select name="banType" onchange="if(confirm('Ban user ' + '{{this.username}}' + ' as ' + this.value + '?')) this.form.submit(); else this.value='';">
-                                <option value="">Ban User...</option>
-                                <option value="24hBanned">24 Hours</option>
-                                <option value="7dBanned">7 Days</option>
-                                <option value="LifeBanned">Lifetime</option>
-                            </select>
-                        </form>
-                    </li>
+                    <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">remove</a></li>
+                    {{#if (and (isAdminNotOwner @root.user this) (neq this.username '[removed]'))}}
+                        {{#if (eq this.ban_type 'normal')}}
+                        <li>
+                            <form action="/moderation/user/{{this.user_id}}/ban" method="POST" style="display:inline;" class="ban-form">
+                                <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                                <select name="banType" class="ban-select">
+                                    <option value="">Ban User...</option>
+                                    <option value="24hBanned">24 Hours</option>
+                                    <option value="7dBanned">7 Days</option>
+                                    <option value="LifeBanned">Lifetime</option>
+                                </select>
+                            </form>
+                        </li>
+                        <li>
+                            <a href="#" class="ban-confirm-link text-button" style="display:none; color: #eb0808; margin-left: 5px;">confirm ban</a>
+                        </li>
+                        {{else}}
+                            <li>
+                                <span class="text-button" style="color: #eb0808; cursor: default;">
+                                    {{#if (eq this.ban_type 'LifeBanned')}}
+                                        Permanently Banned
+                                    {{else}}
+                                        Banned until {{formatDateFull this.banned_until}}
+                                    {{/if}}
+                                </span>
+                            </li>
+                        {{/if}}
+                    {{/if}}
                 </ul>
             </div>
             {{/each}}
@@ -99,5 +116,33 @@
 </div>
 
 <script src="{{assetUrl '/js/item.js'}}" defer></script>
+<script src="{{assetUrl '/js/moderation.js'}}" defer></script>
+
+<style>
+    .moderation-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    }
+
+    .moderation-comments-list {
+        margin-top: 20px;
+    }
+
+    .moderation-comment-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+</style>
 
 {{> footer}}

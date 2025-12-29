@@ -90,6 +90,19 @@ router.post('/login', async (req, res, next) => {
             return res.render('pages/auth/login', { error: 'Invalid username or password', title: 'login' });
         }
 
+        // Check if user is banned
+        const banDetails = await UserService.checkBanStatus(user);
+        if (banDetails) {
+            let message = 'Your account has been banned.';
+            if (banDetails.until) {
+                const dateStr = banDetails.until.toLocaleString();
+                message = `Your account has been banned until ${dateStr}.`;
+            } else if (banDetails.type === 'LifeBanned') {
+                message = 'Your account has been permanently banned.';
+            }
+            return res.render('pages/auth/login', { error: message, title: 'login' });
+        }
+
         req.session.user = { 
             id: user.id, 
             username: user.username, 

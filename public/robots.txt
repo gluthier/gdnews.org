@@ -9,3 +9,4 @@ Disallow: /promoted-cancel
 Disallow: /favorite/
 Disallow: /unfavorite/
 Disallow: /item/*/comment
+Disallow: /moderation/

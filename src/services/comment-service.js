@@ -62,7 +62,7 @@ const fetchCommentsForPost = async (postId) => {
 const getAllComments = async ({ page = 1, limit = 50 }) => {
     const offset = (page - 1) * limit;
     const comments = await database.query(`
-        SELECT c.*, u.username, p.title as post_title 
+        SELECT c.*, u.username, u.ban_type, u.banned_until, p.title as post_title 
         FROM comments c 
         JOIN users u ON c.user_id = u.id 
         JOIN posts p ON c.post_id = p.id 
