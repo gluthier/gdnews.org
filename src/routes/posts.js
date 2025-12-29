@@ -192,13 +192,34 @@ router.post('/item/:id/remove', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
         const post = await PostService.getPostById(postId, req.session.user.id);
+        const isAdmin = req.session.user.user_type === 'admin';
 
-        if (!post || post.user_id !== req.session.user.id) {
+        if (!post || (post.user_id !== req.session.user.id && !isAdmin)) {
             return res.status(403).send('Unauthorized');
         }
 
         await PostService.updatePostStatus(postId, 'removed');
         res.redirect('/');
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Handle Comment Removal
+const CommentService = require('../services/comment-service');
+router.post('/item/:id/comment/:commentId/remove', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    const commentId = req.params.commentId;
+    try {
+        const comment = await CommentService.getCommentById(commentId);
+        const isAdmin = req.session.user.user_type === 'admin';
+
+        if (!comment || (comment.user_id !== req.session.user.id && !isAdmin)) {
+             return res.status(403).send('Unauthorized');
+        }
+        
+        await CommentService.deleteComment(commentId);
+        res.redirect(req.get('Referrer') || `/post/item/${postId}`);
     } catch (err) {
         next(err);
     }

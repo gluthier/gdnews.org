@@ -17,9 +17,9 @@ const fetchCommentsForPost = async (postId) => {
     const rootComments = [];
 
     comments.forEach(comment => {
-        if (comment.is_deleted) {
-            comment.content = '[deleted]';
-            comment.username = '[deleted]';
+        if (comment.is_removed) {
+            comment.content = '[removed]';
+            comment.username = '[removed]';
         }
         comment.children = [];
         commentMap[comment.id] = comment;
@@ -73,9 +73,9 @@ const getAllComments = async ({ page = 1, limit = 50 }) => {
     const countResult = await database.query('SELECT COUNT(*) as count FROM comments');
     
     comments.forEach(comment => {
-        if (comment.is_deleted) {
-            comment.content = '[deleted]';
-            comment.username = '[deleted]';
+        if (comment.is_removed) {
+            comment.content = '[removed]';
+            comment.username = '[removed]';
         }
     });
 
@@ -104,7 +104,7 @@ const getCommentById = async (id) => {
 const deleteComment = async (id) => {
     console.log(`Deleting comment ${id}`);
     const result = await database.query(
-        'UPDATE comments SET is_deleted = 1 WHERE id = ?',
+        'UPDATE comments SET is_removed = 1 WHERE id = ?',
         [id]
     );
     console.log('Delete result:', result);
@@ -118,7 +118,7 @@ const deleteComment = async (id) => {
  */
 const updateComment = async (id, content) => {
     return await database.query(
-        'UPDATE comments SET content = ?, is_edited = 1 WHERE id = ?',
+        'UPDATE comments SET content = ? WHERE id = ?',
         [content, id]
     );
 };

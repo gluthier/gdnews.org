@@ -5,16 +5,6 @@
  * Renders a new comment into the DOM after successful submission.
  * @param {string} commentHtml - The comment HTML string returned from the server.
  * @param {Object|null} parentId - The ID of the parent comment, if any (extracted from the form or response, but here we might need to parse it or pass it separately. 
- * Actually, the HTML itself doesn't easily tell us the parent ID unless we parse it. 
- * But the caller `request` knows the parent ID if we return it or if we look at the form.
- * The previous logic used `comment.parent_comment_id`.
- * The server response is now just HTML.
- * However, we still need to know WHERE to put it.
- * The `commentHtml` is just the `div.comment`.
- * We can modify the server to return JSON again but with `{ html: "...", parentId: "..." }` OR we can extract it.
- * OR we can inspect the form that was submitted to know the parent ID!
- * The `submit` event handler has access to the form.
- * Let's change the `renderNewComment` signature to accept `(commentHtml, parentId)`.
  */
 function renderNewComment(commentHtml, parentId) {
     let container;

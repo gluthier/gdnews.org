@@ -125,7 +125,9 @@ router.get('/item/:id/remove', requireLogin, async (req, res, next) => {
             return next(err);
         }
 
-        if (post.user_id !== req.session.user.id) {
+        const isAdmin = req.session.user.user_type === 'admin';
+
+        if (post.user_id !== req.session.user.id && !isAdmin) {
             const err = new Error('Unauthorized');
             err.status = 403;
             return next(err);
@@ -142,8 +144,9 @@ router.post('/item/:id/remove/unsuccessful', requireLogin, async (req, res, next
     const jobId = req.params.id;
     try {
         const post = await PostService.getPostById(jobId, req.session.user.id);
+        const isAdmin = req.session.user.user_type === 'admin';
 
-        if (!post || post.user_id !== req.session.user.id) {
+        if (!post || (post.user_id !== req.session.user.id && !isAdmin)) {
             return res.status(403).send('Unauthorized');
         }
 
@@ -165,8 +168,9 @@ router.post('/item/:id/remove/successful', requireLogin, async (req, res, next) 
     const jobId = req.params.id;
     try {
         const post = await PostService.getPostById(jobId, req.session.user.id);
+        const isAdmin = req.session.user.user_type === 'admin';
 
-        if (!post || post.user_id !== req.session.user.id) {
+        if (!post || (post.user_id !== req.session.user.id && !isAdmin)) {
             return res.status(403).send('Unauthorized');
         }
 

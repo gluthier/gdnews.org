@@ -69,33 +69,4 @@ describe('Moderation Actions', () => {
             expect(res.statusCode).toBe(302);
         });
     });
-
-    describe('GET /moderation/comment/:id/edit', () => {
-        test('renders edit page', async () => {
-            CommentService.getCommentById.mockResolvedValue({ id: 789, content: 'Old Content' });
-            const res = await request(app).get('/moderation/comment/789/edit');
-            
-            expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Edit Comment');
-            expect(res.text).toContain('Old Content');
-        });
-
-        test('returns 404 if comment not found', async () => {
-             CommentService.getCommentById.mockResolvedValue(null);
-             const res = await request(app).get('/moderation/comment/999/edit');
-             expect(res.statusCode).toBe(404);
-        });
-    });
-
-    describe('POST /moderation/comment/:id/edit', () => {
-        test('updates comment successfully', async () => {
-            const res = await request(app)
-                .post('/moderation/comment/789/edit')
-                .type('form')
-                .send({ content: 'New Content' });
-            
-            expect(CommentService.updateComment).toHaveBeenCalledWith('789', 'New Content');
-            expect(res.statusCode).toBe(302);
-        });
-    });
 });

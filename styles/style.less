@@ -8,6 +8,7 @@
 @color-white: #ffffff;
 @color-error: #eb0808;
 @color-success: #106524;
+@color-admin: #d3700d;
 
 @spacing-xs: 2px;
 @spacing-sm: 5px;
@@ -722,4 +723,12 @@ button {
 .moderation-comment-item {
     border-bottom: 1px solid #eee;
     padding: 15px 0;
+}
+
+.admin-action {
+    color: @color-admin !important;
+    
+    &:hover {
+        color: darken(@color-admin, 10%) !important;
+    }
 }

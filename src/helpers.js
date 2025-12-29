@@ -1,3 +1,11 @@
+
+const isUserAdmin = (user) => {
+    return user && user.user_type === 'admin';
+}
+const isUserOwner = (user, post) => {
+    return user && user.id === post.user_id;
+}
+
 const helpers = {
     formatDate: (dateString) => {
         const date = new Date(dateString);
@@ -102,6 +110,21 @@ const helpers = {
         return date.getDate() === today.getDate() &&
             date.getMonth() === today.getMonth() &&
             date.getFullYear() === today.getFullYear();
+    },
+    canUserRemoveJob: (post, user, isDetail) => {
+        return (isDetail && post.is_job && (isUserAdmin(user) || isUserOwner(user, post)));
+    },
+    canUserRemovePost: (post, user, isDetail) => {
+        return (isDetail && !post.is_job && !post.is_promoted && (isUserAdmin(user) || isUserOwner(user, post)));
+    },
+    canUserRemovePromotedPost: (post, user, isDetail) => {
+        return (isDetail && post.is_promoted && isUserOwner(user, post));
+    },
+    isAdminNotOwner: (user, post) => {
+        return isUserAdmin(user) && !isUserOwner(user, post);
+    },
+    canUserRemoveComment: (comment, user) => {
+        return user && (isUserAdmin(user) || comment.user_id === user.id);
     }
 };
 

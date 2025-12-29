@@ -94,35 +94,4 @@ router.post('/comment/:id/delete', async (req, res, next) => {
     }
 });
 
-// Edit Comment Page
-router.get('/comment/:id/edit', async (req, res, next) => {
-    try {
-        const commentId = req.params.id;
-        const comment = await CommentService.getCommentById(commentId);
-        if (!comment) {
-            return res.status(404).send('Comment not found');
-        }
-        res.render('pages/moderation/edit-comment', {
-            title: 'Edit Comment',
-            user: req.session.user,
-            comment,
-            csrfToken: req.csrfToken()
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-
-// Edit Comment Action
-router.post('/comment/:id/edit', async (req, res, next) => {
-    try {
-        const commentId = req.params.id;
-        const { content } = req.body;
-        await CommentService.updateComment(commentId, content);
-        res.redirect('/moderation/comments');
-    } catch (err) {
-        next(err);
-    }
-});
-
 module.exports = router;
