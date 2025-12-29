@@ -284,6 +284,13 @@ const UserService = {
         return { type: user.ban_type, reason: 'Banned', until: null };
     },
 
+    async updateLastConnection(userId) {
+        await database.query(
+            'UPDATE users SET last_connection = NOW() WHERE id = ?',
+            [userId]
+        );
+    },
+
     /**
      * Unban a user manually (admin action if needed, though not explicitly requested, good helper)
      */

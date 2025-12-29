@@ -118,6 +118,10 @@ router.post('/login', async (req, res, next) => {
             email: user.email,
             user_type: user.user_type
         };
+
+        // Update last connection asynchronously
+        UserService.updateLastConnection(user.id).catch(err => console.error('Failed to update last connection:', err));
+
         res.redirect('/');
     } catch (err) {
         console.error(err);

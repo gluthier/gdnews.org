@@ -115,6 +115,7 @@ describe('Authentication Routes', () => {
                 username: 'testuser', 
                 password_hash: 'hashedpassword'
             });
+            UserService.updateLastConnection.mockResolvedValue();
             bcrypt.compare.mockResolvedValue(true);
 
             const res = await agent
@@ -128,6 +129,7 @@ describe('Authentication Routes', () => {
 
             expect(res.statusCode).toBe(302);
             expect(res.headers.location).toBe('/');
+            expect(UserService.updateLastConnection).toHaveBeenCalledWith(1);
         });
 
         test.skip('Fails with missing CSRF token', async () => {
