@@ -21,17 +21,20 @@
                     <span class="comment-post">
                         on <a href="/post/item/{{this.post_id}}">{{this.post_title}}</a>
                     </span>
-                    {{#if this.replied_to_comment_id}}
+                    {{#if this.parent_comment_id}}
                          <span class="comment-reply">
-                            (replying to comment #{{this.replied_to_comment_id}})
+                            (replying to <a href="#" class="view-parent-comment" data-comment-id="{{this.parent_comment_id}}">comment #{{this.parent_comment_id}}</a>)
                         </span>
                     {{/if}}
+                    <div class="parent-comment-preview" id="parent-preview-{{this.parent_comment_id}}" style="display: none; background: #f9f9f9; padding: 10px; margin: 10px 0; border-left: 3px solid #ccc;">
+                        <!-- Content will be loaded here -->
+                    </div>
                 </div>
                 <div class="comment-content">
                     {{formatTextBlockContent this.content}}
                 </div>
                 <ul class="inline-list moderation-actions">
-                    <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">View Context</a></li>
+                    <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">view context</a></li>
                     <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">remove</a></li>
                     {{> moderation-ban this commentUserId=this.user_id}}
                 </ul>

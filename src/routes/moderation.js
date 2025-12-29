@@ -99,4 +99,26 @@ router.post('/comment/:id/delete', async (req, res, next) => {
     }
 });
 
+// API: Get Comment
+router.get('/api/comment/:id', async (req, res, next) => {
+    try {
+        const commentId = req.params.id;
+        const comment = await CommentService.getCommentById(commentId);
+        
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+        
+        // Also fetch user to get username
+        const user = await UserService.getUserById(comment.user_id);
+        
+        res.json({
+            ...comment,
+            username: user ? user.username : '[deleted]'
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
