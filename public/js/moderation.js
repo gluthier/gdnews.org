@@ -12,32 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle Ban Confirmation Click
-    document.addEventListener('click', (e) => {
-        if (e.target && e.target.classList.contains('ban-confirm-button')) {
-            e.preventDefault();
-            const btn = e.target;
-            // Traverse up to the action list to find the form
-            const container = btn.closest('.moderation-actions');
-            if (container) {
-                const form = container.querySelector('form.ban-form');
-                if (form) {
-                    form.submit();
-                }
-            }
-        }
-    });
     // Handle View Parent Comment Click
     document.addEventListener('click', async (e) => {
         if (e.target && e.target.classList.contains('view-parent-comment')) {
             e.preventDefault();
             const link = e.target;
             const commentId = link.dataset.commentId;
-            // The preview div is inserted right after the meta container in the template logic
-            // But depending on where the link is, we might need to find it more robustly.
-            // In the template, it's a sibling of the parent span's parent div?
-            // Structure: .comment-meta -> .comment-reply -> a.view-parent-comment
-            // Preview: .comment-meta + .parent-comment-preview
             
             const metaDiv = link.closest('.comment-meta');
             const previewDiv = metaDiv.querySelector('.parent-comment-preview') || metaDiv.nextElementSibling;
