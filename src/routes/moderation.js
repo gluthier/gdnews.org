@@ -114,7 +114,7 @@ router.get('/api/comment/:id', async (req, res, next) => {
         
         res.json({
             ...comment,
-            username: user ? user.username : '[deleted]'
+            username: user ? user.username : '[removed]'
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

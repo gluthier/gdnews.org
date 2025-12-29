@@ -15,7 +15,7 @@
     "batch": "node src/batch_server/batch_server.js",
     "test": "cross-env NODE_ENV=test jest",
     "build:css": "lessc --clean-css styles/style.less public/style.min.css",
-    "build:js": "terser public/js/item.js -o public/js/item.min.js --compress --mangle && terser public/js/schedule.js -o public/js/schedule.min.js --compress --mangle",
+    "build:js": "terser public/js/item.js -o public/js/item.min.js --compress --mangle && terser public/js/schedule.js -o public/js/schedule.min.js --compress --mangle && terser public/js/moderation.js -o public/js/moderation.min.js --compress --mangle",
     "build": "npm run build:css && npm run build:js"
   },
   "keywords": [],

@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 
                 const content = data.is_removed ? '[removed]' : data.content;
-                const username = data.username || '[deleted]';
+                const username = data.username || '[removed]';
                 
                 previewDiv.innerHTML = `
                     <div style="font-size: 0.9em; margin-bottom: 5px;">
