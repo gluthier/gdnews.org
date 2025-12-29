@@ -214,6 +214,84 @@ const UserService = {
             });
             console.log("'gdnews-bot' user created.");
         }
+    },
+
+    /**
+     * Ban a user
+     * @param {number} userId 
+     * @param {string} banType '24hBanned', '7dBanned', 'LifeBanned'
+     */
+    async banUser(userId, banType) {
+        let bannedUntil = null;
+        if (banType === '24hBanned') {
+            bannedUntil = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        } else if (banType === '7dBanned') {
+            bannedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        } else if (banType === 'LifeBanned') {
+            // Null banned_until means forever if type is LifeBanned, or we can use a far future date
+            // Let's use NULL for indefinite, or a very far date. The logic below handles NULL for LifeBanned implicitly if we just check type.
+            // But let's set a far future date just in case or leave null. 
+            // Logic: if ban_type != normal, check banned_until. If banned_until is NULL and type is LifeBanned -> banned.
+            bannedUntil = null; 
+        } else {
+             throw new Error('Invalid ban type');
+        }
+
+        await database.query(
+            'UPDATE users SET ban_type = ?, banned_until = ? WHERE id = ?',
+            [banType, bannedUntil, userId]
+        );
+    },
+
+    /**
+     * Check if user is banned and unban if expired. 
+     * Fetches fresh user data to ensure accuracy.
+     * @param {Object} userSession - User object from session
+     * @returns {Object|null} Ban details if banned, null otherwise
+     */
+    async checkBanStatus(userSession) {
+        // Fetch fresh user data
+        const user = await this.getUserById(userSession.id);
+        
+        if (!user || user.ban_type === 'normal') {
+            return null;
+        }
+
+        if (user.ban_type === 'LifeBanned') {
+            return { type: 'LifeBanned', reason: 'Lifetime Ban', until: null };
+        }
+
+        if (user.banned_until) {
+            const bannedUntil = new Date(user.banned_until);
+            if (bannedUntil < new Date()) {
+                // Ban expired
+                await database.query(
+                    'UPDATE users SET ban_type = "normal", banned_until = NULL WHERE id = ?',
+                    [user.id]
+                );
+                return null;
+            }
+            return { 
+                type: user.ban_type, 
+                reason: user.ban_type === '24hBanned' ? '24 Hour Ban' : '7 Day Ban',
+                until: bannedUntil 
+            };
+        }
+
+        // Fallback if inconsistent state (banned type but no date and not LifeBanned)
+        // Treat as normal or indefinite? Let's treat as indefinite/manual ban if we add more types later.
+        // For now, if we are here, it's weird. Return generic ban.
+        return { type: user.ban_type, reason: 'Banned', until: null };
+    },
+
+    /**
+     * Unban a user manually (admin action if needed, though not explicitly requested, good helper)
+     */
+    async unbanUser(userId) {
+         await database.query(
+            'UPDATE users SET ban_type = "normal", banned_until = NULL WHERE id = ?',
+            [userId]
+        );
     }
 };
 

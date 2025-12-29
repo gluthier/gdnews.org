@@ -13,7 +13,8 @@ const CommentService = require('../../src/services/comment-service');
 
 jest.mock('../../src/services/user-service', () => ({
     getAllUsers: jest.fn(),
-    getUserCount: jest.fn()
+    getUserCount: jest.fn(),
+    checkBanStatus: jest.fn().mockResolvedValue(false)
 }));
 
 jest.mock('../../src/services/comment-service', () => ({
@@ -77,7 +78,7 @@ describe('Moderation Routes', () => {
         test('renders user list for admin', async () => {
             const res = await request(app).get('/moderation/users');
             expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Users List');
+            expect(res.text).toContain('Moderation');
             expect(res.text).toContain('user2');
             expect(UserService.getAllUsers).toHaveBeenCalledWith({ page: 1, limit: 50 });
         });
@@ -102,7 +103,7 @@ describe('Moderation Routes', () => {
         test('renders user list for admin', async () => {
             const res = await request(app).get('/moderation/users');
             expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Users List');
+            expect(res.text).toContain('Moderation');
             expect(res.text).toContain('user2');
             expect(UserService.getAllUsers).toHaveBeenCalledWith({ page: 1, limit: 50 });
         });
@@ -126,7 +127,7 @@ describe('Moderation Routes', () => {
         test('renders comment list for admin', async () => {
             const res = await request(app).get('/moderation/comments');
             expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Comments List');
+            expect(res.text).toContain('Moderation');
             expect(res.text).toContain('Some comment');
             expect(CommentService.getAllComments).toHaveBeenCalledWith({ page: 1, limit: 50 });
         });

@@ -689,3 +689,37 @@ button {
 .back-link {
     margin-top: 20px;
 }
+
+.text-danger {
+    color: @color-error;
+    
+    &:hover {
+        color: darken(@color-error, 10%);
+    }
+}
+
+/* Moderation Page */
+.moderation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+}
+
+.moderation-comments-list {
+    margin-top: 20px;
+}
+
+.moderation-comment-item {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}

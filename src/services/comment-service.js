@@ -17,6 +17,10 @@ const fetchCommentsForPost = async (postId) => {
     const rootComments = [];
 
     comments.forEach(comment => {
+        if (comment.is_deleted) {
+            comment.content = '[deleted]';
+            comment.username = '[deleted]';
+        }
         comment.children = [];
         commentMap[comment.id] = comment;
     });
@@ -68,10 +72,55 @@ const getAllComments = async ({ page = 1, limit = 50 }) => {
 
     const countResult = await database.query('SELECT COUNT(*) as count FROM comments');
     
+    comments.forEach(comment => {
+        if (comment.is_deleted) {
+            comment.content = '[deleted]';
+            comment.username = '[deleted]';
+        }
+    });
+
     return {
         comments,
         count: Number(countResult[0].count)
     };
+};
+
+/**
+ * Get comment by ID
+ * @param {number} id 
+ */
+const getCommentById = async (id) => {
+    const comments = await database.query(
+        'SELECT * FROM comments WHERE id = ?',
+        [id]
+    );
+    return comments.length > 0 ? comments[0] : null;
+};
+
+/**
+ * Soft delete a comment
+ * @param {number} id 
+ */
+const deleteComment = async (id) => {
+    console.log(`Deleting comment ${id}`);
+    const result = await database.query(
+        'UPDATE comments SET is_deleted = 1 WHERE id = ?',
+        [id]
+    );
+    console.log('Delete result:', result);
+    return result;
+};
+
+/**
+ * Update comment content
+ * @param {number} id 
+ * @param {string} content 
+ */
+const updateComment = async (id, content) => {
+    return await database.query(
+        'UPDATE comments SET content = ?, is_edited = 1 WHERE id = ?',
+        [content, id]
+    );
 };
 
 /**
@@ -85,5 +134,8 @@ const getCommentCount = async () => {
 module.exports = {
     fetchCommentsForPost,
     getAllComments,
-    getCommentCount
+    getCommentCount,
+    getCommentById,
+    deleteComment,
+    updateComment
 };

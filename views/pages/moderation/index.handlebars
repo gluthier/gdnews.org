@@ -63,9 +63,28 @@
                 <div class="comment-content">
                     {{formatTextBlockContent this.content}}
                 </div>
-                 <div class="comment-actions">
-                     <a href="/post/item/{{this.post_id}}#comment-{{this.id}}">View Context</a>
-                </div>
+                <ul class="inline-list comment-actions">
+                <div class="comment-actions">
+                    <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">View Context</a></li>
+                    <li><a href="/moderation/comment/{{this.id}}/edit" class="text-button">Edit</a></li>
+                    <li>
+                        <form action="/moderation/comment/{{this.id}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                            <button type="submit" class="text-button text-danger">Delete</button>
+                        </form>
+                    </li>
+                    <li>
+                        <form action="/moderation/user/{{this.user_id}}/ban" method="POST" style="display:inline;">
+                            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+                            <select name="banType" onchange="if(confirm('Ban user ' + '{{this.username}}' + ' as ' + this.value + '?')) this.form.submit(); else this.value='';">
+                                <option value="">Ban User...</option>
+                                <option value="24hBanned">24 Hours</option>
+                                <option value="7dBanned">7 Days</option>
+                                <option value="LifeBanned">Lifetime</option>
+                            </select>
+                        </form>
+                    </li>
+                </ul>
             </div>
             {{/each}}
         </div>
@@ -85,44 +104,6 @@
 </div>
 
 
-<style>
-    .moderation-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-    .moderation-table th, .moderation-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    .moderation-table th {
-        background-color: #f2f2f2;
-    }
-    .moderation-comments-list {
-        margin-top: 20px;
-    }
-    .moderation-comment-item {
-        border-bottom: 1px solid #eee;
-        padding: 15px 0;
-    }
-    .comment-meta {
-        font-size: 0.9em;
-        color: #666;
-        margin-bottom: 5px;
-    }
-    .comment-content {
-        margin-bottom: 5px;
-    }
-    .comment-actions {
-        font-size: 0.8em;
-    }
-    .pagination {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-</style>
+
 
 {{> footer}}

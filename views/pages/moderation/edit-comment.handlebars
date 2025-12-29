@@ -1,0 +1,45 @@
+{{> header}}
+
+<div class="moderation-container">
+    <h1>Edit Comment</h1>
+    
+    <div class="edit-comment-form">
+        <form action="/moderation/comment/{{comment.id}}/edit" method="POST">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            
+            <div class="form-group">
+                <label for="content">Content:</label>
+                <textarea id="content" name="content" rows="10" class="form-control" required>{{comment.content}}</textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="primary-button">Update Comment</button>
+                <a href="/moderation/comments" class="secondary-button">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .moderation-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+    }
+    .form-actions {
+        display: flex;
+        gap: 10px;
+    }
+</style>
+
+{{> footer}}
