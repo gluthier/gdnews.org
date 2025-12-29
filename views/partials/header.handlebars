@@ -23,17 +23,17 @@
                     <li><a href="/promoted/upcoming">upcoming</a></li>
                     <li class="nav-break"><a href="/job/list">jobs</a></li>
                     
-                    <div class="nav-auth">
+                    <li class="nav-end">
                         {{#if (eq user.user_type 'admin')}}
-                            <li><a href="/moderation" class="admin-action">mod</a></li>
+                            <a href="/moderation" class="admin-action">mod</a>
                         {{/if}}
-                        <li><a href="/post/submit">submit</a></li>
+                        <a href="/post/submit">submit</a>
                         {{#if user}}
-                        <li><a href="/user/profile/{{user.username}}">{{user.username}}</a></li>
+                        <a href="/user/profile/{{user.username}}">{{user.username}}</a>
                         {{else}}
-                        <li><a href="/auth/login">login</a></li>
+                        <a href="/auth/login">login</a>
                         {{/if}}
-                    </div>
+                    </li>
                 </ul>
             </nav>
         </header>
