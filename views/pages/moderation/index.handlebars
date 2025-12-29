@@ -9,41 +9,6 @@
         <a href="/moderation/users" class="{{#if (eq moderationType 'users')}}active{{/if}}">Users ({{userCount}})</a>
     </div>
 
-    {{#if (eq moderationType 'users')}}
-        <table class="moderation-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Type</th>
-                    <th>Created At</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each items}}
-                <tr>
-                    <td>{{this.id}}</td>
-                    <td>
-                        {{> user-profile-link username=this.username user_type=this.user_type}}
-                    </td>
-                    <td>{{this.email}}</td>
-                    <td>{{this.user_type}}</td>
-                    <td>{{formatDateFull this.created_at}}</td>
-                    <td>
-                        {{#if this.email_verified}}
-                            <span class="status-verified">Verified</span>
-                        {{else}}
-                            <span class="status-unverified">Unverified</span>
-                        {{/if}}
-                    </td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    {{/if}}
-
     {{#if (eq moderationType 'comments')}}
         <div class="moderation-comments-list">
             {{#each items}}
@@ -65,38 +30,51 @@
                 <div class="comment-content">
                     {{formatTextBlockContent this.content}}
                 </div>
-                <ul class="inline-list comment-actions">
+                <ul class="inline-list moderation-actions">
                     <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">View Context</a></li>
                     <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">remove</a></li>
-                    {{#if (and (isAdminNotOwner @root.user this) (neq this.username '[removed]'))}}
-                        {{#if (eq this.ban_type 'normal')}}
-                        <li>
-                            <form action="/moderation/user/{{this.user_id}}/ban" method="POST" style="display:inline;" class="ban-form">
-                                <input type="hidden" name="_csrf" value="{{../csrfToken}}">
-                                <select name="banType" class="ban-select">
-                                    <option value="">Ban User...</option>
-                                    <option value="24hBanned">24 Hours</option>
-                                    <option value="7dBanned">7 Days</option>
-                                    <option value="LifeBanned">Lifetime</option>
-                                </select>
-                            </form>
-                        </li>
-                        <li>
-                            <a href="#" class="ban-confirm-link text-button" style="display:none; color: #eb0808; margin-left: 5px;">confirm ban</a>
-                        </li>
-                        {{else}}
-                            <li>
-                                <span class="text-button" style="color: #eb0808; cursor: default;">
-                                    {{#if (eq this.ban_type 'LifeBanned')}}
-                                        Permanently Banned
-                                    {{else}}
-                                        Banned until {{formatDateFull this.banned_until}}
-                                    {{/if}}
-                                </span>
-                            </li>
-                        {{/if}}
-                    {{/if}}
+                    {{> moderation-ban this}}
                 </ul>
+            </div>
+            {{/each}}
+        </div>
+    {{/if}}
+
+    {{#if (eq moderationType 'users')}}
+        <div class="moderation-users-list">
+            {{#each items}}
+            <div class="moderation-user-item">
+                <div class="user-meta">
+                    <span class="user-name">
+                        {{> user-profile-link username=this.username user_type=this.user_type}}
+                    </span>
+                    <span class="user-email">
+                        {{#if this.email}}
+                            {{this.email}}
+                            {{#if this.email_verified}}
+                                <span class="status-verified" title="Verified">✓</span>
+                            {{else}}
+                                <span class="status-unverified" title="Unverified">✕</span>
+                            {{/if}}
+                        {{else}}
+                            (no email)
+                        {{/if}}
+                    </span>
+                </div>
+                <div class="user-details">
+                    <span class="detail-item">Created: {{formatDateFull this.created_at}}</span>
+                    {{#if this.last_connection}}
+                        <span class="detail-item">Last Connected: {{formatDateFull this.last_connection}}</span>
+                    {{else}}
+                        <span class="detail-item">Last Connected: Never</span>
+                    {{/if}}
+                </div>
+                
+                <div class="user-actions moderation-actions">
+                    <ul class="inline-list">
+                    {{> moderation-ban this}}
+                    </ul>
+                </div>
             </div>
             {{/each}}
         </div>
@@ -119,19 +97,69 @@
 <script src="{{assetUrl '/js/moderation.js'}}" defer></script>
 
 <style>
-    .moderation-table {
-        width: 100%;
-        border-collapse: collapse;
+    .moderation-users-list {
         margin-top: 20px;
+    }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+    .moderation-user-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+    }
+
+    .user-meta {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-email {
+        font-weight: normal;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .status-verified {
+        color: green;
+        margin-left: 5px;
+    }
+
+    .status-unverified {
+        color: red;
+        margin-left: 5px;
+    }
+
+    .user-details {
+        font-size: 0.9em;
+        color: #828282;
+        margin-bottom: 10px;
+    }
+
+    .detail-item {
+        margin-right: 15px;
+        display: inline-block;
+    }
+
+    .user-actions {
+        margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+        .user-meta {
+            flex-direction: column;
+            align-items: flex-start;
         }
-
-        th {
-            background-color: #f2f2f2;
+        
+        .user-email {
+            display: block;
+            margin-top: 2px;
+        }
+        
+        .detail-item {
+            display: block;
+            margin-right: 0;
+            margin-bottom: 2px;
         }
     }
 

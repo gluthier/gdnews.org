@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target && e.target.classList.contains('ban-select')) {
             const select = e.target;
             // Traverse up to the action list to find the sibling link
-            const container = select.closest('.comment-actions');
+            const container = select.closest('.moderation-actions');
             if (container) {
                 const link = container.querySelector('.ban-confirm-link');
                 if (link) {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const link = e.target;
             // Traverse up to the action list to find the form
-            const container = link.closest('.comment-actions');
+            const container = link.closest('.moderation-actions') || link.closest('.user-actions');
             if (container) {
                 const form = container.querySelector('form.ban-form');
                 if (form) {

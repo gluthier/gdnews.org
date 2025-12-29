@@ -38,7 +38,8 @@ router.get('/users', async (req, res, next) => {
             nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
             prevPage: page > 1 ? page - 1 : null,
             userCount: count,
-            commentCount
+            commentCount,
+            csrfToken: req.csrfToken()
         });
     } catch (err) {
         next(err);
@@ -76,8 +77,11 @@ router.post('/user/:id/ban', async (req, res, next) => {
     try {
         const userId = req.params.id;
         const banType = req.body.banType; // '24hBanned', '7dBanned', 'LifeBanned'
+        const returnTo = req.body.returnTo;
+        
         await UserService.banUser(userId, banType);
-        res.redirect(req.get('Referrer') || '/moderation/comments');
+        
+        res.redirect(returnTo || req.get('Referrer') || '/moderation/comments');
     } catch (err) {
         next(err);
     }
@@ -88,6 +92,7 @@ router.post('/comment/:id/delete', async (req, res, next) => {
     try {
         const commentId = req.params.id;
         await CommentService.deleteComment(commentId);
+        
         res.redirect(req.get('Referrer') || '/moderation/comments');
     } catch (err) {
         next(err);
