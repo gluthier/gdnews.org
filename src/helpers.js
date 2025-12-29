@@ -125,6 +125,9 @@ const helpers = {
     },
     canUserRemoveComment: (comment, user) => {
         return user && (isUserAdmin(user) || comment.user_id === user.id);
+    },
+    isPostSeparator: (index) => {
+        return (index + 1) % 5 === 0 && index < 29;
     }
 };
 
