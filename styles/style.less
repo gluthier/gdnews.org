@@ -103,20 +103,17 @@ header {
                 color: @color-white;
                 text-decoration: underline;
             }
-
-            .nav-break {
-                flex: 1;
-
-                @media (max-width: 330px) {
-                    flex: initial;
-                }
-            }
-
-            .nav-end {
+            
+            .nav-right-group {
                 display: flex;
                 flex-wrap: wrap;
                 gap: @spacing-lg;
                 row-gap: @spacing-md;
+                margin-left: auto;
+
+                @media (max-width: 450px) {
+                    margin-left: 0;
+                }
             }
         }
 

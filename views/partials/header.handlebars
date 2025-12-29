@@ -21,17 +21,17 @@
                     <li><div title="Home" class="logo"><a href="/" class="logo-symbol">🐉&nbsp;</a><a href="/">gdnews</a></div></li>
                     <li><a href="/post/newest">newest</a></li>
                     <li><a href="/promoted/upcoming">upcoming</a></li>
-                    <li class="nav-break"><a href="/job/list">jobs</a></li>
+                    {{!-- <li><a href="/job/list">jobs</a></li> --}}
                     
-                    <li class="nav-end">
+                    <li class="nav-right-group">
                         {{#if (eq user.user_type 'admin')}}
                             <a href="/moderation" class="admin-action">mod</a>
                         {{/if}}
                         <a href="/post/submit">submit</a>
                         {{#if user}}
-                        <a href="/user/profile/{{user.username}}">{{user.username}}</a>
+                            <a href="/user/profile/{{user.username}}">{{user.username}}</a>
                         {{else}}
-                        <a href="/auth/login">login</a>
+                            <a href="/auth/login">login</a>
                         {{/if}}
                     </li>
                 </ul>
