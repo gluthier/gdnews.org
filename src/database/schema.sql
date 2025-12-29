@@ -5,6 +5,9 @@ CREATE TABLE IF NOT EXISTS users (
     email_verified BOOLEAN DEFAULT FALSE,
     password_hash VARCHAR(255) NOT NULL,
     user_type ENUM('normal', 'bot', 'admin') DEFAULT 'normal',
+    ban_type ENUM('normal', '24hBanned', '7dBanned', 'LifeBanned') DEFAULT 'normal',
+    banned_until TIMESTAMP NULL,
+    last_connection TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -28,6 +31,7 @@ CREATE TABLE IF NOT EXISTS comments (
     user_id INT NOT NULL,
     parent_comment_id INT,
     content TEXT NOT NULL,
+    is_removed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (post_id) REFERENCES posts(id),
     FOREIGN KEY (user_id) REFERENCES users(id),
