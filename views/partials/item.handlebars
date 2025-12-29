@@ -27,11 +27,9 @@
             </li>
             {{/unless}}
 
-            <li><a href="/user/profile/{{username}}">
-            {{#if (eq user_type 'bot')}}<span title="automated account"><span class="bot-emoji">☰</span>{{username}}</span>
-            {{else}}{{username}}
-            {{/if}}
-            </a></li>
+            <li>
+                {{> user-profile-link username=username user_type=user_type}}
+            </li>
 
             {{#if (eq type 'promoted')}}
                 <li><span class="post-date" title="{{formatDateFull promoted_date}}"><strong>

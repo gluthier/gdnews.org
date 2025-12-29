@@ -1,3 +1,7 @@
+jest.mock('../../src/services/user-service', () => ({
+    checkBanStatus: jest.fn().mockResolvedValue(null)
+}));
+
 const requireLogin = require('../../src/middleware/auth');
 
 describe('Auth Middleware', () => {
@@ -19,9 +23,9 @@ describe('Auth Middleware', () => {
     });
 
     describe('Authenticated User', () => {
-        test('calls next() when user is logged in', () => {
+        test('calls next() when user is logged in', async () => {
             req.session.user = { id: 1, username: 'testuser' };
-            requireLogin(req, res, next);
+            await requireLogin(req, res, next);
             expect(next).toHaveBeenCalled();
             expect(res.redirect).not.toHaveBeenCalled();
             expect(res.status).not.toHaveBeenCalled();

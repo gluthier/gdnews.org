@@ -2,7 +2,9 @@
     <div class="comment-main" id="comment-{{id}}">
         <div class="comment-meta">
             <ul class="inline-list">
-                <li><a href="/user/{{username}}">{{username}}</a></li>
+                <li>
+                    {{> user-profile-link username=username user_type=user_type}}
+                </li>
                 <li>
                     <span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span>
                 </li>

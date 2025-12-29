@@ -25,7 +25,7 @@
                     
                     <div class="nav-auth">
                         {{#if (eq user.user_type 'admin')}}
-                            <li><a href="/moderation">mod</a></li>
+                            <li><a href="/moderation" class="admin-action">mod</a></li>
                         {{/if}}
                         <li><a href="/post/submit">submit</a></li>
                         {{#if user}}

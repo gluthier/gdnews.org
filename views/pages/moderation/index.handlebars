@@ -25,7 +25,9 @@
                 {{#each items}}
                 <tr>
                     <td>{{this.id}}</td>
-                    <td><a href="/user/profile/{{this.username}}">{{this.username}}</a></td>
+                    <td>
+                        {{> user-profile-link username=this.username user_type=this.user_type}}
+                    </td>
                     <td>{{this.email}}</td>
                     <td>{{this.user_type}}</td>
                     <td>{{formatDateFull this.created_at}}</td>
@@ -48,7 +50,7 @@
             <div class="moderation-comment-item">
                 <div class="comment-meta">
                     <span class="comment-author">
-                        <a href="/user/profile/{{this.username}}">{{this.username}}</a>
+                        {{> user-profile-link username=this.username user_type=this.user_type}}
                     </span>
                     <span class="comment-date">{{formatDateFull this.created_at}}</span>
                     <span class="comment-post">
@@ -64,15 +66,8 @@
                     {{formatTextBlockContent this.content}}
                 </div>
                 <ul class="inline-list comment-actions">
-                <div class="comment-actions">
                     <li><a href="/post/item/{{this.post_id}}#comment-{{this.id}}" class="text-button">View Context</a></li>
-                    <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove1</a></li>
-                    <li>
-                        <form action="/moderation/comment/{{this.id}}/delete" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this comment?');">
-                            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
-                            <button type="submit" class="text-button text-danger">Delete</button>
-                        </form>
-                    </li>
+                    <li><a href="/moderation/comment/{{this.id}}/delete" class="confirm-action text-danger" data-csrf="{{@root.csrfToken}}">remove</a></li>
                     <li>
                         <form action="/moderation/user/{{this.user_id}}/ban" method="POST" style="display:inline;">
                             <input type="hidden" name="_csrf" value="{{../csrfToken}}">
@@ -103,7 +98,6 @@
     </div>
 </div>
 
-
-
+<script src="{{assetUrl '/js/item.js'}}" defer></script>
 
 {{> footer}}
