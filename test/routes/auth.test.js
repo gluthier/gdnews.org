@@ -168,6 +168,25 @@ describe('Authentication Routes', () => {
             expect(UserService.createUser).toHaveBeenCalled();
         });
 
+        test('Succeeds with hyphen in username', async () => {
+            bcrypt.hash.mockResolvedValue('newhashedpassword');
+            UserService.createUser.mockResolvedValue(1);
+
+            const res = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: 'user-name',
+                    password: 'password123',
+                    email: 'test-hyphen@example.com',
+                    _csrf: csrfToken
+                });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Registration successful');
+            expect(UserService.createUser).toHaveBeenCalled();
+        });
+
         test('Fails with duplicate username', async () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             UserService.createUser.mockRejectedValue({ code: 'ER_DUP_ENTRY' });

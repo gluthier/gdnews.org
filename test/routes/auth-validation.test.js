@@ -82,6 +82,20 @@ describe('Username Validation', () => {
         expect(res.text).toContain('Username can only contain letters, numbers, and underscores');
     });
 
+    test('Fails when username contains "gdnews"', async () => {
+        const res = await agent
+            .post('/auth/register')
+            .type('form')
+            .send({
+                username: 'the_gdnews_official',
+                password: 'password123',
+                _csrf: csrfToken
+            });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.text).toContain('Username cannot contain &quot;gdnews&quot;');
+    });
+
     test('Succeeds with 24 characters and underscores', async () => {
         const validUsername = 'user_name_12345678901234'; // 24 chars
         UserService.createUser.mockResolvedValue(1);

@@ -42,9 +42,18 @@ router.post('/register', async (req, res, next) => {
         });
     }
 
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    if (!/^[a-zA-Z0-9_\-]+$/.test(username)) {
         return res.render('pages/auth/register', { 
-            error: 'Username can only contain letters, numbers, and underscores', 
+            error: 'Username can only contain letters, numbers, underscores and hyphens', 
+            title: 'register',
+            username,
+            email
+        });
+    }
+
+    if (username.toLowerCase().includes('gdnews')) {
+        return res.render('pages/auth/register', { 
+            error: 'Username cannot contain "gdnews"', 
             title: 'register',
             username,
             email
