@@ -247,7 +247,7 @@ describe('Authentication Routes', () => {
                 .type('form')
                 .send({
                     username: 'user', 
-                    password: 'pass',
+                    password: 'password123',
                     _csrf: csrfToken
                 });
             

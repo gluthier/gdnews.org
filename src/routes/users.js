@@ -86,6 +86,14 @@ router.post('/change-email', async (req, res, next) => {
     }
     const { email } = req.body;
 
+    if (email && email.length > 254) {
+        return res.render('pages/auth/change-email', { 
+            error: 'Email must be at most 254 characters long', 
+            user: req.session.user, 
+            title: 'change email' 
+        });
+    }
+
     try {
         await UserService.initiateEmailConfirmation(req.session.user.id, email, 'CHANGE_EMAIL');
         res.render('pages/auth/change-email', { 

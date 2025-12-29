@@ -14,11 +14,11 @@
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div>
         <label for="username">username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" minlength="3" maxlength="24" pattern="^[a-zA-Z0-9_]+$" title="Username must be 3-24 characters long and contain only letters, numbers, and underscores." required>
     </div>
     <div>
         <label for="password">password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" minlength="8" maxlength="128" required>
     </div>
     <button class="primary-button" type="submit">login</button>
 </form>

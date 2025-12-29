@@ -24,7 +24,7 @@
             <form action="/post/item/{{@root.post.id}}/comment" method="POST">
                 <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                 <input type="hidden" name="parent_comment_id" value="{{id}}">
-                <textarea name="content" rows="2" cols="50" required></textarea><br>
+                <textarea name="content" rows="2" cols="50" maxlength="10000" required></textarea><br>
                 <button class="primary-button" type="submit">submit reply</button>
                 <button class="secondary-button cancel-reply-btn" type="button" data-comment-id="{{id}}">cancel</button>
             </form>

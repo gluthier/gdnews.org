@@ -79,6 +79,36 @@ router.post('/schedule', requireLogin, async (req, res, next) => {
         });
     }
 
+    if (title.length > 180) {
+        return res.render('pages/promoted/schedule', { 
+            error: 'Title must be at most 180 characters long',
+            title: title,
+            url: url,
+            description: description,
+            minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+
+    if (url && url.length > 2000) {
+        return res.render('pages/promoted/schedule', { 
+            error: 'URL must be at most 2000 characters long',
+            title: title,
+            url: url,
+            description: description,
+            minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+
+    if (description && description.length > 10000) {
+        return res.render('pages/promoted/schedule', { 
+            error: 'Description must be at most 10000 characters long',
+            title: title,
+            url: url,
+            description: description,
+            minDate: new Date().toISOString().split('T')[0]
+        });
+    }
+
     const selectedDate = new Date(promoted_date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);

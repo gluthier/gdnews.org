@@ -4,9 +4,9 @@
 </div>
 <div>
     <label for="url">url{{#if (eq urlRequired true)}}{{else}} (optional){{/if}}:</label>
-    <input type="url" id="url" name="url" {{#if (eq urlRequired true)}}required{{/if}} value="{{url}}">
+    <input type="url" id="url" name="url" maxlength="2000" {{#if (eq urlRequired true)}}required{{/if}} value="{{url}}">
 </div>
 <div>
     <label for="description">description{{#if (eq descriptionRequired true)}}{{else}} (optional){{/if}}:</label>
-    <textarea id="description" name="description" rows="4" cols="50" {{#if (eq descriptionRequired true)}}required{{/if}}>{{description}}</textarea>
+    <textarea id="description" name="description" rows="4" cols="50" maxlength="10000" {{#if (eq descriptionRequired true)}}required{{/if}}>{{description}}</textarea>
 </div>

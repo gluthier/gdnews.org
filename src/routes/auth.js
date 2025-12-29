@@ -24,6 +24,24 @@ router.post('/register', async (req, res, next) => {
         });
     }
 
+    if (password.length < 8 || password.length > 128) {
+        return res.render('pages/auth/register', { 
+            error: 'Password must be between 8 and 128 characters long', 
+            title: 'register',
+            username,
+            email
+        });
+    }
+
+    if (email && email.length > 254) {
+        return res.render('pages/auth/register', { 
+            error: 'Email must be at most 254 characters long', 
+            title: 'register',
+            username,
+            email
+        });
+    }
+
     if (username.length < 3) {
         return res.render('pages/auth/register', { 
             error: 'Username must be at least 3 characters long', 
@@ -210,6 +228,14 @@ router.post('/reset-password', async (req, res, next) => {
         return res.render('pages/auth/reset-password', { 
             token,
             error: 'Passwords do not match',
+            title: 'reset password'
+        });
+    }
+
+    if (password.length < 8 || password.length > 128) {
+        return res.render('pages/auth/reset-password', { 
+            token,
+            error: 'Password must be between 8 and 128 characters long', 
             title: 'reset password'
         });
     }

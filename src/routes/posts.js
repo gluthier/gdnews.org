@@ -55,6 +55,18 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         return res.render('pages/post/submit', { error: 'Title is required', title, url, description });
     }
 
+    if (title.length > 180) {
+        return res.render('pages/post/submit', { error: 'Title must be at most 180 characters long', title, url, description });
+    }
+
+    if (url && url.length > 2000) {
+        return res.render('pages/post/submit', { error: 'URL must be at most 2000 characters long', title, url, description });
+    }
+
+    if (description && description.length > 10000) {
+        return res.render('pages/post/submit', { error: 'Description must be at most 10000 characters long', title, url, description });
+    }
+
     if (url && (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:'))) {
         return res.render('pages/post/submit', { error: 'Invalid URL scheme', title, url, description });
     }
@@ -113,6 +125,17 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
     const redirectUrl = req.get('Referrer') || `/post/item/${postId}`;
 
     if (!content) {
+        return res.redirect(redirectUrl);
+    }
+
+    if (content.length > 10000) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.status(400).json({ error: 'Comment too long' });
+        }
+        // Ideally we would show an error, but for now redirecting is the fallback behavior 
+        // similar to empty content. 
+        // A better approach would be to render the page with an error, 
+        // but that requires fetching the post and all comments again.
         return res.redirect(redirectUrl);
     }
 

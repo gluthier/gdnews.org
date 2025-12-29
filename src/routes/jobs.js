@@ -61,6 +61,36 @@ router.post('/submit', requireLogin, async (req, res, next) => {
         });
     }
 
+    if (title.length > 180) {
+        return res.render('pages/job/submit', { 
+            error: 'Title must be at most 180 characters long', 
+            title, 
+            url, 
+            description,
+            metaDescription: "Submit a new job offer on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        });
+    }
+
+    if (url && url.length > 2000) {
+        return res.render('pages/job/submit', { 
+            error: 'URL must be at most 2000 characters long', 
+            title, 
+            url, 
+            description,
+            metaDescription: "Submit a new job offer on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        });
+    }
+
+    if (description.length > 10000) {
+        return res.render('pages/job/submit', { 
+            error: 'Description must be at most 10000 characters long', 
+            title, 
+            url, 
+            description,
+            metaDescription: "Submit a new job offer on gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        });
+    }
+
     try {
         await PostService.createPost({
             userId: req.session.user.id,
