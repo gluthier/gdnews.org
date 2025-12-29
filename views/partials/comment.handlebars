@@ -6,7 +6,7 @@
                     {{> user-profile-link username=username user_type=user_type}}
                 </li>
                 <li>
-                    <span title="{{formatDateFull created_at}}">{{formatDate created_at}}</span>
+                    <a href="/post/item/{{@root.post.id}}#comment-{{id}}" class="post-date" title="{{formatDateFull created_at}}">{{formatDate created_at}}</a>
                 </li>
                 <li><button class="text-button toggle-children-btn" data-comment-id="{{id}}" data-count="{{descendant_count}}">hide</button></li>
                 <li><button class="text-button show-reply-btn" data-comment-id="{{id}}">reply</button></li>
@@ -67,7 +67,7 @@
             </button>
             <div style="display: none;">
                 {{#each children}}
-                {{> comment this depth=(add ../depth 1) maxDepth=(add ../maxDepth 2)}}
+                {{> comment this depth=(add ../depth 1) maxDepth=(add ../maxDepth 3)}}
                 {{/each}}
             </div>
         </div>

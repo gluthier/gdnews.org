@@ -176,6 +176,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // Handle clicks on comment date links to avoid hard jump
+    document.body.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && link.hash && link.hash.startsWith('#comment-') && 
+            link.pathname === window.location.pathname) {
+            
+            e.preventDefault();
+            
+            // Push state only if it changes
+            if (window.location.hash !== link.hash) {
+                history.pushState(null, '', link.hash);
+            }
+            
+            handleDeepLink();
+        }
+    });
     
     function handleDeepLink() {
         // Remove existing highlights
@@ -219,10 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     current = current.parentElement;
                 }
                 
-                // Scroll to target
-                setTimeout(() => {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+                // Smart scroll: only scroll if not in viewport
+                const rect = targetElement.getBoundingClientRect();
+                const isInViewport = (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+
+                if (!isInViewport) {
+                    setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
             }
         }
     }
