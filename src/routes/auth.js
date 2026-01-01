@@ -91,7 +91,10 @@ router.post('/register', async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         await UserService.createUser({ username, password_hash: hashedPassword, email });
         // Redirect to a page telling them to check email (or just login with a message)
-        res.render('pages/auth/login', { error: null, success: 'Registration successful! Please check your email to confirm your account.', title: 'login' });
+        const successMessage = email 
+            ? 'Registration successful! Please check your email to confirm your account.' 
+            : 'Registration successful!';
+        res.render('pages/auth/login', { error: null, success: successMessage, title: 'login' });
     } catch (err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {

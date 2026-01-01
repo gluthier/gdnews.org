@@ -166,7 +166,7 @@ describe('Authentication Routes', () => {
                 });
 
             expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Registration successful');
+            expect(res.text).toContain('Registration successful! Please check your email to confirm your account.');
             expect(UserService.createUser).toHaveBeenCalled();
         });
 
@@ -185,7 +185,27 @@ describe('Authentication Routes', () => {
                 });
 
             expect(res.statusCode).toBe(200);
-            expect(res.text).toContain('Registration successful');
+            expect(res.text).toContain('Registration successful! Please check your email to confirm your account.');
+            expect(UserService.createUser).toHaveBeenCalled();
+        });
+
+        test('Succeeds without email', async () => {
+            bcrypt.hash.mockResolvedValue('newhashedpassword');
+            UserService.createUser.mockResolvedValue(1);
+
+            const res = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: 'noemailuser',
+                    password: 'password123',
+                    email: '',
+                    _csrf: csrfToken
+                });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Registration successful!');
+            expect(res.text).not.toContain('Please check your email');
             expect(UserService.createUser).toHaveBeenCalled();
         });
 
