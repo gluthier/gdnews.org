@@ -236,7 +236,7 @@ router.get('/unfavorite/:id', requireLogin, async (req, res, next) => {
 });
 
 // Handle Post Removal
-router.post('/item/:id/remove', requireLogin, async (req, res, next) => {
+router.post('/item/:id/delete', requireLogin, async (req, res, next) => {
     const postId = req.params.id;
     try {
         const post = await PostService.getPostById(postId, req.session.user.id);

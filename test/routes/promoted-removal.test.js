@@ -52,12 +52,12 @@ describe('Promoted Post Removal Routes', () => {
         jest.clearAllMocks();
     });
 
-    describe('POST /promoted/item/:id/remove', () => {
+    describe('POST /promoted/item/:id/delete', () => {
         test('marks promoted post as removed', async () => {
             PostService.getPostById.mockResolvedValue({ id: 20, user_id: 1, title: 'My Promoted Post', is_promoted: true });
             PostService.updatePostStatus.mockResolvedValue({ affectedRows: 1 });
 
-            const res = await request(app).post('/promoted/item/20/remove');
+            const res = await request(app).post('/promoted/item/20/delete');
             
             expect(PostService.updatePostStatus).toHaveBeenCalledWith('20', 'removed');
             expect(res.statusCode).toBe(302);
@@ -67,7 +67,7 @@ describe('Promoted Post Removal Routes', () => {
         test('returns 403 for non-owner', async () => {
             PostService.getPostById.mockResolvedValue({ id: 20, user_id: 2, title: 'Not My Post', is_promoted: true });
 
-            const res = await request(app).post('/promoted/item/20/remove');
+            const res = await request(app).post('/promoted/item/20/delete');
             
             expect(PostService.updatePostStatus).not.toHaveBeenCalled();
             expect(res.statusCode).toBe(403);

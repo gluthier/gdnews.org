@@ -22,7 +22,6 @@ class SettingsService {
                 }
             });
             this.initialized = true;
-            console.log('SettingsService initialized:', this.cache);
         } catch (err) {
             console.error('Failed to initialize SettingsService:', err);
         }
