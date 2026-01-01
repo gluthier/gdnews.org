@@ -3,6 +3,59 @@
 
 <div class="moderation-container">
     <h1>Moderation</h1>
+
+    <div class="global-actions" style="margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #eee; border-radius: 3px;">
+        <h3 style="margin-top: 0; font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">Global Actions</h3>
+        <ul class="inline-list" style="display: flex; flex-wrap: wrap; gap: 15px;">
+            <li>
+                {{#if settings.lock_global}}
+                    <button disabled style="opacity: 0.6; cursor: not-allowed;">Lock New Accounts</button>
+                    <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(GLOBALLY LOCKED)</span>
+                {{else}}
+                    {{#if settings.lock_signup}}
+                        <button class="confirm-global-action" data-key="lock_signup" data-value="false" data-action-text="unlock accounts" data-csrf="{{@root.csrfToken}}">Unlock New Accounts</button>
+                        <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(LOCKED)</span>
+                    {{else}}
+                        <button class="confirm-global-action" data-key="lock_signup" data-value="true" data-action-text="lock accounts" data-csrf="{{@root.csrfToken}}">Lock New Accounts</button>
+                    {{/if}}
+                {{/if}}
+            </li>
+            <li>
+                {{#if settings.lock_global}}
+                    <button disabled style="opacity: 0.6; cursor: not-allowed;">Lock New Posts</button>
+                    <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(GLOBALLY LOCKED)</span>
+                {{else}}
+                    {{#if settings.lock_posts}}
+                        <button class="confirm-global-action" data-key="lock_posts" data-value="false" data-action-text="unlock posts" data-csrf="{{@root.csrfToken}}">Unlock New Posts</button>
+                        <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(LOCKED)</span>
+                    {{else}}
+                        <button class="confirm-global-action" data-key="lock_posts" data-value="true" data-action-text="lock posts" data-csrf="{{@root.csrfToken}}">Lock New Posts</button>
+                    {{/if}}
+                {{/if}}
+            </li>
+            <li>
+                {{#if settings.lock_global}}
+                    <button disabled style="opacity: 0.6; cursor: not-allowed;">Lock New Comments</button>
+                    <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(GLOBALLY LOCKED)</span>
+                {{else}}
+                    {{#if settings.lock_comments}}
+                        <button class="confirm-global-action" data-key="lock_comments" data-value="false" data-action-text="unlock comments" data-csrf="{{@root.csrfToken}}">Unlock New Comments</button>
+                        <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(LOCKED)</span>
+                    {{else}}
+                        <button class="confirm-global-action" data-key="lock_comments" data-value="true" data-action-text="lock comments" data-csrf="{{@root.csrfToken}}">Lock New Comments</button>
+                    {{/if}}
+                {{/if}}
+            </li>
+            <li style="border-left: 1px solid #eee; padding-left: 15px;">
+                {{#if settings.lock_global}}
+                    <button class="confirm-global-action" data-key="lock_global" data-value="false" data-action-text="unlock everything" data-csrf="{{@root.csrfToken}}">Unlock Everything</button>
+                    <span style="color: #eb0808; font-size: 0.8em; font-weight: bold;">(LOCKED)</span>
+                {{else}}
+                    <button class="confirm-global-action" data-key="lock_global" data-value="true" data-action-text="lock everything" data-csrf="{{@root.csrfToken}}">Lock Everything</button>
+                {{/if}}
+            </li>
+        </ul>
+    </div>
     
     <div class="tabs">
         <a href="/moderation/comments" class="{{#if (eq moderationType 'comments')}}active{{/if}}">Comments ({{commentCount}})</a>

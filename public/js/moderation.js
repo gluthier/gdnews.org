@@ -60,5 +60,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 previewDiv.innerHTML = `<span style="color: red;">Error: ${err.message}</span>`;
             }
         }
+
+        // Global Action Confirmation Logic
+        if (e.target.matches('.confirm-global-action')) {
+            e.preventDefault();
+            const btn = e.target;
+            
+            if (btn.dataset.confirmed !== 'true') {
+                btn.dataset.originalText = btn.innerText;
+                const actionText = btn.dataset.actionText || 'continue';
+                btn.innerText = `Confirm ${actionText}?`;
+                btn.style.color = '#eb0808'; 
+                btn.style.fontWeight = 'bold';
+                btn.dataset.confirmed = 'true';
+                
+                // Reset after 3 seconds if not clicked
+                setTimeout(() => {
+                    if (btn.innerText.startsWith('Confirm')) {
+                        btn.innerText = btn.dataset.originalText;
+                        btn.style.color = '';
+                        btn.style.fontWeight = '';
+                        btn.dataset.confirmed = 'false';
+                    }
+                }, 3000);
+            } else {
+                btn.innerText = 'Processing...';
+                btn.disabled = true;
+                
+                try {
+                    const response = await fetch('/moderation/settings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: new URLSearchParams({
+                            key: btn.dataset.key,
+                            value: btn.dataset.value,
+                            _csrf: btn.dataset.csrf
+                        })
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Action failed');
+                        window.location.reload();
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    alert('An error occurred');
+                    window.location.reload();
+                }
+            }
+        }
     });
 });

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const UserService = require('../services/user-service');
 const CommentService = require('../services/comment-service');
+const SettingsService = require('../services/settings-service');
 
 // Middleware to check if user is admin
 const isAdmin = (req, res, next) => {
@@ -28,6 +29,8 @@ router.get('/comments', async (req, res, next) => {
         const { comments, count } = await CommentService.getAllComments({ page, limit });
         const userCount = await UserService.getUserCount();
 
+        const settings = await SettingsService.getAll();
+
         res.render('pages/moderation/index', {
             title: 'Moderation - Comments',
             user: req.session.user,
@@ -39,7 +42,8 @@ router.get('/comments', async (req, res, next) => {
             prevPage: page > 1 ? page - 1 : null,
             userCount,
             commentCount: count,
-            csrfToken: req.csrfToken()
+            csrfToken: req.csrfToken(),
+            settings
         });
     } catch (err) {
         next(err);
@@ -54,6 +58,8 @@ router.get('/users', async (req, res, next) => {
         const { users, count } = await UserService.getAllUsers({ page, limit });
         const commentCount = await CommentService.getCommentCount();
 
+        const settings = await SettingsService.getAll();
+
         res.render('pages/moderation/index', {
             title: 'Moderation - Users',
             user: req.session.user,
@@ -65,7 +71,8 @@ router.get('/users', async (req, res, next) => {
             prevPage: page > 1 ? page - 1 : null,
             userCount: count,
             commentCount,
-            csrfToken: req.csrfToken()
+            csrfToken: req.csrfToken(),
+            settings
         });
     } catch (err) {
         next(err);
@@ -94,6 +101,30 @@ router.post('/comment/:id/delete', async (req, res, next) => {
         await CommentService.deleteComment(commentId);
         
         res.redirect(req.get('Referrer') || '/moderation/comments');
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Update Settings
+router.post('/settings', async (req, res, next) => {
+    try {
+        const { key, value } = req.body;
+        // value passed as string 'true' or 'false'
+        const boolValue = value === 'true';
+        
+        // Allowed keys
+        const allowedKeys = ['lock_signup', 'lock_posts', 'lock_comments', 'lock_global'];
+        if (!allowedKeys.includes(key)) {
+            throw new Error('Invalid setting key');
+        }
+
+        await SettingsService.set(key, boolValue);
+        
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.json({ success: true, key, value: boolValue });
+        }
+        res.redirect(req.get('Referrer') || '/moderation');
     } catch (err) {
         next(err);
     }

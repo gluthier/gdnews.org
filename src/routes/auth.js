@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 
 const UserService = require('../services/user-service');
+const SettingsService = require('../services/settings-service');
 
 router.get('/register', (req, res) => {
     res.render('pages/auth/register', { 
@@ -13,6 +14,14 @@ router.get('/register', (req, res) => {
 });
 
 router.post('/register', async (req, res, next) => {
+    if (SettingsService.isLocked('lock_signup')) {
+        return res.render('pages/auth/register', { 
+            error: 'Account creation is currently disabled.', 
+            title: 'register',
+            metaDescription: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        });
+    }
+
     const { username, password, email } = req.body;
     if (!username || !password) {
         return res.render('pages/auth/register', { 

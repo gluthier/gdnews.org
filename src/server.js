@@ -7,7 +7,9 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const csurf = require('csurf');
+
 const database = require('./database/database');
+const settingsService = require('./services/settings-service');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -175,7 +177,8 @@ app.use((err, req, res, next) => {
     });
 });
 
-const startServer = () => {
+const startServer = async () => {
+    await settingsService.init();
     const server = app.listen(PORT, () => {
         const protocol = process.env.APP_PROTOCOL || 'http';
         const domain = process.env.APP_DOMAIN || 'localhost';

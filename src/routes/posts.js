@@ -4,6 +4,7 @@ const router = express.Router();
 const requireLogin = require('../middleware/auth');
 const PostService = require('../services/post-service');
 const { fetchCommentsForPost } = require('../services/comment-service');
+const SettingsService = require('../services/settings-service');
 
 // List posts (Home) - Redirect to root
 router.get('/list', (req, res) => {
@@ -51,6 +52,11 @@ router.get('/submit', requireLogin, (req, res) => {
 // Handle submission
 router.post('/submit', requireLogin, async (req, res, next) => {
     const { title, url, description } = req.body;
+    
+    if (SettingsService.isLocked('lock_posts')) {
+        return res.render('pages/post/submit', { error: 'New post submissions are currently disabled.', title, url, description });
+    }
+
     if (!title) {
         return res.render('pages/post/submit', { error: 'Title is required', title, url, description });
     }
@@ -123,6 +129,13 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
     const { content, parent_comment_id } = req.body;
 
     const redirectUrl = req.get('Referrer') || `/post/item/${postId}`;
+
+    if (SettingsService.isLocked('lock_comments')) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+            return res.status(403).json({ error: 'Comments are currently disabled.' });
+        }
+        return res.redirect(redirectUrl);
+    }
 
     if (!content) {
         return res.redirect(redirectUrl);
