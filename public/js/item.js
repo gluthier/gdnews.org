@@ -39,6 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(form);
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerText;
+            const errorDiv = form.querySelector('.error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.innerText = '';
+            }
+
             submitBtn.disabled = true;
             submitBtn.innerText = 'Submitting...';
 
@@ -65,11 +71,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/auth/login';
                 } else {
                     console.error('Submission failed');
-                    alert('Failed to submit comment. Please try again.');
+                    let errorMessage = 'Failed to submit comment. Please try again.';
+                    try {
+                        const data = await response.json();
+                        if (data.error) errorMessage = data.error;
+                    } catch (e) {
+                         // ignore JSON parse error
+                    }
+                    
+                    if (errorDiv) {
+                        errorDiv.innerText = errorMessage;
+                        errorDiv.style.display = 'block';
+                    } else {
+                         alert(errorMessage);
+                    }
                 }
             } catch (err) {
                 console.error('Error:', err);
-                alert('An error occurred. Please try again.');
+                if (errorDiv) {
+                    errorDiv.innerText = 'An error occurred. Please try again.';
+                    errorDiv.style.display = 'block';
+                } else {
+                    alert('An error occurred. Please try again.');
+                }
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalBtnText;
