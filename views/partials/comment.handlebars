@@ -12,7 +12,11 @@
                 <li><button class="text-button show-reply-btn" data-comment-id="{{id}}">reply</button></li>
                 {{#if (canUserRemoveComment this @root.user)}}
                 <li>
-                    <a href="/post/item/{{@root.post.id}}/comment/{{id}}/remove" class="confirm-action {{#if (isAdminNotOwner @root.user this)}}admin-action{{/if}}" data-csrf="{{@root.csrfToken}}">remove</a>
+                    {{#if (isAdminNotOwner @root.user this)}}
+                        <a href="/post/item/{{@root.post.id}}/comment/{{id}}/remove" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">[remove]</a>
+                    {{else}}
+                        <a href="/post/item/{{@root.post.id}}/comment/{{id}}/remove" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove</a>
+                    {{/if}}
                 </li>
                 {{/if}}
             </ul>

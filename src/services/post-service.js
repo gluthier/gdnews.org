@@ -313,6 +313,18 @@ const PostService = {
             'UPDATE posts SET status = ? WHERE id = ?',
             [status, id]
         );
+    },
+
+    /**
+     * Update a post's lock status
+     * @param {number} id
+     * @param {boolean} isLocked
+     */
+    async updatePostLockStatus(id, isLocked) {
+        return await database.query(
+            'UPDATE posts SET is_locked = ? WHERE id = ?',
+            [isLocked, id]
+        );
     }
 };
 

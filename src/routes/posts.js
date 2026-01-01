@@ -130,6 +130,18 @@ router.post('/item/:id/comment', requireLogin, async (req, res, next) => {
 
     const redirectUrl = req.get('Referrer') || `/post/item/${postId}`;
 
+    try {
+        const post = await PostService.getPostById(postId);
+        if (post && post.is_locked) {
+            if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
+                return res.status(403).json({ error: 'This post is locked.' });
+            }
+            return res.redirect(redirectUrl);
+        }
+    } catch (err) {
+        console.error('Error checking post lock status:', err);
+    }
+
     if (SettingsService.isLocked('lock_comments')) {
         if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             return res.status(403).json({ error: 'Comments are currently disabled.' });
@@ -265,6 +277,40 @@ router.post('/item/:id/comment/:commentId/remove', requireLogin, async (req, res
         if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             return res.status(500).json({ error: 'Deletion failed' });
         }
+        next(err);
+    }
+});
+
+// Handle Post Locking
+router.post('/item/:id/lock', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        const isAdmin = req.session.user.user_type === 'admin';
+
+        if (!isAdmin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await PostService.updatePostLockStatus(postId, true);
+        res.redirect(req.get('Referrer') || `/post/item/${postId}`);
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Handle Post Unlocking
+router.post('/item/:id/unlock', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        const isAdmin = req.session.user.user_type === 'admin';
+
+        if (!isAdmin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        await PostService.updatePostLockStatus(postId, false);
+        res.redirect(req.get('Referrer') || `/post/item/${postId}`);
+    } catch (err) {
         next(err);
     }
 });

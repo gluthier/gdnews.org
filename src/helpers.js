@@ -112,6 +112,9 @@ const helpers = {
             date.getMonth() === today.getMonth() &&
             date.getFullYear() === today.getFullYear();
     },
+    canUserLockPost: (post, user, isDetail) => {
+        return (isDetail && isUserAdmin(user));
+    },
     canUserRemoveJob: (post, user, isDetail) => {
         return (isDetail && post.is_job && (isUserAdmin(user) || isUserOwner(user, post)));
     },

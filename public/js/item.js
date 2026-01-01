@@ -166,12 +166,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const link = e.target;
             if (link.dataset.confirmed !== 'true') {
-                link.innerText = 'confirm remove';
+                const actionText = link.dataset.confirmText || 'remove';
+                link.innerText = `confirm ${actionText}`;
                 link.style.color = '#eb0808'; // @color-error
                 link.dataset.confirmed = 'true';
             } else {
                 const originalText = link.innerText;
-                link.innerText = 'removing...';
+                link.innerText = 'processing...';
                 
                 try {
                     const response = await fetch(link.href, {

@@ -57,19 +57,41 @@
                         {{/if}}
                     </li>
 
+                    {{#if (canUserLockPost this user isDetail)}}
+                    <li>
+                        {{#if is_locked}}
+                        <a href="/post/item/{{id}}/unlock" class="confirm-action admin-action" data-confirm-text="unlock" data-csrf="{{@root.csrfToken}}">[unlock]</a>
+                        {{else}}
+                        <a href="/post/item/{{id}}/lock" class="confirm-action admin-action" data-confirm-text="lock" data-csrf="{{@root.csrfToken}}">[lock]</a>
+                        {{/if}}
+                    </li>
+                    {{/if}}
+
                     {{#if (canUserRemoveJob this user isDetail)}}
                     <li>
-                        <a href="/job/item/{{id}}/remove" {{#if (isAdminNotOwner user this)}}class="admin-action"{{/if}}>remove offer</a>
+                        {{#if (isAdminNotOwner user this)}}
+                        <a href="/job/item/{{id}}/remove" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">[remove offer]</a>
+                        {{else}}
+                        <a href="/job/item/{{id}}/remove" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove offer</a>
+                        {{/if}}
                     </li>
                     {{/if}}
                     {{#if (canUserRemovePost this user isDetail)}}
                     <li>
-                        <a href="/post/item/{{id}}/remove" class="confirm-action {{#if (isAdminNotOwner user this)}}admin-action{{/if}}" data-csrf="{{@root.csrfToken}}">remove</a>
+                        {{#if (isAdminNotOwner user this)}}
+                        <a href="/post/item/{{id}}/remove" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">[remove]</a>
+                        {{else}}
+                        <a href="/post/item/{{id}}/remove" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove</a>
+                        {{/if}}
                     </li>
                     {{/if}}
                     {{#if (canUserRemovePromotedPost this user isDetail)}}
                     <li>
-                        <a href="/promoted/item/{{id}}/remove" class="confirm-action {{#if (isAdminNotOwner user this)}}admin-action{{/if}}" data-csrf="{{@root.csrfToken}}">remove</a>
+                        {{#if (isAdminNotOwner user this)}}
+                        <a href="/promoted/item/{{id}}/remove" class="confirm-action admin-action" data-csrf="{{@root.csrfToken}}">[remove]</a>
+                        {{else}}
+                        <a href="/promoted/item/{{id}}/remove" class="confirm-action" data-csrf="{{@root.csrfToken}}">remove</a>
+                        {{/if}}
                     </li>
                     {{/if}}
                 {{/if}}

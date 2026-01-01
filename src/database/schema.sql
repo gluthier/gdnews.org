@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS posts (
     is_promoted BOOLEAN DEFAULT FALSE,
     promoted_date DATE,
     is_job BOOLEAN DEFAULT FALSE,
+    is_locked BOOLEAN DEFAULT FALSE,
     status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
