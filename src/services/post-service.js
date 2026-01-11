@@ -193,12 +193,14 @@ const PostService = {
     /**
      * Create a new post
      */
-    async createPost({ userId, title, url, description, isJob = false, isPromoted = false, promotedDate = null }) {
+    async createPost({ userId, title, url, description, isJob = false, isPromoted = false, promotedDate = null, skipLimitCheck = false }) {
         if (title.length > 180) {
             throw new Error('Title must be 180 characters or less');
         }
 
-        await this.checkSubmissionLimit(userId, isJob);
+        if (!skipLimitCheck) {
+            await this.checkSubmissionLimit(userId, isJob);
+        }
 
         return await database.query(
             'INSERT INTO posts (user_id, title, url, description, is_job, is_promoted, promoted_date) VALUES (?, ?, ?, ?, ?, ?, ?)',

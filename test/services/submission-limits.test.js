@@ -87,5 +87,25 @@ describe('PostService Submission Limits', () => {
 
             expect(database.query).toHaveBeenCalledTimes(2); // Should not have called dynamic insert
         });
+
+        it('should skip limit check if skipLimitCheck is true', async () => {
+             database.query
+                .mockResolvedValueOnce({ insertId: 123 });     // Insert
+
+            await expect(PostService.createPost({
+                userId,
+                title: 'Test Post',
+                url: 'http://example.com',
+                skipLimitCheck: true
+            })).resolves.not.toThrow();
+
+            // Should have called insert, but NOT the user check or count check
+            // However, depending on implementation detail of checkSubmissionLimit, 
+            // the cleanest check is that it DID NOT fail even though we didn't mock the limit check queries.
+            // But to be precise, createPost calls checkSubmissionLimit if !skipLimitCheck.
+            // If skipLimitCheck is true, it proceeds to insert.
+            // Insert is the 1st call in this scenario because user/count checks are skipped.
+            expect(database.query).toHaveBeenCalledTimes(1); 
+        });
     });
 });
