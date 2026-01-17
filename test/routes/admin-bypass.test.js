@@ -50,13 +50,13 @@ describe('Admin Bypass Deletion Routes', () => {
         global.testUser = { id: 1, username: 'normal_user', user_type: 'normal' };
     });
 
-    describe('POST /post/item/:id/remove', () => {
+    describe('POST /post/item/:id/delete', () => {
         test('Admin can delete post NOT owned by them', async () => {
             global.testUser = { id: 999, username: 'admin_user', user_type: 'admin' };
             PostService.getPostById.mockResolvedValue({ id: 10, user_id: 1, title: 'User Post' });
             PostService.updatePostStatus.mockResolvedValue({ affectedRows: 1 });
 
-            const res = await request(app).post('/post/item/10/remove');
+            const res = await request(app).post('/post/item/10/delete');
             
             expect(PostService.updatePostStatus).toHaveBeenCalledWith('10', 'removed');
             expect(res.statusCode).toBe(302);
@@ -67,7 +67,7 @@ describe('Admin Bypass Deletion Routes', () => {
             global.testUser = { id: 2, username: 'normal_user', user_type: 'normal' };
             PostService.getPostById.mockResolvedValue({ id: 10, user_id: 1, title: 'User Post' });
 
-            const res = await request(app).post('/post/item/10/remove');
+            const res = await request(app).post('/post/item/10/delete');
             
             expect(PostService.updatePostStatus).not.toHaveBeenCalled();
             expect(res.statusCode).toBe(403);
@@ -78,7 +78,7 @@ describe('Admin Bypass Deletion Routes', () => {
             PostService.getPostById.mockResolvedValue({ id: 10, user_id: 1, title: 'My Post' });
             PostService.updatePostStatus.mockResolvedValue({ affectedRows: 1 });
 
-            const res = await request(app).post('/post/item/10/remove');
+            const res = await request(app).post('/post/item/10/delete');
             
             expect(PostService.updatePostStatus).toHaveBeenCalledWith('10', 'removed');
             expect(res.statusCode).toBe(302);
