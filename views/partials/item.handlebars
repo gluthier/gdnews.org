@@ -67,6 +67,12 @@
                     </li>
                     {{/if}}
 
+                    {{#if (canUserModifyPost this user isDetail)}}
+                    <li>
+                        <a href="/post/item/{{id}}/modify" class="admin-action">[modify]</a>
+                    </li>
+                    {{/if}}
+
                     {{#if (canUserRemoveJob this user isDetail)}}
                     <li>
                         {{#if (isAdminNotOwner user this)}}

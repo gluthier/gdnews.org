@@ -315,4 +315,119 @@ router.post('/item/:id/unlock', requireLogin, async (req, res, next) => {
     }
 });
 
+// Show modify form
+router.get('/item/:id/modify', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    try {
+        const isAdmin = req.session.user.user_type === 'admin';
+        if (!isAdmin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        const post = await PostService.getPostById(postId, req.session.user.id);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        res.render('pages/post/modify', {
+            post,
+            title: post.title,
+            url: post.url,
+            description: post.description,
+            titleRequired: true,
+            urlRequired: false,
+            descriptionRequired: false
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Handle modification
+router.post('/item/:id/modify', requireLogin, async (req, res, next) => {
+    const postId = req.params.id;
+    const { title, url, description } = req.body;
+
+    try {
+        const isAdmin = req.session.user.user_type === 'admin';
+        if (!isAdmin) {
+            return res.status(403).send('Unauthorized');
+        }
+
+        if (!title) {
+            const post = await PostService.getPostById(postId, req.session.user.id);
+            return res.render('pages/post/modify', { 
+                error: 'Title is required', 
+                post, title, url, description,
+                titleRequired: true,
+                urlRequired: false,
+                descriptionRequired: false
+            });
+        }
+
+        if (title.length > 180) {
+            const post = await PostService.getPostById(postId, req.session.user.id);
+            return res.render('pages/post/modify', { 
+                error: 'Title must be at most 180 characters long', 
+                post, title, url, description,
+                titleRequired: true,
+                urlRequired: false,
+                descriptionRequired: false
+            });
+        }
+
+        if (url && url.length > 2000) {
+            const post = await PostService.getPostById(postId, req.session.user.id);
+            return res.render('pages/post/modify', { 
+                error: 'URL must be at most 2000 characters long', 
+                post, title, url, description,
+                titleRequired: true,
+                urlRequired: false,
+                descriptionRequired: false
+            });
+        }
+
+        if (description && description.length > 10000) {
+            const post = await PostService.getPostById(postId, req.session.user.id);
+            return res.render('pages/post/modify', { 
+                error: 'Description must be at most 10000 characters long', 
+                post, title, url, description,
+                titleRequired: true,
+                urlRequired: false,
+                descriptionRequired: false
+            });
+        }
+
+        if (url && (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:'))) {
+            const post = await PostService.getPostById(postId, req.session.user.id);
+            return res.render('pages/post/modify', { 
+                error: 'Invalid URL scheme', 
+                post, title, url, description,
+                titleRequired: true,
+                urlRequired: false,
+                descriptionRequired: false
+            });
+        }
+
+        await PostService.updatePost({
+            id: postId,
+            title,
+            url,
+            description
+        });
+
+        res.redirect(`/post/item/${postId}`);
+    } catch (err) {
+        console.error(err);
+        const post = await PostService.getPostById(postId, req.session.user.id);
+        res.render('pages/post/modify', { 
+            error: err.message || 'Modification failed', 
+            post, title, url, description,
+            titleRequired: true,
+            urlRequired: false,
+            descriptionRequired: false
+        });
+    }
+});
+
 module.exports = router;

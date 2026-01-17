@@ -115,6 +115,9 @@ const helpers = {
     canUserLockPost: (post, user, isDetail) => {
         return (isDetail && isUserAdmin(user));
     },
+    canUserModifyPost: (post, user, isDetail) => {
+        return (isDetail && isUserAdmin(user));
+    },
     canUserRemoveJob: (post, user, isDetail) => {
         return (isDetail && post.is_job && (isUserAdmin(user) || isUserOwner(user, post)));
     },

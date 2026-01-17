@@ -306,6 +306,45 @@ const PostService = {
     },
 
     /**
+     * Update a post's details
+     * @param {Object} options
+     * @param {number} options.id
+     * @param {string} options.title
+     * @param {string} options.url
+     * @param {string} options.description
+     */
+    async updatePost({ id, title, url, description }) {
+        if (title && title.length > 180) {
+            throw new Error('Title must be 180 characters or less');
+        }
+
+        const updates = [];
+        const params = [];
+
+        if (title !== undefined) {
+            updates.push('title = ?');
+            params.push(title);
+        }
+        if (url !== undefined) {
+            updates.push('url = ?');
+            params.push(url);
+        }
+        if (description !== undefined) {
+            updates.push('description = ?');
+            params.push(description);
+        }
+
+        if (updates.length === 0) return;
+
+        params.push(id);
+        
+        return await database.query(
+            `UPDATE posts SET ${updates.join(', ')} WHERE id = ?`,
+            params
+        );
+    },
+
+    /**
      * Update a post's status
      * @param {number} id
      * @param {string} status
