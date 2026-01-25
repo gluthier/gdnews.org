@@ -1,4 +1,5 @@
 const path = require('path');
+const crypto = require('crypto');
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
 require('dotenv').config({ path: path.join(__dirname, '../', envFile), quiet: true });
 
@@ -19,17 +20,31 @@ app.set('trust proxy', 1);
 
 const lessMiddleware = require('less-middleware');
 
+// Generate CSP Nonce
+app.use((req, res, next) => {
+    res.locals.nonce = crypto.randomBytes(16).toString('base64');
+    next();
+});
+
 // Middleware
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "blob:", "https://js.stripe.com", "https://*.stripe.com", "https://gc.zgo.at", "https://challenges.cloudflare.com"],
+            "script-src": [
+                "'strict-dynamic'",
+                (req, res) => `'nonce-${res.locals.nonce}'`,
+                "'unsafe-inline'", // fallback for older browsers
+                "http:", // fallback for older browsers
+                "https:", // fallback for older browsers
+            ],
             "img-src": ["'self'", "data:", "blob:", "https://*.stripe.com", "https://gc.zgo.at"],
             "frame-src": ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://*.stripe.com", "https://challenges.cloudflare.com"],
             "connect-src": ["'self'", "https://api.stripe.com", "https://*.stripe.com", "https://gdnews.goatcounter.com", "https://gc.zgo.at", "https://challenges.cloudflare.com"],
             "form-action": ["'self'", "https://checkout.stripe.com", "https://*.stripe.com"],
-            "upgrade-insecure-requests": process.env.NODE_ENV === 'production' ? [] : null
+            "upgrade-insecure-requests": process.env.NODE_ENV === 'production' ? [] : null,
+            "require-trusted-types-for": ["'script'"],
+            "base-uri": ["'self'"]
         }
     },
     // crossOriginEmbedderPolicy: { policy: "require-corp" }

@@ -21,9 +21,13 @@ const app = require('../../src/server');
 describe('Authentication Routes', () => {
     let csrfToken;
     let agent;
+    const originalEnv = process.env;
 
     beforeEach(async () => {
         jest.clearAllMocks();
+        process.env = { ...originalEnv };
+        delete process.env.TURNSTILE_SECRET_KEY; // Disable Turnstile for these tests
+        
         agent = request.agent(app);
         
         // Fetch login page to get CSRF token and set cookie
@@ -37,6 +41,10 @@ describe('Authentication Routes', () => {
         } else {
             throw new Error('Could not find CSRF token in login page');
         }
+    });
+
+    afterEach(() => {
+        process.env = originalEnv;
     });
 
     describe('GET Routes', () => {

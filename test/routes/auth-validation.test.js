@@ -15,15 +15,23 @@ const app = require('../../src/server');
 describe('Username Validation', () => {
     let csrfToken;
     let agent;
+    const originalEnv = process.env;
 
     beforeEach(async () => {
         jest.clearAllMocks();
+        process.env = { ...originalEnv };
+        delete process.env.TURNSTILE_SECRET_KEY; // Disable Turnstile for these tests
+
         agent = request.agent(app);
         
         // Fetch register page to get CSRF token
         const res = await agent.get('/auth/register');
         const match = res.text.match(/name="_csrf" value="([^"]+)"/);
         csrfToken = match[1];
+    });
+
+    afterEach(() => {
+        process.env = originalEnv;
     });
 
     test('Fails when username is too short (< 3 chars)', async () => {

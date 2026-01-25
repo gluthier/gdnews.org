@@ -29,11 +29,13 @@ describe('Security Headers', () => {
     test('CSP should restrict sources', async () => {
          const res = await request(app).get('/');
          const csp = res.headers['content-security-policy'];
-         expect(csp).toContain("script-src 'self' blob: https://js.stripe.com https://*.stripe.com");
-         expect(csp).toContain("img-src 'self' data: https://*.stripe.com");
-         expect(csp).toContain("frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.stripe.com");
-         expect(csp).toContain("connect-src 'self' https://api.stripe.com https://*.stripe.com");
+         expect(csp).toContain("script-src 'strict-dynamic' 'nonce-");
+         expect(csp).toContain("'unsafe-inline' http: https:");
+         expect(csp).toContain("img-src 'self' data: blob: https://*.stripe.com https://gc.zgo.at");
+         expect(csp).toContain("frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.stripe.com https://challenges.cloudflare.com");
+         expect(csp).toContain("connect-src 'self' https://api.stripe.com https://*.stripe.com https://gdnews.goatcounter.com https://gc.zgo.at https://challenges.cloudflare.com");
          expect(csp).toContain("form-action 'self' https://checkout.stripe.com https://*.stripe.com");
+         expect(csp).toContain("require-trusted-types-for 'script'");
     });
 
     test('CSP should not upgrade insecure requests in non-production', async () => {

@@ -14,7 +14,7 @@
 </div>
 
 <div class="comments">
-    <script src="{{assetUrl '/js/item.js'}}" defer></script>
+    <script src="{{assetUrl '/js/item.js'}}" defer nonce="{{{nonce}}}"></script>
     {{#each comments}}
     {{> comment this depth=0 maxDepth=3}}
     {{/each}}
