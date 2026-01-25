@@ -11,6 +11,10 @@
     <link rel="icon" type="image/png" href="/images/favicon-16x16.png" sizes="16x16" />
 
     <link rel="stylesheet" href="{{assetUrl '/style.css'}}">
+    
+    {{#if enableTurnstile}}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {{/if}}
 </head>
 
 <body>

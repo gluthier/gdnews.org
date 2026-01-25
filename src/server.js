@@ -24,10 +24,10 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "script-src": ["'self'", "blob:", "https://js.stripe.com", "https://*.stripe.com", "https://gc.zgo.at"],
-            "img-src": ["'self'", "data:", "https://*.stripe.com", "https://gc.zgo.at"],
-            "frame-src": ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://*.stripe.com"],
-            "connect-src": ["'self'", "https://api.stripe.com", "https://*.stripe.com", "https://gdnews.goatcounter.com", "https://gc.zgo.at"],
+            "script-src": ["'self'", "blob:", "https://js.stripe.com", "https://*.stripe.com", "https://gc.zgo.at", "https://challenges.cloudflare.com"],
+            "img-src": ["'self'", "data:", "blob:", "https://*.stripe.com", "https://gc.zgo.at"],
+            "frame-src": ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://*.stripe.com", "https://challenges.cloudflare.com"],
+            "connect-src": ["'self'", "https://api.stripe.com", "https://*.stripe.com", "https://gdnews.goatcounter.com", "https://gc.zgo.at", "https://challenges.cloudflare.com"],
             "form-action": ["'self'", "https://checkout.stripe.com", "https://*.stripe.com"],
             "upgrade-insecure-requests": process.env.NODE_ENV === 'production' ? [] : null
         }

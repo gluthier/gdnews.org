@@ -9,7 +9,9 @@ router.get('/register', (req, res) => {
     res.render('pages/auth/register', { 
         error: null, 
         title: 'register',
-        metaDescription: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
+        metaDescription: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community.",
+        enableTurnstile: true,
+        turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
     });
 });
 
@@ -22,7 +24,57 @@ router.post('/register', async (req, res, next) => {
         });
     }
 
-    const { username, password, email } = req.body;
+    const { username, password, email, 'cf-turnstile-response': turnstileToken } = req.body;
+
+    // Verify Turnstile Token
+    if (process.env.TURNSTILE_SECRET_KEY) {
+        if (!turnstileToken) {
+            return res.render('pages/auth/register', { 
+                error: 'Please complete the security check', 
+                title: 'register',
+                username,
+                email,
+                enableTurnstile: true,
+                turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
+            });
+        }
+
+        const formData = new URLSearchParams();
+		formData.append('secret', process.env.TURNSTILE_SECRET_KEY);
+		formData.append('response', turnstileToken);
+		formData.append('remoteip', req.ip);
+
+        try {
+            const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                body: formData,
+            });
+            const outcome = await turnstileRes.json();
+            if (!outcome.success) {
+                 return res.render('pages/auth/register', { 
+                    error: 'Security check failed. Please try again.', 
+                    title: 'register',
+                    username,
+                    email,
+                    enableTurnstile: true,
+                    turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
+                });
+            }
+        } catch (err) {
+            console.error('Turnstile verification error:', err);
+             return res.render('pages/auth/register', { 
+                error: 'Security check error. Please try again later.', 
+                title: 'register',
+                username,
+                email,
+                enableTurnstile: true,
+                turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
+            });
+        }
+    } else {
+        console.warn('TURNSTILE_SECRET_KEY not set, skipping verification');
+    }
+
     if (!username || !password) {
         return res.render('pages/auth/register', { 
             error: 'All fields are required', 
