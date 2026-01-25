@@ -35,7 +35,6 @@ app.use(helmet({
                 "'strict-dynamic'",
                 (req, res) => `'nonce-${res.locals.nonce}'`,
                 "'unsafe-inline'", // fallback for older browsers
-                "http:", // fallback for older browsers
                 "https:", // fallback for older browsers
             ],
             "img-src": ["'self'", "data:", "blob:", "https://*.stripe.com", "https://gc.zgo.at"],
@@ -48,7 +47,14 @@ app.use(helmet({
         }
     },
     // crossOriginEmbedderPolicy: { policy: "require-corp" }
-    crossOriginEmbedderPolicy: false // Disable COEP if it causes issues with external resources like Stripe
+    crossOriginEmbedderPolicy: false, // Disable COEP if it causes issues with external resources like Stripe
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true
+    },
+    xContentTypeOptions: true
 }));
 
 // Set Cross-Origin-Resource-Policy for local assets to satisfy COEP
