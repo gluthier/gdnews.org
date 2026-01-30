@@ -16,6 +16,10 @@ const helpers = {
         const hours = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
 
+        if (minutes < 1) {
+            return 'now';
+        }
+
         if (minutes < 120) {
             return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
         }

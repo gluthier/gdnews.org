@@ -14,6 +14,7 @@ describe('Helper Functions', () => {
 
         const testCases = [
             { desc: '10 minutes ago', date: '2025-12-09T11:50:00', expected: '10 minutes ago' },
+            { desc: 'Just now', date: '2025-12-09T11:59:30', expected: 'now' },
             { desc: '1 hour 59 minutes ago', date: '2025-12-09T10:01:00', expected: '119 minutes ago' },
             // Logic in helper for "minutes < 120" returns "X minutes ago", but then "hours < 24" returns "X hours ago".
             // Wait, looking at src/helpers.js:
