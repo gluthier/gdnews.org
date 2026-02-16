@@ -25,6 +25,7 @@ router.post('/register', async (req, res, next) => {
     }
 
     const { username, password, email, 'cf-turnstile-response': turnstileToken } = req.body;
+    const normalizedEmail = typeof email === 'string' ? email.trim() : email;
 
     // Verify Turnstile Token
     if (process.env.TURNSTILE_SECRET_KEY) {
@@ -33,7 +34,7 @@ router.post('/register', async (req, res, next) => {
                 error: 'Please complete the security check', 
                 title: 'register',
                 username,
-                email,
+                email: normalizedEmail,
                 enableTurnstile: true,
                 turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
             });
@@ -55,7 +56,7 @@ router.post('/register', async (req, res, next) => {
                     error: 'Security check failed. Please try again.', 
                     title: 'register',
                     username,
-                    email,
+                    email: normalizedEmail,
                     enableTurnstile: true,
                     turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
                 });
@@ -66,7 +67,7 @@ router.post('/register', async (req, res, next) => {
                 error: 'Security check error. Please try again later.', 
                 title: 'register',
                 username,
-                email,
+                email: normalizedEmail,
                 enableTurnstile: true,
                 turnstileSiteKey: process.env.TURNSTILE_SITE_KEY
             });
@@ -80,7 +81,7 @@ router.post('/register', async (req, res, next) => {
             error: 'All fields are required', 
             title: 'register',
             username,
-            email,
+            email: normalizedEmail,
             metaDescription: "Register to gdnews, a video game design & development news aggregator to share healthy discussions with the community."
         });
     }
@@ -90,16 +91,16 @@ router.post('/register', async (req, res, next) => {
             error: 'Password must be between 8 and 128 characters long', 
             title: 'register',
             username,
-            email
+            email: normalizedEmail
         });
     }
 
-    if (email && email.length > 254) {
+    if (normalizedEmail && normalizedEmail.length > 254) {
         return res.render('pages/auth/register', { 
             error: 'Email must be at most 254 characters long', 
             title: 'register',
             username,
-            email
+            email: normalizedEmail
         });
     }
 
@@ -108,7 +109,7 @@ router.post('/register', async (req, res, next) => {
             error: 'Username must be at least 3 characters long', 
             title: 'register',
             username,
-            email
+            email: normalizedEmail
         });
     }
 
@@ -117,7 +118,7 @@ router.post('/register', async (req, res, next) => {
             error: 'Username must be at most 24 characters long', 
             title: 'register',
             username,
-            email
+            email: normalizedEmail
         });
     }
 
@@ -126,7 +127,7 @@ router.post('/register', async (req, res, next) => {
             error: 'Username can only contain letters, numbers, underscores and hyphens', 
             title: 'register',
             username,
-            email
+            email: normalizedEmail
         });
     }
 
@@ -135,18 +136,34 @@ router.post('/register', async (req, res, next) => {
             error: 'Username cannot contain "gdnews"', 
             title: 'register',
             username,
-            email
+            email: normalizedEmail
         });
     }
 
     try {
+        if (normalizedEmail) {
+            const existingUserWithEmail = await UserService.getUserByEmail(normalizedEmail);
+            if (existingUserWithEmail) {
+                return res.render('pages/auth/register', {
+                    error: 'Registration failed', // avoid leaking info email already exists
+                    title: 'register',
+                    username,
+                    email: normalizedEmail
+                });
+            }
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        await UserService.createUser({ username, password_hash: hashedPassword, email });
+        await UserService.createUser({ username, password_hash: hashedPassword, email: normalizedEmail });
         // Redirect to a page telling them to check email (or just login with a message)
-        const successMessage = email 
+        const successMessage = normalizedEmail 
             ? 'Registration successful! Please check your email to confirm your account.' 
             : 'Registration successful!';
-        res.render('pages/auth/login', { error: null, success: successMessage, title: 'login' });
+        res.render('pages/auth/login', {
+            error: null,
+            success: successMessage,
+            title: 'login'
+        });
     } catch (err) {
         console.error(err);
         if (err.code === 'ER_DUP_ENTRY') {
@@ -154,7 +171,7 @@ router.post('/register', async (req, res, next) => {
                 error: 'Username already exists', 
                 title: 'register',
                 username,
-                email
+                email: normalizedEmail
             });
         }
         next(err);

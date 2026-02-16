@@ -240,6 +240,25 @@ describe('Authentication Routes', () => {
             consoleSpy.mockRestore();
         });
 
+        test('Fails with duplicate email', async () => {
+            UserService.getUserByEmail.mockResolvedValue({ id: 42, email: 'test@example.com' });
+
+            const res = await agent
+                .post('/auth/register')
+                .type('form')
+                .send({
+                    username: 'newuser',
+                    password: 'password123',
+                    email: 'test@example.com',
+                    _csrf: csrfToken
+                });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.text).toContain('Registration failed');
+            expect(UserService.createUser).not.toHaveBeenCalled();
+            expect(bcrypt.hash).not.toHaveBeenCalled();
+        });
+
         test('Fails with missing fields', async () => {
             const res = await agent
                 .post('/auth/register')

@@ -63,6 +63,26 @@ describe('UserService', () => {
         });
     });
 
+    describe('getUserByEmail', () => {
+        it('should return user if found with case-insensitive match', async () => {
+            const mockUser = { id: 1, email: 'test@example.com' };
+            database.query.mockResolvedValue([mockUser]);
+
+            const result = await UserService.getUserByEmail('TEST@example.com');
+            expect(result).toEqual(mockUser);
+            expect(database.query).toHaveBeenCalledWith(
+                expect.stringContaining('LOWER(email) = LOWER(?)'),
+                ['TEST@example.com']
+            );
+        });
+
+        it('should return null if not found', async () => {
+            database.query.mockResolvedValue([]);
+            const result = await UserService.getUserByEmail('missing@example.com');
+            expect(result).toBeNull();
+        });
+    });
+
     describe('getUserById', () => {
         it('should return user if found', async () => {
             const mockUser = { id: 1, username: 'test' };

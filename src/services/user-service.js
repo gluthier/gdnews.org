@@ -38,6 +38,18 @@ const UserService = {
     },
 
     /**
+     * Get a user by email (case-insensitive)
+     * @param {string} email
+     */
+    async getUserByEmail(email) {
+        const users = await database.query(
+            'SELECT * FROM users WHERE LOWER(email) = LOWER(?)',
+            [email]
+        );
+        return users.length > 0 ? users[0] : null;
+    },
+
+    /**
      * Get a user by ID
      * @param {number} id 
      */
