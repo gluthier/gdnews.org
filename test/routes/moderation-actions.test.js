@@ -15,6 +15,8 @@ jest.mock('../../src/services/user-service', () => ({
     getAllUsers: jest.fn(),
     getUserCount: jest.fn(),
     banUser: jest.fn(),
+    getUserById: jest.fn(),
+    deleteUserAccount: jest.fn(),
     checkBanStatus: jest.fn().mockResolvedValue(false), // Mock ban status check
 }));
 
@@ -66,6 +68,19 @@ describe('Moderation Actions', () => {
                 .post('/moderation/comment/456/delete');
             
             expect(CommentService.deleteComment).toHaveBeenCalledWith('456');
+            expect(res.statusCode).toBe(302);
+        });
+    });
+
+    describe('POST /moderation/user/:id/delete', () => {
+        test('deletes permanently banned user successfully', async () => {
+            UserService.getUserById.mockResolvedValue({ id: 123, ban_type: 'LifeBanned' });
+
+            const res = await request(app)
+                .post('/moderation/user/123/delete');
+
+            expect(UserService.getUserById).toHaveBeenCalledWith('123');
+            expect(UserService.deleteUserAccount).toHaveBeenCalledWith('123');
             expect(res.statusCode).toBe(302);
         });
     });

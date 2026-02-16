@@ -17,13 +17,14 @@
     </li>
     {{else}}
         <li>
-            <span class="text-button" style="color: #eb0808; cursor: default;">
-                {{#if (eq this.ban_type 'LifeBanned')}}
-                    Permanently Banned
-                {{else}}
+            {{#if (eq this.ban_type 'LifeBanned')}}
+                <span class="text-button" style="color: #eb0808; cursor: default;">Permanently Banned</span>
+                <a href="/moderation/user/{{commentUserId}}/delete" class="confirm-action admin-action" style="margin-left: 8px;" data-confirm-text="delete account" data-csrf="{{@root.csrfToken}}">[delete account]</a>
+            {{else}}
+                <span class="text-button" style="color: #eb0808; cursor: default;">
                     Banned until {{formatDateFull this.banned_until}}
-                {{/if}}
-            </span>
+                </span>
+            {{/if}}
         </li>
     {{/if}}
 {{/if}}

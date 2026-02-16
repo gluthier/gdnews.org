@@ -14,6 +14,8 @@ const CommentService = require('../../src/services/comment-service');
 jest.mock('../../src/services/user-service', () => ({
     getAllUsers: jest.fn(),
     getUserCount: jest.fn(),
+    getUserById: jest.fn(),
+    deleteUserAccount: jest.fn(),
     checkBanStatus: jest.fn().mockResolvedValue(false)
 }));
 
@@ -69,7 +71,7 @@ describe('Moderation Routes', () => {
         beforeEach(() => {
             global.testUser = { id: 1, username: 'admin', user_type: 'admin' };
             UserService.getAllUsers.mockResolvedValue({
-                users: [{ id: 2, username: 'user2', user_type: 'normal' }],
+                users: [{ id: 2, username: 'user2', user_type: 'normal', ban_type: 'LifeBanned' }],
                 count: 1
             });
             CommentService.getCommentCount.mockResolvedValue(10);
@@ -80,6 +82,7 @@ describe('Moderation Routes', () => {
             expect(res.statusCode).toBe(200);
             expect(res.text).toContain('Moderation');
             expect(res.text).toContain('user2');
+            expect(res.text).toContain('/moderation/user/2/delete');
             expect(UserService.getAllUsers).toHaveBeenCalledWith({ page: 1, limit: 50 });
         });
 

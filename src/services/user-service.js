@@ -311,6 +311,33 @@ const UserService = {
             'UPDATE users SET ban_type = "normal", banned_until = NULL WHERE id = ?',
             [userId]
         );
+    },
+
+    /**
+     * Delete a user account and dependent content.
+     * This removes the user's posts and comments first to satisfy FK constraints.
+     * @param {number|string} userId
+     */
+    async deleteUserAccount(userId) {
+        await database.query(
+            'DELETE FROM comments WHERE post_id IN (SELECT id FROM posts WHERE user_id = ?)',
+            [userId]
+        );
+
+        await database.query(
+            'DELETE FROM comments WHERE user_id = ?',
+            [userId]
+        );
+
+        await database.query(
+            'DELETE FROM posts WHERE user_id = ?',
+            [userId]
+        );
+
+        await database.query(
+            'DELETE FROM users WHERE id = ?',
+            [userId]
+        );
     }
 };
 

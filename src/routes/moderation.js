@@ -94,6 +94,37 @@ router.post('/user/:id/ban', async (req, res, next) => {
     }
 });
 
+// Delete User (only if permanently banned)
+router.post('/user/:id/delete', async (req, res, next) => {
+    try {
+        const userId = req.params.id;
+        const currentUserId = String(req.session.user.id);
+        if (String(userId) === currentUserId) {
+            const err = new Error('Cannot delete your own account');
+            err.status = 400;
+            throw err;
+        }
+
+        const targetUser = await UserService.getUserById(userId);
+        if (!targetUser) {
+            const err = new Error('User not found');
+            err.status = 404;
+            throw err;
+        }
+
+        if (targetUser.ban_type !== 'LifeBanned') {
+            const err = new Error('Only permanently banned users can be deleted');
+            err.status = 400;
+            throw err;
+        }
+
+        await UserService.deleteUserAccount(userId);
+        res.redirect(req.get('Referrer') || '/moderation/users');
+    } catch (err) {
+        next(err);
+    }
+});
+
 // Delete Comment
 router.post('/comment/:id/delete', async (req, res, next) => {
     try {
