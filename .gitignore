@@ -34,3 +34,5 @@ public/style.min.css
 public/js/item.min.js
 public/js/moderation.min.js
 public/js/schedule.min.js
+
+models/

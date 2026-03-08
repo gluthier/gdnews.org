@@ -1,51 +1,29 @@
 {
   "name": "gdnews",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/server.js",
-  "scripts": {
-    "start": "npm run build && pm2 start ecosystem.config.js --env production",
-    "stop": "pm2 stop ecosystem.config.js",
-    "restart": "npm run build && pm2 restart ecosystem.config.js",
-    "delete": "pm2 delete ecosystem.config.js",
-    "logs": "pm2 logs",
-    "status": "pm2 status",
-    "dev": "npm run build && pm2-dev ecosystem.config.js --env development",
-    "server": "npm run build && node src/server.js",
-    "batch": "node src/batch_server/batch_server.js",
-    "test": "cross-env NODE_ENV=test jest",
-    "build:css": "lessc --clean-css styles/style.less public/style.min.css",
-    "build:js": "terser public/js/item.js -o public/js/item.min.js --compress --mangle && terser public/js/schedule.js -o public/js/schedule.min.js --compress --mangle && terser public/js/moderation.js -o public/js/moderation.min.js --compress --mangle",
-    "build": "npm run build:css && npm run build:js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "version": "2.0.0",
+  "description": "Static game development news aggregator pipeline",
   "type": "commonjs",
+  "scripts": {
+    "db:reset": "node src/database/reset_minimal_db.js",
+    "crawl": "node src/crawler/index.js",
+    "build:css": "lessc --clean-css styles/style.less public/style.min.css",
+    "seed:fake": "node scripts/seed-fake-posts.js",
+    "build:static": "node src/static/build-site.js",
+    "build": "npm run build:css && npm run build:static",
+    "refresh": "npm run build:css && node src/pipeline/refresh.js",
+    "test": "jest --runInBand"
+  },
   "dependencies": {
-    "bcrypt": "^6.0.0",
-    "body-parser": "^2.2.0",
-    "csurf": "^1.2.2",
+    "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-handlebars": "^8.0.4",
-    "express-mysql-session": "^3.0.3",
-    "express-session": "^1.18.2",
-    "helmet": "^8.1.0",
     "less": "^4.4.2",
-    "less-middleware": "^2.2.1",
     "mariadb": "^3.4.5",
-    "mysql2": "^3.16.0",
-    "nodemailer": "^7.0.11",
-    "pm2": "^6.0.14",
-    "stripe": "^20.0.0"
+    "node-llama-cpp": "^3.14.5",
+    "rss-parser": "^3.13.0"
   },
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
-    "cross-env": "^10.1.0",
-    "jest": "^30.2.0",
-    "nodemon": "^3.1.11",
-    "supertest": "^7.1.4",
-    "terser": "^5.44.1"
+    "jest": "^30.2.0"
   }
 }

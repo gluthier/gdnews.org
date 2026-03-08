@@ -1,0 +1,17 @@
+You are evaluating whether a game industry article is useful for game developers and designers.
+
+Score this article from 0 to 100.
+- High scores: practical design/development insights, postmortems, tools, technical workflows.
+- Medium scores: relevant game industry context with some value to practitioners.
+- Low scores: pure marketing, celebrity gossip, financial-only, or unrelated content.
+
+Return STRICT JSON only with this shape:
+{
+  "score": <integer 0-100>,
+  "reasoning": "<short explanation>"
+}
+
+Title: {{TITLE}}
+Source: {{SOURCE}}
+Content:
+{{CONTENT}}

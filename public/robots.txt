@@ -1,12 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /auth/
-Disallow: /submit
-Disallow: /submit-job
-Disallow: /schedule-promoted
-Disallow: /promoted-success
-Disallow: /promoted-cancel
-Disallow: /favorite/
-Disallow: /unfavorite/
-Disallow: /item/*/comment
-Disallow: /moderation/
+
+Sitemap: https://gdnews.org/sitemap.xml

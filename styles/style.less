@@ -118,6 +118,9 @@ header {
         }
 
         .logo a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
             font-weight: bold;
             color: @color-white;
             font-size: @font-size-large;
@@ -129,6 +132,13 @@ header {
             &.logo-symbol:hover + a {
                 text-decoration: underline;
             }
+        }
+
+        .logo-icon {
+            display: block;
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
         }
     }
 }
@@ -254,6 +264,54 @@ footer {
 
         &:hover {
             text-decoration: underline;
+            color: @color-dark-font;
+        }
+    }
+}
+
+.posts-static {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .post-row {
+        display: flex;
+        flex-direction: column;
+        gap: @spacing-xs;
+        margin-bottom: @spacing-md;
+        padding-bottom: @spacing-sm;
+        border-bottom: 1px solid @color-highlight-border;
+
+        &.empty {
+            color: @color-light-font;
+            border-bottom: none;
+        }
+
+        .post-link {
+            font-size: @font-size-large;
+            line-height: 1.3;
+        }
+
+        .post-meta {
+            color: @color-light-font;
+            font-size: @font-size-small;
+        }
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: @spacing-lg;
+    margin-left: @spacing-md;
+    gap: @spacing-md;
+
+    a {
+        color: @color-light-font;
+        min-height: @touch-target-size;
+        line-height: @touch-target-size;
+
+        &:hover {
             color: @color-dark-font;
         }
     }
