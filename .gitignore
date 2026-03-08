@@ -27,3 +27,6 @@ coverage/
 gdnews.config
 data/
 models/
+
+cron-job.md
+logs/
