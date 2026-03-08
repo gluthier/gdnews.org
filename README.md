@@ -4,16 +4,10 @@ Static game development news site generated from a local crawler pipeline.
 
 ## Workflow
 
-1. Reset DB to minimal schema (destructive):
+1. Reset the local post store (destructive):
 
 ```bash
-npm run db:reset
-```
-
-If you want non-interactive reset, use:
-
-```bash
-GDNEWS_CONFIRM_DB_RESET=true npm run db:reset
+npm run data:reset
 ```
 
 2. Refresh everything (crawl -> ingest -> static build):
@@ -22,7 +16,7 @@ GDNEWS_CONFIRM_DB_RESET=true npm run db:reset
 npm run refresh
 ```
 
-3. Rebuild static pages only from existing DB data:
+3. Rebuild static pages only from existing stored data:
 
 ```bash
 npm run build:static
@@ -32,9 +26,12 @@ Generated files:
 - `public/index.html`
 - `public/page/<n>/index.html`
 
+Stored data:
+- `data/posts.json`
+
 ## Environment
 
-Copy `.template.env` to `.env.development` (or `.env.production`) and set DB + crawler values.
+Copy `.template.env` to `.env.development` (or `.env.production`) and set crawler values.
 
 ## Testing
 

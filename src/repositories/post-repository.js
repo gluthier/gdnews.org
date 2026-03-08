@@ -1,4 +1,7 @@
-const database = require('../database/database');
+const fs = require('fs/promises');
+const path = require('path');
+
+const STORE_PATH = path.join(__dirname, '../../data/posts.json');
 
 const sanitizeText = (value, maxLength) => {
     if (value == null) return null;
@@ -15,6 +18,50 @@ const parseDate = (value) => {
     const pad = (n) => String(n).padStart(2, '0');
     return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
 };
+
+async function ensureStore() {
+    await fs.mkdir(path.dirname(STORE_PATH), { recursive: true });
+
+    try {
+        await fs.access(STORE_PATH);
+    } catch (error) {
+        await fs.writeFile(STORE_PATH, '[]\n', 'utf8');
+    }
+}
+
+async function loadPosts() {
+    await ensureStore();
+    const raw = await fs.readFile(STORE_PATH, 'utf8');
+
+    if (!raw.trim()) {
+        return [];
+    }
+
+    const posts = JSON.parse(raw);
+    if (!Array.isArray(posts)) {
+        throw new Error(`Post store must contain a JSON array: ${STORE_PATH}`);
+    }
+
+    return posts;
+}
+
+async function savePosts(posts) {
+    await fs.mkdir(path.dirname(STORE_PATH), { recursive: true });
+    await fs.writeFile(STORE_PATH, `${JSON.stringify(posts, null, 2)}\n`, 'utf8');
+}
+
+function sortPosts(posts) {
+    return [...posts].sort((left, right) => {
+        const leftCreatedAt = Date.parse(left.created_at || '') || 0;
+        const rightCreatedAt = Date.parse(right.created_at || '') || 0;
+
+        if (rightCreatedAt !== leftCreatedAt) {
+            return rightCreatedAt - leftCreatedAt;
+        }
+
+        return (Number(right.id) || 0) - (Number(left.id) || 0);
+    });
+}
 
 const PostRepository = {
     async insertManyIgnoreDuplicates(posts) {
@@ -37,18 +84,33 @@ const PostRepository = {
             return { insertedCount: 0, skippedCount: posts.length };
         }
 
-        const placeholders = normalized.map(() => '(?, ?, ?, ?, ?, ?)').join(', ');
-        const params = [];
+        const storedPosts = await loadPosts();
+        const seenUrls = new Set(storedPosts.map((post) => post.url));
+        let nextId = storedPosts.reduce((maxId, post) => Math.max(maxId, Number(post.id) || 0), 0) + 1;
+        let insertedCount = 0;
+
         for (const post of normalized) {
-            params.push(post.title, post.url, post.sourceName, post.publishedAt, post.score, post.reasoning);
+            if (seenUrls.has(post.url)) {
+                continue;
+            }
+
+            seenUrls.add(post.url);
+            insertedCount += 1;
+            storedPosts.push({
+                id: nextId,
+                title: post.title,
+                url: post.url,
+                source_name: post.sourceName,
+                published_at: post.publishedAt,
+                score: post.score,
+                reasoning: post.reasoning,
+                created_at: new Date().toISOString()
+            });
+            nextId += 1;
         }
 
-        const result = await database.query(
-            `INSERT IGNORE INTO posts (title, url, source_name, published_at, score, reasoning) VALUES ${placeholders}`,
-            params
-        );
+        await savePosts(storedPosts);
 
-        const insertedCount = Number(result.affectedRows || 0);
         return {
             insertedCount,
             skippedCount: normalized.length - insertedCount
@@ -60,18 +122,17 @@ const PostRepository = {
         const safeLimit = Math.max(1, Number(limit) || 30);
         const offset = (safePage - 1) * safeLimit;
 
-        return database.query(
-            `SELECT id, title, url, source_name, published_at, score, reasoning, created_at
-             FROM posts
-             ORDER BY created_at DESC, id DESC
-             LIMIT ? OFFSET ?`,
-            [safeLimit, offset]
-        );
+        const posts = sortPosts(await loadPosts());
+        return posts.slice(offset, offset + safeLimit);
     },
 
     async countAll() {
-        const rows = await database.query('SELECT COUNT(*) AS count FROM posts');
-        return Number(rows[0].count || 0);
+        const posts = await loadPosts();
+        return posts.length;
+    },
+
+    async reset() {
+        await savePosts([]);
     }
 };
 

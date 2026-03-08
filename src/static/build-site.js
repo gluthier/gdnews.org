@@ -2,7 +2,6 @@ const fs = require('fs/promises');
 const path = require('path');
 
 const PostRepository = require('../repositories/post-repository');
-const database = require('../database/database');
 
 const PAGE_SIZE = Number.parseInt(process.env.STATIC_PAGE_SIZE || '30', 10);
 const PUBLIC_DIR = path.join(__dirname, '../../public');
@@ -181,9 +180,6 @@ if (require.main === module) {
         .catch((error) => {
             console.error('Static site build failed:', error);
             process.exitCode = 1;
-        })
-        .finally(async () => {
-            await database.close();
         });
 }
 

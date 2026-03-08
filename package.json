@@ -4,12 +4,13 @@
   "description": "Static game development news aggregator pipeline",
   "type": "commonjs",
   "scripts": {
-    "db:reset": "node src/database/reset_minimal_db.js",
+    "data:reset": "node src/repositories/reset-post-store.js",
     "crawl": "node src/crawler/index.js",
     "build:css": "lessc --clean-css styles/style.less public/style.css",
     "seed:fake": "node scripts/seed-fake-posts.js",
     "build:static": "node src/static/build-site.js",
     "build": "npm run build:css && npm run build:static",
+    "refresh": "node src/pipeline/refresh.js",
     "start": "node src/pipeline/refresh.js && npm run build",
     "test": "jest --runInBand"
   },
@@ -18,7 +19,6 @@
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
     "less": "^4.4.2",
-    "mariadb": "^3.4.5",
     "node-llama-cpp": "^3.14.5",
     "rss-parser": "^3.13.0"
   },

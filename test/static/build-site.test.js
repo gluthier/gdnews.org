@@ -51,6 +51,6 @@ describe('build-site', () => {
         expect(html).toContain('example.com');
         expect(html).toContain('1.01.2026');
         expect(html).toContain('page/2/');
-        expect(html).toContain('style.min.css');
+        expect(html).toContain('style.css');
     });
 });

@@ -6,13 +6,13 @@ const shouldRun = process.env.RUN_E2E_SMOKE === 'true';
 const maybeDescribe = shouldRun ? describe : describe.skip;
 
 maybeDescribe('local e2e smoke', () => {
-    test('db reset + refresh generates static homepage', () => {
+    test('post store reset + refresh generates static homepage', () => {
         const repoRoot = path.join(__dirname, '../..');
 
-        execSync('node src/database/reset_minimal_db.js --yes', {
+        execSync('node src/repositories/reset-post-store.js', {
             cwd: repoRoot,
             stdio: 'inherit',
-            env: { ...process.env, GDNEWS_CONFIRM_DB_RESET: 'true' }
+            env: process.env
         });
 
         execSync('node src/pipeline/refresh.js', {

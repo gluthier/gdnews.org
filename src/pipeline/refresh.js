@@ -1,7 +1,6 @@
 const runCrawler = require('../crawler');
 const PostRepository = require('../repositories/post-repository');
 const buildSite = require('../static/build-site');
-const database = require('../database/database');
 
 /**
  * @typedef {Object} CrawledArticle
@@ -40,7 +39,7 @@ async function refreshPipeline() {
     console.log(`- filtered: ${summary.filtered}`);
     console.log(`- inserted: ${summary.inserted}`);
     console.log(`- skipped: ${summary.skipped}`);
-    console.log(`- total posts in DB: ${summary.totalPosts}`);
+    console.log(`- total stored posts: ${summary.totalPosts}`);
     console.log(`- static pages generated: ${summary.pagesGenerated}`);
 
     return summary;
@@ -53,12 +52,6 @@ if (require.main === module) {
         } catch (error) {
             console.error('Refresh pipeline failed:', error);
             process.exitCode = 1;
-        } finally {
-            try {
-                await database.close();
-            } finally {
-                process.exit(process.exitCode || 0);
-            }
         }
     })();
 }

@@ -25,8 +25,7 @@ coverage/
 
 # Configuration
 gdnews.config
-
-setup_production_db.sql
+data/
 
 # Public
 public/style.css

@@ -1,4 +1,3 @@
-const database = require('../src/database/database');
 const PostRepository = require('../src/repositories/post-repository');
 
 const DEFAULT_COUNT = 60;
@@ -54,7 +53,7 @@ async function seed() {
     const posts = buildPosts(count);
 
     if (clear) {
-        await database.query('TRUNCATE TABLE posts');
+        await PostRepository.reset();
     }
 
     const result = await PostRepository.insertManyIgnoreDuplicates(posts);
@@ -62,9 +61,7 @@ async function seed() {
     console.log(`Fake data seed complete: inserted ${result.insertedCount}, skipped ${result.skippedCount}, requested ${count}.`);
 }
 
-seed()
-    .then(() => database.close())
-    .catch((error) => {
-        console.error('Seed failed:', error.message);
-        database.close().finally(() => process.exit(1));
-    });
+seed().catch((error) => {
+    console.error('Seed failed:', error.message);
+    process.exit(1);
+});
