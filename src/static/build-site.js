@@ -57,7 +57,7 @@ const pageHref = (page, targetPage) => {
 };
 
 const stylesheetHref = (page) => {
-    return `${pagePathPrefix(page)}style.min.css`;
+    return `${pagePathPrefix(page)}style.css`;
 };
 
 const faviconHref = (page, size) => {

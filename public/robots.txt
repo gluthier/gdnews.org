@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://gdnews.org/sitemap.xml

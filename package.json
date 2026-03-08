@@ -6,11 +6,11 @@
   "scripts": {
     "db:reset": "node src/database/reset_minimal_db.js",
     "crawl": "node src/crawler/index.js",
-    "build:css": "lessc --clean-css styles/style.less public/style.min.css",
+    "build:css": "lessc --clean-css styles/style.less public/style.css",
     "seed:fake": "node scripts/seed-fake-posts.js",
     "build:static": "node src/static/build-site.js",
     "build": "npm run build:css && npm run build:static",
-    "refresh": "npm run build:css && node src/pipeline/refresh.js",
+    "start": "node src/pipeline/refresh.js && npm run build",
     "test": "jest --runInBand"
   },
   "dependencies": {

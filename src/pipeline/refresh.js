@@ -47,14 +47,20 @@ async function refreshPipeline() {
 }
 
 if (require.main === module) {
-    refreshPipeline()
-        .catch((error) => {
+    (async () => {
+        try {
+            await refreshPipeline();
+        } catch (error) {
             console.error('Refresh pipeline failed:', error);
             process.exitCode = 1;
-        })
-        .finally(async () => {
-            await database.close();
-        });
+        } finally {
+            try {
+                await database.close();
+            } finally {
+                process.exit(process.exitCode || 0);
+            }
+        }
+    })();
 }
 
 module.exports = refreshPipeline;
