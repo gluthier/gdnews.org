@@ -280,7 +280,11 @@ footer {
         gap: @spacing-xs;
         margin-bottom: @spacing-md;
         padding-bottom: @spacing-sm;
-        border-bottom: 1px solid @color-highlight-border;
+        border-bottom: none;
+
+        &.with-separator {
+            border-bottom: 1px solid @color-highlight-border;
+        }
 
         &.empty {
             color: @color-light-font;
@@ -295,6 +299,8 @@ footer {
         .post-meta {
             color: @color-light-font;
             font-size: @font-size-small;
+            display: inline-flex;
+            gap: @spacing-lg;
         }
     }
 }
@@ -302,7 +308,7 @@ footer {
 .pagination {
     display: flex;
     justify-content: flex-start;
-    margin-top: @spacing-lg;
+    margin-top: @spacing-sm;
     margin-left: @spacing-md;
     gap: @spacing-md;
 

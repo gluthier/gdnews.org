@@ -49,7 +49,7 @@ describe('build-site', () => {
         const html = firstPageCall[1];
         expect(html).toContain('https://example.com/1');
         expect(html).toContain('example.com');
-        expect(html).toContain('2026-01-01');
+        expect(html).toContain('1.01.2026');
         expect(html).toContain('page/2/');
         expect(html).toContain('style.min.css');
     });

@@ -28,7 +28,12 @@ const domainFromUrl = (url) => {
 const formatDate = (value) => {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';
-    return date.toISOString().slice(0, 10);
+    return new Intl.DateTimeFormat('fr-CH', {
+        day: 'numeric',
+        month: '2-digit',
+        year: 'numeric',
+        timeZone: 'Europe/Zurich'
+    }).format(date);
 };
 
 const pagePathPrefix = (page) => {
@@ -92,11 +97,13 @@ const pageInfo = (page, totalPages) => {
 `;
 };
 
-const renderPostRow = (post) => {
+const renderPostRow = (post, index, totalPosts) => {
     const domain = domainFromUrl(post.url);
     const date = formatDate(post.published_at || post.created_at);
+    const isSeparator = ((index + 1) % 5 === 0) && index + 1 !== totalPosts;
+    const separatorClass = isSeparator ? ' with-separator' : '';
 
-    return `<li class="post-row"><a class="post-link" href="${escapeHtml(post.url)}" rel="noopener noreferrer" target="_blank">${escapeHtml(post.title)}</a><span class="post-meta">${escapeHtml(domain)}${date ? ` · ${escapeHtml(date)}` : ''}</span></li>`;
+    return `<li class="post-row${separatorClass}"><a class="post-link" href="${escapeHtml(post.url)}" rel="noopener noreferrer" target="_blank">${escapeHtml(post.title)}</a><span class="post-meta">${escapeHtml(domain)}${date ? `<span>${escapeHtml(date)}</span>` : ''}</span></li>`;
 };
 
 const renderPagination = (page, totalPages) => {
@@ -114,7 +121,7 @@ const renderPagination = (page, totalPages) => {
 
 const renderPage = ({ posts, page, totalPages }) => {
     const rows = posts.length > 0
-        ? posts.map(renderPostRow).join('\n')
+        ? posts.map((post, index) => renderPostRow(post, index, posts.length)).join('\n')
         : '<li class="post-row empty">No articles yet. Run `npm run refresh` to fetch news.</li>';
 
     return `${pageInfo(page, totalPages)}
@@ -125,7 +132,7 @@ const renderPage = ({ posts, page, totalPages }) => {
     <footer>
       <hr>
       <div class="footer-content">
-        <p>game development & design news links</p>
+        <p>Aggregation of game development & design news</p>
       </div>
     </footer>
   </div>
