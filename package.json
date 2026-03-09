@@ -11,7 +11,8 @@
     "build:static": "node src/static/build-site.js",
     "build": "npm run build:css && npm run build:static",
     "refresh": "node src/pipeline/refresh.js",
-    "start": "node src/pipeline/refresh.js && npm run build",
+    "publish": "node src/pipeline/publish.js",
+    "start": "npm run refresh && npm run build && npm run publish",
     "test": "jest --runInBand"
   },
   "dependencies": {
