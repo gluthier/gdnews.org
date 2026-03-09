@@ -45,15 +45,19 @@ async function refreshPipeline() {
     return summary;
 }
 
+async function runRefreshCli() {
+    try {
+        await refreshPipeline();
+        process.exit(0);
+    } catch (error) {
+        console.error('Refresh pipeline failed:', error);
+        process.exit(1);
+    }
+}
+
 if (require.main === module) {
-    (async () => {
-        try {
-            await refreshPipeline();
-        } catch (error) {
-            console.error('Refresh pipeline failed:', error);
-            process.exitCode = 1;
-        }
-    })();
+    runRefreshCli();
 }
 
 module.exports = refreshPipeline;
+module.exports.runRefreshCli = runRefreshCli;

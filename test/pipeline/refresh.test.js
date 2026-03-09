@@ -8,6 +8,7 @@ const runCrawler = require('../../src/crawler');
 const PostRepository = require('../../src/repositories/post-repository');
 const buildSite = require('../../src/static/build-site');
 const refreshPipeline = require('../../src/pipeline/refresh');
+const { runRefreshCli } = require('../../src/pipeline/refresh');
 
 describe('refresh pipeline', () => {
     beforeEach(() => {
@@ -48,5 +49,41 @@ describe('refresh pipeline', () => {
             totalPosts: 10,
             pagesGenerated: 1
         });
+    });
+
+    test('cli exits successfully when refresh completes', async () => {
+        runCrawler.mockResolvedValue({
+            fetchedCount: 0,
+            recentCount: 0,
+            dedupedCount: 0,
+            analyzedCount: 0,
+            filteredCount: 0,
+            articles: []
+        });
+        PostRepository.insertManyIgnoreDuplicates.mockResolvedValue({ insertedCount: 0, skippedCount: 0 });
+        buildSite.mockResolvedValue({ totalPosts: 0, totalPages: 1 });
+
+        const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined);
+
+        await runRefreshCli();
+
+        expect(exitSpy).toHaveBeenCalledWith(0);
+
+        exitSpy.mockRestore();
+    });
+
+    test('cli exits with failure code when refresh throws', async () => {
+        runCrawler.mockRejectedValue(new Error('boom'));
+
+        const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined);
+        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+        await runRefreshCli();
+
+        expect(errorSpy).toHaveBeenCalledWith('Refresh pipeline failed:', expect.any(Error));
+        expect(exitSpy).toHaveBeenCalledWith(1);
+
+        errorSpy.mockRestore();
+        exitSpy.mockRestore();
     });
 });
