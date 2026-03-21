@@ -1,0 +1,23 @@
+- `gdnews.org` is a CommonJS Node.js project that crawls and aggregates game development news, stores data locally, and generates a static site.
+- Prefer small, targeted changes that preserve the existing pipeline structure.
+- Install dependencies: `npm install`
+- Run tests: `npm test`
+- Refresh pipeline data: `npm run refresh`
+- Build CSS: `npm run build:css`
+- Build static site: `npm run build:static`
+- Full build/publish flow: `npm start`
+- Source code: `src/`
+- One-off scripts: `scripts/`
+- Static output: `public/`
+- Input/output data and local state: `data/`, `models/`, `logs/`
+- Styles: `styles/`
+- Tests: `test/`
+- Keep module style consistent with the existing CommonJS codebase.
+- Prefer fixing behavior in source files under `src/` instead of editing generated output in `public/` unless the user explicitly asks for generated-file changes.
+- Avoid destructive data operations unless the user clearly requests them. In particular, `npm run data:reset` deletes local stored post data.
+- Do not commit secrets or environment files. Use `.template.env` as the reference for env configuration.
+- Keep edits minimal and aligned with the current project structure and naming.
+- For logic changes, run the most targeted relevant test(s) first, then broader validation only if needed.
+- If a change affects generated site output, prefer validating by rebuilding with `npm run build:static` when appropriate.
+- Respect the existing `.gitignore`.
+- Do not add generated artifacts, local data, logs, or dependency directories to version control.
